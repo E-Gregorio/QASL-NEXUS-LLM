@@ -1,0 +1,1121 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": { "type": "grafana", "uid": "-- Grafana --" },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "description": "INGRID v2.0 - Framework Profesional de Testing de IA/LLM con OWASP LLM Top 10 2025 Completo | Desarrollado por Elyer Gregorio Maldonado - Lider Tecnico QA | EPIDATA",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "liveNow": true,
+  "panels": [
+    {
+      "gridPos": { "h": 4, "w": 24, "x": 0, "y": 0 },
+      "id": 100,
+      "options": {
+        "code": { "language": "plaintext", "showLineNumbers": false },
+        "content": "<div style=\"text-align: center; padding: 15px; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); border-radius: 10px; border: 1px solid #00BCD4;\">\n<h1 style=\"margin: 0; color: #00BCD4; font-size: 32px; text-shadow: 0 0 20px #00BCD4;\">INGRID v2.0</h1>\n<p style=\"margin: 5px 0; color: #00E5FF; font-size: 16px; letter-spacing: 2px;\">Intelligent Network for Generative Response Inspection & Defense</p>\n<p style=\"margin: 8px 0 0 0; color: #888; font-size: 13px;\">OWASP LLM Top 10 2025 Complete | Red Teaming | LLM-as-Judge | Multi-Model Security Testing</p>\n<p style=\"margin: 5px 0 0 0;\"><span style=\"background: #00C853; color: #000; padding: 2px 10px; border-radius: 12px; font-size: 11px; font-weight: bold;\">EPIDATA</span> <span style=\"color: #FFD700; margin-left: 10px;\">Elyer Gregorio Maldonado - Lider Tecnico QA</span></p>\n</div>",
+        "mode": "html"
+      },
+      "pluginVersion": "10.0.0",
+      "title": "",
+      "transparent": true,
+      "type": "text"
+    },
+    {
+      "gridPos": { "h": 2, "w": 24, "x": 0, "y": 4 },
+      "id": 200,
+      "options": {
+        "code": { "language": "plaintext", "showLineNumbers": false },
+        "content": "<div style=\"text-align: center; padding: 8px; background: linear-gradient(90deg, #1e3a5f 0%, #2d5a87 50%, #1e3a5f 100%); border-radius: 5px;\">\n<span style=\"color: #00E5FF; font-size: 14px; font-weight: bold; letter-spacing: 3px;\">PANEL DE CONTROL PRINCIPAL</span>\n</div>",
+        "mode": "html"
+      },
+      "pluginVersion": "10.0.0",
+      "title": "",
+      "transparent": true,
+      "type": "text"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "#FF4444", "value": null },
+              { "color": "#FFAA00", "value": 70 },
+              { "color": "#00C853", "value": 85 }
+            ]
+          },
+          "unit": "percent",
+          "max": 100,
+          "min": 0
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 5, "w": 4, "x": 0, "y": 6 },
+      "id": 1,
+      "options": {
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      },
+      "title": "Pass Rate General",
+      "type": "gauge",
+      "targets": [{ "expr": "max(ai_test_pass_rate)", "refId": "A", "legendFormat": "Pass Rate" }]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "fixedColor": "#6C63FF", "mode": "fixed" },
+          "mappings": [],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "#6C63FF", "value": null }] }
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 5, "w": 3, "x": 4, "y": 6 },
+      "id": 2,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "value"
+      },
+      "title": "Total Tests",
+      "type": "stat",
+      "targets": [{ "expr": "max(ai_test_total)", "refId": "A", "legendFormat": "Total" }]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "fixedColor": "#00C853", "mode": "fixed" },
+          "mappings": [],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "#00C853", "value": null }] }
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 5, "w": 3, "x": 7, "y": 6 },
+      "id": 11,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "value"
+      },
+      "title": "Exitosos",
+      "type": "stat",
+      "targets": [{ "expr": "max(ai_test_passed)", "refId": "A", "legendFormat": "Passed" }]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "fixedColor": "#FF4444", "mode": "fixed" },
+          "mappings": [],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "#FF4444", "value": null }] }
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 5, "w": 3, "x": 10, "y": 6 },
+      "id": 12,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "value"
+      },
+      "title": "Fallidos",
+      "type": "stat",
+      "targets": [{ "expr": "max(ai_test_failed)", "refId": "A", "legendFormat": "Failed" }]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [{ "options": { "0": { "color": "green", "index": 0, "text": "SEGURO" } }, "type": "value" }],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "#00C853", "value": null },
+              { "color": "#FFAA00", "value": 1 },
+              { "color": "#FF4444", "value": 3 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 5, "w": 3, "x": 13, "y": 6 },
+      "id": 3,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "value"
+      },
+      "title": "Vulnerabilidades",
+      "type": "stat",
+      "targets": [{ "expr": "max(ai_security_vulnerabilities)", "refId": "A", "legendFormat": "Vulnerabilities" }]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "#00C853", "value": null },
+              { "color": "#FFAA00", "value": 3 },
+              { "color": "#FF4444", "value": 5 }
+            ]
+          },
+          "max": 10,
+          "min": 0
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 5, "w": 4, "x": 16, "y": 6 },
+      "id": 8,
+      "options": {
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      },
+      "title": "Alucinacion (bajo=mejor)",
+      "type": "gauge",
+      "targets": [{ "expr": "max(ai_metric_hallucination)", "refId": "A", "legendFormat": "Hallucination" }]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "fixedColor": "#673AB7", "mode": "fixed" },
+          "mappings": [],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "#673AB7", "value": null }] },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 5, "w": 4, "x": 20, "y": 6 },
+      "id": 10,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "horizontal",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "value"
+      },
+      "title": "Duracion Total",
+      "type": "stat",
+      "targets": [{ "expr": "max(ai_test_duration_ms) / 1000", "refId": "A", "legendFormat": "Duration" }]
+    },
+    {
+      "gridPos": { "h": 2, "w": 24, "x": 0, "y": 11 },
+      "id": 201,
+      "options": {
+        "code": { "language": "plaintext", "showLineNumbers": false },
+        "content": "<div style=\"text-align: center; padding: 8px; background: linear-gradient(90deg, #4a1942 0%, #7b2869 50%, #4a1942 100%); border-radius: 5px;\">\n<span style=\"color: #FF6B9D; font-size: 14px; font-weight: bold; letter-spacing: 3px;\">OWASP LLM TOP 10 - 2025 (COMPLETO)</span>\n</div>",
+        "mode": "html"
+      },
+      "pluginVersion": "10.0.0",
+      "title": "",
+      "transparent": true,
+      "type": "text"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [
+            { "options": { "match": "null", "result": { "color": "#808080", "index": 0, "text": "N/A" } }, "type": "special" },
+            { "options": { "-1": { "color": "#808080", "index": 1, "text": "N/A" } }, "type": "value" },
+            { "options": { "0": { "color": "#00C853", "index": 2, "text": "PASS" } }, "type": "value" },
+            { "options": { "1": { "color": "#FF4444", "index": 3, "text": "FAIL" } }, "type": "value" }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "#00C853", "value": null },
+              { "color": "#FF4444", "value": 1 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 0, "y": 13 },
+      "id": 301,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "value"
+      },
+      "title": "LLM01: Prompt Injection",
+      "type": "stat",
+      "targets": [{ "expr": "max(ai_owasp_llm01_prompt_injection)", "refId": "A" }]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [
+            { "options": { "match": "null", "result": { "color": "#808080", "index": 0, "text": "N/A" } }, "type": "special" },
+            { "options": { "-1": { "color": "#808080", "index": 1, "text": "N/A" } }, "type": "value" },
+            { "options": { "0": { "color": "#00C853", "index": 2, "text": "PASS" } }, "type": "value" },
+            { "options": { "1": { "color": "#FF4444", "index": 3, "text": "FAIL" } }, "type": "value" }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "#00C853", "value": null },
+              { "color": "#FF4444", "value": 1 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 4, "y": 13 },
+      "id": 302,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "value"
+      },
+      "title": "LLM02: Insecure Output",
+      "type": "stat",
+      "targets": [{ "expr": "max(ai_owasp_llm02_insecure_output)", "refId": "A" }]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [
+            { "options": { "match": "null", "result": { "color": "#808080", "index": 0, "text": "N/A" } }, "type": "special" },
+            { "options": { "-1": { "color": "#808080", "index": 1, "text": "N/A" } }, "type": "value" },
+            { "options": { "0": { "color": "#00C853", "index": 2, "text": "PASS" } }, "type": "value" },
+            { "options": { "1": { "color": "#FF4444", "index": 3, "text": "FAIL" } }, "type": "value" }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "#00C853", "value": null },
+              { "color": "#FF4444", "value": 1 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 8, "y": 13 },
+      "id": 303,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "value"
+      },
+      "title": "LLM03: Training Poisoning",
+      "type": "stat",
+      "targets": [{ "expr": "max(ai_owasp_llm03_training_poisoning)", "refId": "A" }]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [
+            { "options": { "match": "null", "result": { "color": "#808080", "index": 0, "text": "N/A" } }, "type": "special" },
+            { "options": { "-1": { "color": "#808080", "index": 1, "text": "N/A" } }, "type": "value" },
+            { "options": { "0": { "color": "#00C853", "index": 2, "text": "PASS" } }, "type": "value" },
+            { "options": { "1": { "color": "#FF4444", "index": 3, "text": "FAIL" } }, "type": "value" }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "#00C853", "value": null },
+              { "color": "#FF4444", "value": 1 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 12, "y": 13 },
+      "id": 304,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "value"
+      },
+      "title": "LLM04: Model DoS",
+      "type": "stat",
+      "targets": [{ "expr": "max(ai_owasp_llm04_model_dos)", "refId": "A" }]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [
+            { "options": { "match": "null", "result": { "color": "#808080", "index": 0, "text": "N/A" } }, "type": "special" },
+            { "options": { "-1": { "color": "#808080", "index": 1, "text": "N/A" } }, "type": "value" },
+            { "options": { "0": { "color": "#00C853", "index": 2, "text": "PASS" } }, "type": "value" },
+            { "options": { "1": { "color": "#FF4444", "index": 3, "text": "FAIL" } }, "type": "value" }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "#00C853", "value": null },
+              { "color": "#FF4444", "value": 1 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 16, "y": 13 },
+      "id": 305,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "value"
+      },
+      "title": "LLM05: Supply Chain",
+      "type": "stat",
+      "targets": [{ "expr": "max(ai_owasp_llm05_supply_chain)", "refId": "A" }]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [
+            { "options": { "match": "null", "result": { "color": "#808080", "index": 0, "text": "N/A" } }, "type": "special" },
+            { "options": { "-1": { "color": "#808080", "index": 1, "text": "N/A" } }, "type": "value" },
+            { "options": { "0": { "color": "#00C853", "index": 2, "text": "PASS" } }, "type": "value" },
+            { "options": { "1": { "color": "#FF4444", "index": 3, "text": "FAIL" } }, "type": "value" }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "#00C853", "value": null },
+              { "color": "#FF4444", "value": 1 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 20, "y": 13 },
+      "id": 306,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "value"
+      },
+      "title": "LLM06: Sensitive Info",
+      "type": "stat",
+      "targets": [{ "expr": "max(ai_owasp_llm06_sensitive_info)", "refId": "A" }]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [
+            { "options": { "match": "null", "result": { "color": "#808080", "index": 0, "text": "N/A" } }, "type": "special" },
+            { "options": { "-1": { "color": "#808080", "index": 1, "text": "N/A" } }, "type": "value" },
+            { "options": { "0": { "color": "#00C853", "index": 2, "text": "PASS" } }, "type": "value" },
+            { "options": { "1": { "color": "#FF4444", "index": 3, "text": "FAIL" } }, "type": "value" }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "#00C853", "value": null },
+              { "color": "#FF4444", "value": 1 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 2, "y": 17 },
+      "id": 307,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "value"
+      },
+      "title": "LLM07: Insecure Plugin",
+      "type": "stat",
+      "targets": [{ "expr": "max(ai_owasp_llm07_insecure_plugin)", "refId": "A" }]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [
+            { "options": { "match": "null", "result": { "color": "#808080", "index": 0, "text": "N/A" } }, "type": "special" },
+            { "options": { "-1": { "color": "#808080", "index": 1, "text": "N/A" } }, "type": "value" },
+            { "options": { "0": { "color": "#00C853", "index": 2, "text": "PASS" } }, "type": "value" },
+            { "options": { "1": { "color": "#FF4444", "index": 3, "text": "FAIL" } }, "type": "value" }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "#00C853", "value": null },
+              { "color": "#FF4444", "value": 1 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 6, "y": 17 },
+      "id": 308,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "value"
+      },
+      "title": "LLM08: Excessive Agency",
+      "type": "stat",
+      "targets": [{ "expr": "max(ai_owasp_llm08_excessive_agency)", "refId": "A" }]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [
+            { "options": { "match": "null", "result": { "color": "#808080", "index": 0, "text": "N/A" } }, "type": "special" },
+            { "options": { "-1": { "color": "#808080", "index": 1, "text": "N/A" } }, "type": "value" },
+            { "options": { "0": { "color": "#00C853", "index": 2, "text": "PASS" } }, "type": "value" },
+            { "options": { "1": { "color": "#FF4444", "index": 3, "text": "FAIL" } }, "type": "value" }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "#00C853", "value": null },
+              { "color": "#FF4444", "value": 1 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 10, "y": 17 },
+      "id": 309,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "value"
+      },
+      "title": "LLM09: Overreliance",
+      "type": "stat",
+      "targets": [{ "expr": "max(ai_owasp_llm09_overreliance)", "refId": "A" }]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [
+            { "options": { "match": "null", "result": { "color": "#808080", "index": 0, "text": "N/A" } }, "type": "special" },
+            { "options": { "-1": { "color": "#808080", "index": 1, "text": "N/A" } }, "type": "value" },
+            { "options": { "0": { "color": "#00C853", "index": 2, "text": "PASS" } }, "type": "value" },
+            { "options": { "1": { "color": "#FF4444", "index": 3, "text": "FAIL" } }, "type": "value" }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "#00C853", "value": null },
+              { "color": "#FF4444", "value": 1 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 14, "y": 17 },
+      "id": 310,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "value"
+      },
+      "title": "LLM10: Model Theft",
+      "type": "stat",
+      "targets": [{ "expr": "max(ai_owasp_llm10_model_theft)", "refId": "A" }]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "#00C853", "value": null },
+              { "color": "#FFAA00", "value": 7 },
+              { "color": "#FF4444", "value": 9 }
+            ]
+          },
+          "max": 10,
+          "min": 0,
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 18, "y": 17 },
+      "id": 311,
+      "options": {
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "showThresholdLabels": true,
+        "showThresholdMarkers": true
+      },
+      "title": "OWASP Score (10/10)",
+      "type": "gauge",
+      "targets": [{ "expr": "max(ai_owasp_tests_passed)", "refId": "A" }]
+    },
+    {
+      "gridPos": { "h": 2, "w": 24, "x": 0, "y": 21 },
+      "id": 202,
+      "options": {
+        "code": { "language": "plaintext", "showLineNumbers": false },
+        "content": "<div style=\"text-align: center; padding: 8px; background: linear-gradient(90deg, #1a472a 0%, #2d6a4f 50%, #1a472a 100%); border-radius: 5px;\">\n<span style=\"color: #95D5B2; font-size: 14px; font-weight: bold; letter-spacing: 3px;\">SEGURIDAD AVANZADA - RED TEAMING</span>\n</div>",
+        "mode": "html"
+      },
+      "pluginVersion": "10.0.0",
+      "title": "",
+      "transparent": true,
+      "type": "text"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [
+            { "options": { "0": { "color": "#00C853", "index": 0, "text": "SEGURO" } }, "type": "value" },
+            { "options": { "1": { "color": "#FF4444", "index": 1, "text": "LEAK!" } }, "type": "value" }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "#00C853", "value": null },
+              { "color": "#FF4444", "value": 1 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 5, "w": 6, "x": 0, "y": 23 },
+      "id": 401,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "value"
+      },
+      "title": "PII Detection (Data Leak)",
+      "type": "stat",
+      "targets": [{ "expr": "max(ai_security_pii_detected)", "refId": "A" }]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "#00C853", "value": null },
+              { "color": "#FFAA00", "value": 2 },
+              { "color": "#FF4444", "value": 4 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 5, "w": 6, "x": 6, "y": 23 },
+      "id": 402,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "value"
+      },
+      "title": "Fuzzing Attempts Blocked",
+      "type": "stat",
+      "targets": [{ "expr": "max(ai_security_fuzzing_blocked)", "refId": "A" }]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [
+            { "options": { "0": { "color": "#FF4444", "index": 0, "text": "NO LIMIT" } }, "type": "value" },
+            { "options": { "1": { "color": "#00C853", "index": 1, "text": "PROTECTED" } }, "type": "value" }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "#FF4444", "value": null },
+              { "color": "#00C853", "value": 1 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 5, "w": 6, "x": 12, "y": 23 },
+      "id": 403,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "value"
+      },
+      "title": "Rate Limiting Status",
+      "type": "stat",
+      "targets": [{ "expr": "max(ai_security_rate_limiting)", "refId": "A" }]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "hideFrom": { "legend": false, "tooltip": false, "viz": false } },
+          "mappings": []
+        },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "Criticas" }, "properties": [{ "id": "color", "value": { "fixedColor": "#B71C1C", "mode": "fixed" } }] },
+          { "matcher": { "id": "byName", "options": "Altas" }, "properties": [{ "id": "color", "value": { "fixedColor": "#FF5722", "mode": "fixed" } }] },
+          { "matcher": { "id": "byName", "options": "Medias" }, "properties": [{ "id": "color", "value": { "fixedColor": "#FFC107", "mode": "fixed" } }] },
+          { "matcher": { "id": "byName", "options": "Bajas" }, "properties": [{ "id": "color", "value": { "fixedColor": "#4CAF50", "mode": "fixed" } }] }
+        ]
+      },
+      "gridPos": { "h": 5, "w": 6, "x": 18, "y": 23 },
+      "id": 404,
+      "options": {
+        "displayLabels": ["name", "value"],
+        "legend": { "displayMode": "hidden", "placement": "bottom", "showLegend": false },
+        "pieType": "donut",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "tooltip": { "mode": "single", "sort": "none" }
+      },
+      "title": "Severidad Vulnerabilidades",
+      "type": "piechart",
+      "targets": [
+        { "expr": "max(ai_security_critical)", "legendFormat": "Criticas", "refId": "A" },
+        { "expr": "max(ai_security_high)", "legendFormat": "Altas", "refId": "B" },
+        { "expr": "max(ai_security_medium)", "legendFormat": "Medias", "refId": "C" },
+        { "expr": "max(ai_security_low)", "legendFormat": "Bajas", "refId": "D" }
+      ]
+    },
+    {
+      "gridPos": { "h": 2, "w": 24, "x": 0, "y": 28 },
+      "id": 203,
+      "options": {
+        "code": { "language": "plaintext", "showLineNumbers": false },
+        "content": "<div style=\"text-align: center; padding: 8px; background: linear-gradient(90deg, #1e3a5f 0%, #3d5a80 50%, #1e3a5f 100%); border-radius: 5px;\">\n<span style=\"color: #90CAF9; font-size: 14px; font-weight: bold; letter-spacing: 3px;\">LLM-AS-JUDGE - METRICAS DE CALIDAD (Claude AI)</span>\n</div>",
+        "mode": "html"
+      },
+      "pluginVersion": "10.0.0",
+      "title": "",
+      "transparent": true,
+      "type": "text"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "Score (0-10)",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 25,
+            "gradientMode": "opacity",
+            "hideFrom": { "legend": false, "tooltip": false, "viz": false },
+            "lineInterpolation": "smooth",
+            "lineWidth": 3,
+            "pointSize": 6,
+            "scaleDistribution": { "type": "linear" },
+            "showPoints": "always",
+            "spanNulls": false,
+            "stacking": { "group": "A", "mode": "none" },
+            "thresholdsStyle": { "mode": "line" }
+          },
+          "mappings": [],
+          "max": 10,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "#FF4444", "value": null },
+              { "color": "#00C853", "value": 7 }
+            ]
+          }
+        },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "Relevancia" }, "properties": [{ "id": "color", "value": { "fixedColor": "#00BCD4", "mode": "fixed" } }] },
+          { "matcher": { "id": "byName", "options": "Precision" }, "properties": [{ "id": "color", "value": { "fixedColor": "#8BC34A", "mode": "fixed" } }] },
+          { "matcher": { "id": "byName", "options": "Coherencia" }, "properties": [{ "id": "color", "value": { "fixedColor": "#FF9800", "mode": "fixed" } }] },
+          { "matcher": { "id": "byName", "options": "Completitud" }, "properties": [{ "id": "color", "value": { "fixedColor": "#E91E63", "mode": "fixed" } }] }
+        ]
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 30 },
+      "id": 5,
+      "options": {
+        "legend": { "calcs": ["mean", "last"], "displayMode": "table", "placement": "bottom", "showLegend": true },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "title": "Metricas de Calidad - Timeline",
+      "type": "timeseries",
+      "targets": [
+        { "expr": "max(ai_metric_relevance)", "legendFormat": "Relevancia", "refId": "A" },
+        { "expr": "max(ai_metric_accuracy)", "legendFormat": "Precision", "refId": "B" },
+        { "expr": "max(ai_metric_coherence)", "legendFormat": "Coherencia", "refId": "C" },
+        { "expr": "max(ai_metric_completeness)", "legendFormat": "Completitud", "refId": "D" }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "#FF4444", "value": null },
+              { "color": "#FFAA00", "value": 5 },
+              { "color": "#00C853", "value": 7 }
+            ]
+          },
+          "max": 10,
+          "min": 0
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 3, "x": 12, "y": 30 },
+      "id": 501,
+      "options": {
+        "orientation": "vertical",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      },
+      "title": "Relevancia",
+      "type": "gauge",
+      "targets": [{ "expr": "max(ai_metric_relevance)", "refId": "A" }]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "#FF4444", "value": null },
+              { "color": "#FFAA00", "value": 5 },
+              { "color": "#00C853", "value": 7 }
+            ]
+          },
+          "max": 10,
+          "min": 0
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 3, "x": 15, "y": 30 },
+      "id": 502,
+      "options": {
+        "orientation": "vertical",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      },
+      "title": "Precision",
+      "type": "gauge",
+      "targets": [{ "expr": "max(ai_metric_accuracy)", "refId": "A" }]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "#FF4444", "value": null },
+              { "color": "#FFAA00", "value": 5 },
+              { "color": "#00C853", "value": 7 }
+            ]
+          },
+          "max": 10,
+          "min": 0
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 3, "x": 18, "y": 30 },
+      "id": 503,
+      "options": {
+        "orientation": "vertical",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      },
+      "title": "Coherencia",
+      "type": "gauge",
+      "targets": [{ "expr": "max(ai_metric_coherence)", "refId": "A" }]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "#FF4444", "value": null },
+              { "color": "#FFAA00", "value": 5 },
+              { "color": "#00C853", "value": 7 }
+            ]
+          },
+          "max": 10,
+          "min": 0
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 3, "x": 21, "y": 30 },
+      "id": 504,
+      "options": {
+        "orientation": "vertical",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      },
+      "title": "Completitud",
+      "type": "gauge",
+      "targets": [{ "expr": "max(ai_metric_completeness)", "refId": "A" }]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "hideFrom": { "legend": false, "tooltip": false, "viz": false } },
+          "mappings": []
+        },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "Exitosos" }, "properties": [{ "id": "color", "value": { "fixedColor": "#00C853", "mode": "fixed" } }] },
+          { "matcher": { "id": "byName", "options": "Fallidos" }, "properties": [{ "id": "color", "value": { "fixedColor": "#FF4444", "mode": "fixed" } }] }
+        ]
+      },
+      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 34 },
+      "id": 9,
+      "options": {
+        "displayLabels": ["name", "percent"],
+        "legend": { "displayMode": "table", "placement": "right", "showLegend": true, "values": ["value", "percent"] },
+        "pieType": "donut",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "tooltip": { "mode": "single", "sort": "none" }
+      },
+      "title": "Resultados",
+      "type": "piechart",
+      "targets": [
+        { "expr": "max(ai_test_passed)", "legendFormat": "Exitosos", "refId": "A" },
+        { "expr": "max(ai_test_failed)", "legendFormat": "Fallidos", "refId": "B" }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "fixedColor": "#2196F3", "mode": "fixed" },
+          "mappings": [],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "#2196F3", "value": null }] },
+          "unit": "ms"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 6, "x": 18, "y": 34 },
+      "id": 13,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "horizontal",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "value"
+      },
+      "title": "Tiempo Respuesta Promedio",
+      "type": "stat",
+      "targets": [{ "expr": "max(ai_perf_avg_response_ms)", "refId": "A", "legendFormat": "Avg Response" }]
+    },
+    {
+      "gridPos": { "h": 2, "w": 24, "x": 0, "y": 38 },
+      "id": 204,
+      "options": {
+        "code": { "language": "plaintext", "showLineNumbers": false },
+        "content": "<div style=\"text-align: center; padding: 8px; background: linear-gradient(90deg, #4a3728 0%, #6d4c41 50%, #4a3728 100%); border-radius: 5px;\">\n<span style=\"color: #FFCC80; font-size: 14px; font-weight: bold; letter-spacing: 3px;\">PERFORMANCE - TIEMPO DE RESPUESTA</span>\n</div>",
+        "mode": "html"
+      },
+      "pluginVersion": "10.0.0",
+      "title": "",
+      "transparent": true,
+      "type": "text"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 15,
+            "gradientMode": "scheme",
+            "hideFrom": { "legend": false, "tooltip": false, "viz": false },
+            "lineInterpolation": "smooth",
+            "lineWidth": 3,
+            "pointSize": 5,
+            "scaleDistribution": { "type": "linear" },
+            "showPoints": "always",
+            "spanNulls": false,
+            "stacking": { "group": "A", "mode": "none" },
+            "thresholdsStyle": { "mode": "area" }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "#00C853", "value": null },
+              { "color": "#FFAA00", "value": 3000 },
+              { "color": "#FF4444", "value": 5000 }
+            ]
+          },
+          "unit": "ms"
+        },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "Tiempo Promedio" }, "properties": [{ "id": "color", "value": { "fixedColor": "#2196F3", "mode": "fixed" } }] },
+          { "matcher": { "id": "byName", "options": "P95" }, "properties": [{ "id": "color", "value": { "fixedColor": "#9C27B0", "mode": "fixed" } }] }
+        ]
+      },
+      "gridPos": { "h": 7, "w": 24, "x": 0, "y": 40 },
+      "id": 7,
+      "options": {
+        "legend": { "calcs": ["mean", "max", "last"], "displayMode": "table", "placement": "right", "showLegend": true },
+        "tooltip": { "mode": "multi", "sort": "none" }
+      },
+      "title": "Tiempo de Respuesta del Chatbot",
+      "type": "timeseries",
+      "targets": [
+        { "expr": "max(ai_perf_avg_response_ms)", "legendFormat": "Tiempo Promedio", "refId": "A" },
+        { "expr": "max(ai_perf_p95_response_ms)", "legendFormat": "P95", "refId": "B" }
+      ]
+    },
+    {
+      "gridPos": { "h": 3, "w": 24, "x": 0, "y": 47 },
+      "id": 101,
+      "options": {
+        "code": { "language": "plaintext", "showLineNumbers": false },
+        "content": "<div style=\"text-align: center; padding: 15px; background: linear-gradient(135deg, #0d1117 0%, #161b22 50%, #0d1117 100%); border-radius: 10px; border: 1px solid #30363d;\">\n<p style=\"margin: 0 0 8px 0; color: #58a6ff; font-size: 12px; letter-spacing: 2px;\">STACK TECNOLOGICO</p>\n<p style=\"margin: 0; font-size: 13px;\">\n<span style=\"color: #00BCD4; background: #00BCD422; padding: 3px 8px; border-radius: 4px; margin: 0 3px;\">Playwright</span>\n<span style=\"color: #3178C6; background: #3178C622; padding: 3px 8px; border-radius: 4px; margin: 0 3px;\">TypeScript</span>\n<span style=\"color: #E91E63; background: #E91E6322; padding: 3px 8px; border-radius: 4px; margin: 0 3px;\">Claude AI</span>\n<span style=\"color: #FF9800; background: #FF980022; padding: 3px 8px; border-radius: 4px; margin: 0 3px;\">Prometheus</span>\n<span style=\"color: #00C853; background: #00C85322; padding: 3px 8px; border-radius: 4px; margin: 0 3px;\">Grafana</span>\n<span style=\"color: #FF5722; background: #FF572222; padding: 3px 8px; border-radius: 4px; margin: 0 3px;\">OWASP</span>\n</p>\n<p style=\"margin: 10px 0 0 0; color: #8b949e; font-size: 11px;\">Framework Profesional de Testing de IA con Evaluacion Inteligente usando LLM-as-Judge</p>\n</div>",
+        "mode": "html"
+      },
+      "pluginVersion": "10.0.0",
+      "title": "",
+      "transparent": true,
+      "type": "text"
+    }
+  ],
+  "refresh": "5s",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": ["ai-testing", "ingrid", "owasp-llm-top10", "red-teaming", "llm-as-judge", "security", "epidata", "qa-automation"],
+  "templating": { "list": [] },
+  "time": { "from": "now-15m", "to": "now" },
+  "timepicker": {
+    "refresh_intervals": ["5s", "10s", "30s", "1m", "5m"],
+    "time_options": ["5m", "15m", "1h", "6h", "12h", "24h"]
+  },
+  "timezone": "browser",
+  "title": "INGRID v2.0 - AI Testing Framework | EPIDATA",
+  "uid": "ingrid-dashboard",
+  "version": 4,
+  "weekStart": ""
+}

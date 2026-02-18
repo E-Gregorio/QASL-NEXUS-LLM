@@ -1,0 +1,9 @@
+{
+  "schedules": {
+    "every5h": "0 */5 * * *",
+    "daily": "0 8 * * *",
+    "weekly": "0 8 * * 1"
+  },
+  "recipients": [],
+  "_comment": "Expresiones cron para reportes automáticos"
+}

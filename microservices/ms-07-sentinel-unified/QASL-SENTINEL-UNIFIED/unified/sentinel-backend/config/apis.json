@@ -1,0 +1,4 @@
+{
+  "apis": [],
+  "_comment": "Lista de APIs a monitorear. Se pueden agregar manualmente o importar desde HAR/Swagger/Postman"
+}

@@ -1,0 +1,53 @@
+# ═══════════════════════════════════════════════════════════════
+# INGRID - AI TESTING FRAMEWORK
+# Git Ignore
+# ═══════════════════════════════════════════════════════════════
+
+# Environment variables (CONTIENE API KEYS!)
+.env
+.env.local
+.env.*.local
+
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+*.js
+*.d.ts
+*.js.map
+
+# Excepciones - archivos JS que SÍ deben incluirse
+!api/**/*.js
+!scripts/**/*.js
+!scripts/*.mjs
+!demo/**/*.js
+!playwright.config.ts
+
+# Test outputs
+reports/
+allure-results/
+test-results/
+playwright-report/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Coverage
+coverage/
+
+# Temporary
+tmp/
+temp/
+*.tmp

@@ -1,0 +1,29 @@
+# ═══════════════════════════════════════════════════════════════════════════
+# QASL-MOBILE .gitignore
+# ═══════════════════════════════════════════════════════════════════════════
+
+# Dependencias
+node_modules/
+
+# Build output (se genera con npm run build)
+dist/
+
+# Environment variables (contiene API keys)
+.env
+
+# Screenshots de tests (generados en ejecución)
+screenshots/*.png
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Maestro test outputs
+.maestro/

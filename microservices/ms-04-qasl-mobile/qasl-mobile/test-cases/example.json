@@ -1,0 +1,55 @@
+{
+  "testCases": [
+    {
+      "id": "TC-MOBILE-001",
+      "epic": "EPIC-001",
+      "userStory": "HU-001",
+      "title": "Login with valid credentials",
+      "priority": "high",
+      "platform": "both",
+      "steps": [
+        {
+          "order": 1,
+          "action": "launchApp",
+          "description": "Launch the application"
+        },
+        {
+          "order": 2,
+          "action": "tap",
+          "description": "Tap on email field",
+          "value": "Email"
+        },
+        {
+          "order": 3,
+          "action": "inputText",
+          "description": "Enter email",
+          "value": "test@example.com"
+        },
+        {
+          "order": 4,
+          "action": "tap",
+          "description": "Tap on password field",
+          "value": "Password"
+        },
+        {
+          "order": 5,
+          "action": "inputText",
+          "description": "Enter password",
+          "value": "password123"
+        },
+        {
+          "order": 6,
+          "action": "tap",
+          "description": "Tap login button",
+          "value": "Login"
+        }
+      ],
+      "expectedResults": [
+        "Welcome message is displayed",
+        "User is on home screen"
+      ],
+      "createdAt": "2025-12-27T08:17:04.999Z",
+      "updatedAt": "2025-12-27T08:17:05.000Z"
+    }
+  ]
+}

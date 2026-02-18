@@ -1,0 +1,40 @@
+# Dependencies
+node_modules/
+
+# Environment variables
+.env
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+npm-debug.log*
+
+# Docker volumes (managed by Docker)
+prometheus-data/
+influxdb-data/
+grafana-data/
+
+# Generated data
+sentinel-backend/data/history/
+sentinel-backend/data/metrics/
+sentinel-backend/data/alerts/
+sentinel-backend/data/baselines/
+sentinel-backend/data/reports/
+sentinel-frontend/snapshots/
+sentinel-frontend/reports/
+sentinel-frontend/security-baselines/
+
+# Temporary
+tmp/
+temp/
+*.tmp

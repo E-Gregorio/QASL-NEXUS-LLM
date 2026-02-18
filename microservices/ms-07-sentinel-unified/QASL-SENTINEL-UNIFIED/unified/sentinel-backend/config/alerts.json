@@ -1,0 +1,17 @@
+{
+  "email": {
+    "enabled": false,
+    "recipients": []
+  },
+  "slack": {
+    "enabled": false,
+    "webhookUrl": "",
+    "channel": "#api-alerts"
+  },
+  "sms": {
+    "enabled": false,
+    "recipients": [],
+    "onlyForCritical": true
+  },
+  "_comment": "Configuración de alertas. Habilita los canales que necesites"
+}

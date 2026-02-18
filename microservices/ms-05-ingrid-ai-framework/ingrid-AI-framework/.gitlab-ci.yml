@@ -1,0 +1,11 @@
+# GitLab Pages deployment
+pages:
+  stage: deploy
+  script:
+    - mkdir -p public
+    - cp -r garak-lab/* public/
+  artifacts:
+    paths:
+      - public
+  only:
+    - main

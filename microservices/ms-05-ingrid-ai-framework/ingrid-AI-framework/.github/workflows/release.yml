@@ -1,0 +1,111 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# INGRID AI Testing Framework - Automated Release
+# ═══════════════════════════════════════════════════════════════════════════════
+# Crea releases automáticos cuando se hace push de un tag v*
+# Incluye:
+# - Changelog automático
+# - Assets (código fuente)
+# - Notificación
+# ═══════════════════════════════════════════════════════════════════════════════
+
+name: 🚀 Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: 🚀 Create Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: ✅ Run validation
+        run: npm run typecheck
+
+      - name: 📋 Generate Changelog
+        id: changelog
+        run: |
+          # Get previous tag
+          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+          CURRENT_TAG=${GITHUB_REF#refs/tags/}
+
+          echo "## 🤖 INGRID $CURRENT_TAG" > RELEASE_NOTES.md
+          echo "" >> RELEASE_NOTES.md
+          echo "### What's Changed" >> RELEASE_NOTES.md
+          echo "" >> RELEASE_NOTES.md
+
+          if [ -n "$PREV_TAG" ]; then
+            git log $PREV_TAG..HEAD --pretty=format:"- %s (%h)" >> RELEASE_NOTES.md
+          else
+            git log --pretty=format:"- %s (%h)" -20 >> RELEASE_NOTES.md
+          fi
+
+          echo "" >> RELEASE_NOTES.md
+          echo "" >> RELEASE_NOTES.md
+          echo "### 📦 Installation" >> RELEASE_NOTES.md
+          echo "" >> RELEASE_NOTES.md
+          echo "\`\`\`bash" >> RELEASE_NOTES.md
+          echo "git clone https://github.com/E-Gregorio/ingrid-AI-framework.git" >> RELEASE_NOTES.md
+          echo "cd ingrid-AI-framework" >> RELEASE_NOTES.md
+          echo "npm install" >> RELEASE_NOTES.md
+          echo "\`\`\`" >> RELEASE_NOTES.md
+          echo "" >> RELEASE_NOTES.md
+          echo "### 🔧 Quick Start" >> RELEASE_NOTES.md
+          echo "" >> RELEASE_NOTES.md
+          echo "1. Configure your \`.env\` file with API keys" >> RELEASE_NOTES.md
+          echo "2. Run: \`npm run demo\` to start the demo server" >> RELEASE_NOTES.md
+          echo "3. Run: \`npm test\` to execute all tests" >> RELEASE_NOTES.md
+          echo "4. Run: \`npm run pdf\` to generate PDF report" >> RELEASE_NOTES.md
+          echo "" >> RELEASE_NOTES.md
+          echo "### 📊 Features" >> RELEASE_NOTES.md
+          echo "" >> RELEASE_NOTES.md
+          echo "- ✅ OWASP LLM Top 10 2025 Security Testing" >> RELEASE_NOTES.md
+          echo "- ✅ LLM-as-Judge Evaluation (Claude evaluates responses)" >> RELEASE_NOTES.md
+          echo "- ✅ Multi-Model API Support (OpenAI, Anthropic, Google AI)" >> RELEASE_NOTES.md
+          echo "- ✅ Professional PDF Reports" >> RELEASE_NOTES.md
+          echo "- ✅ Allure Reports Integration" >> RELEASE_NOTES.md
+          echo "- ✅ Grafana + Prometheus Dashboards" >> RELEASE_NOTES.md
+          echo "- ✅ CI/CD Ready (GitHub Actions)" >> RELEASE_NOTES.md
+          echo "" >> RELEASE_NOTES.md
+          echo "---" >> RELEASE_NOTES.md
+          echo "" >> RELEASE_NOTES.md
+          echo "**Full Changelog**: https://github.com/E-Gregorio/ingrid-AI-framework/compare/$PREV_TAG...$CURRENT_TAG" >> RELEASE_NOTES.md
+
+          cat RELEASE_NOTES.md
+
+      - name: 🚀 Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          body_path: RELEASE_NOTES.md
+          draft: false
+          prerelease: ${{ contains(github.ref, 'alpha') || contains(github.ref, 'beta') || contains(github.ref, 'rc') }}
+          generate_release_notes: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 📢 Release Summary
+        run: |
+          echo "## 🚀 Release Created" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Info | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Tag | ${GITHUB_REF#refs/tags/} |" >> $GITHUB_STEP_SUMMARY
+          echo "| URL | https://github.com/E-Gregorio/ingrid-AI-framework/releases/tag/${GITHUB_REF#refs/tags/} |" >> $GITHUB_STEP_SUMMARY

@@ -1,0 +1,337 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# INGRID AI Testing Framework - CI/CD Pipeline
+# ═══════════════════════════════════════════════════════════════════════════════
+# Pipeline profesional para testing de AI/LLM con:
+# - Tests funcionales, seguridad OWASP LLM Top 10, y rendimiento
+# - LLM-as-Judge evaluation (Claude evalúa respuestas)
+# - Generación automática de reportes (Allure + PDF)
+# - Artifacts descargables
+# ═══════════════════════════════════════════════════════════════════════════════
+
+name: 🤖 INGRID AI Tests
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      test_suite:
+        description: 'Test suite to run'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - functional
+          - security
+          - performance
+          - api
+      chatbot_url:
+        description: 'Target Chatbot URL (optional)'
+        required: false
+        type: string
+
+env:
+  NODE_VERSION: '20'
+  CHATBOT_URL: ${{ inputs.chatbot_url || 'http://localhost:3333' }}
+
+jobs:
+  # ═══════════════════════════════════════════════════════════════════════════
+  # JOB 1: Setup & Validation
+  # ═══════════════════════════════════════════════════════════════════════════
+  setup:
+    name: 📦 Setup & Validate
+    runs-on: ubuntu-latest
+    outputs:
+      cache-key: ${{ steps.cache-key.outputs.key }}
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: 📋 Generate cache key
+        id: cache-key
+        run: echo "key=${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}" >> $GITHUB_OUTPUT
+
+      - name: 💾 Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            node_modules
+            ~/.cache/ms-playwright
+          key: ${{ steps.cache-key.outputs.key }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 🎭 Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: ✅ TypeScript validation
+        run: npm run typecheck
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # JOB 2: Start Demo Server (for self-testing)
+  # ═══════════════════════════════════════════════════════════════════════════
+  test-with-demo:
+    name: 🧪 Run INGRID Tests
+    runs-on: ubuntu-latest
+    needs: setup
+    env:
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      GOOGLE_AI_API_KEY: ${{ secrets.GOOGLE_AI_API_KEY }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: 💾 Restore cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            node_modules
+            ~/.cache/ms-playwright
+          key: ${{ needs.setup.outputs.cache-key }}
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 🎭 Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: 🚀 Start Demo Server
+        run: |
+          npm run demo &
+          sleep 5
+          curl -f http://localhost:3333 || exit 1
+
+      - name: 🔍 Check API Keys Status
+        run: |
+          echo "═══════════════════════════════════════════════════════"
+          echo "  INGRID - API Keys Status"
+          echo "═══════════════════════════════════════════════════════"
+          if [ -n "$ANTHROPIC_API_KEY" ]; then
+            echo "✅ ANTHROPIC_API_KEY: Configured"
+          else
+            echo "⚠️  ANTHROPIC_API_KEY: Not configured (LLM-as-Judge disabled)"
+          fi
+          if [ -n "$GOOGLE_AI_API_KEY" ]; then
+            echo "✅ GOOGLE_AI_API_KEY: Configured"
+          else
+            echo "⚠️  GOOGLE_AI_API_KEY: Not configured"
+          fi
+          if [ -n "$OPENAI_API_KEY" ]; then
+            echo "✅ OPENAI_API_KEY: Configured"
+          else
+            echo "⚠️  OPENAI_API_KEY: Not configured"
+          fi
+          echo "═══════════════════════════════════════════════════════"
+
+      # ─────────────────────────────────────────────────────────────────────
+      # Run Tests based on input or all
+      # ─────────────────────────────────────────────────────────────────────
+      - name: 🧪 Run All Tests
+        if: ${{ github.event.inputs.test_suite == 'all' || github.event.inputs.test_suite == '' }}
+        run: npm test
+        continue-on-error: true
+
+      - name: 🧪 Run Functional Tests
+        if: ${{ github.event.inputs.test_suite == 'functional' }}
+        run: npm run test:chatbot:functional
+        continue-on-error: true
+
+      - name: 🔒 Run Security Tests (OWASP LLM Top 10)
+        if: ${{ github.event.inputs.test_suite == 'security' }}
+        run: npm run test:security
+        continue-on-error: true
+
+      - name: ⚡ Run Performance Tests
+        if: ${{ github.event.inputs.test_suite == 'performance' }}
+        run: npm run test:chatbot:performance
+        continue-on-error: true
+
+      - name: 🌐 Run API Tests
+        if: ${{ github.event.inputs.test_suite == 'api' }}
+        run: npm run test:api
+        continue-on-error: true
+
+      # ─────────────────────────────────────────────────────────────────────
+      # Generate Reports
+      # ─────────────────────────────────────────────────────────────────────
+      - name: 📊 Generate Allure Report
+        if: always()
+        run: npm run report:generate
+        continue-on-error: true
+
+      - name: 📄 Generate PDF Report
+        if: always()
+        run: npm run pdf
+        continue-on-error: true
+
+      - name: 📋 Display Test Summary
+        if: always()
+        run: |
+          echo ""
+          echo "═══════════════════════════════════════════════════════════════"
+          echo "  INGRID - Test Execution Summary"
+          echo "═══════════════════════════════════════════════════════════════"
+          if [ -f "reports/results.json" ]; then
+            node -e "
+              const fs = require('fs');
+              const results = JSON.parse(fs.readFileSync('reports/results.json', 'utf8'));
+              const stats = results.stats || {};
+              console.log('  📊 Total Tests:', stats.expected || 0);
+              console.log('  ✅ Passed:', (stats.expected || 0) - (stats.unexpected || 0) - (stats.skipped || 0));
+              console.log('  ❌ Failed:', stats.unexpected || 0);
+              console.log('  ⏭️  Skipped:', stats.skipped || 0);
+              console.log('  ⏱️  Duration:', Math.round((stats.duration || 0) / 1000), 'seconds');
+            "
+          else
+            echo "  ⚠️  No results.json found"
+          fi
+          echo "═══════════════════════════════════════════════════════════════"
+
+      # ─────────────────────────────────────────────────────────────────────
+      # Upload Artifacts
+      # ─────────────────────────────────────────────────────────────────────
+      - name: 📤 Upload Allure Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results
+          path: allure-results/
+          retention-days: 30
+
+      - name: 📤 Upload Allure Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report
+          path: reports/allure/
+          retention-days: 30
+
+      - name: 📤 Upload PDF Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ingrid-pdf-report
+          path: reports/*.pdf
+          retention-days: 30
+
+      - name: 📤 Upload HTML Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: html-report
+          path: reports/html/
+          retention-days: 30
+
+      - name: 📤 Upload Test Videos
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-videos
+          path: test-results/
+          retention-days: 7
+
+      - name: 📤 Upload Metrics Store
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: metrics-store
+          path: reports/metrics-store.json
+          retention-days: 30
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # JOB 3: Deploy Allure Report to GitHub Pages (optional)
+  # To enable: Settings → Pages → Source: GitHub Actions
+  # ═══════════════════════════════════════════════════════════════════════════
+  deploy-report:
+    name: 🌐 Deploy Report to Pages
+    runs-on: ubuntu-latest
+    needs: test-with-demo
+    if: always()
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: 📥 Download Allure Report
+        uses: actions/download-artifact@v4
+        with:
+          name: allure-report
+          path: allure-report
+
+      - name: 📄 Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: 📤 Upload to Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: allure-report
+
+      - name: 🚀 Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: 📋 Add Report Link to Summary
+        run: |
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## 📊 Allure Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "🔗 **[Ver Reporte Allure](${{ steps.deployment.outputs.page_url }})**" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # JOB 4: Notify Results (Slack/Discord optional)
+  # ═══════════════════════════════════════════════════════════════════════════
+  notify:
+    name: 📢 Notify Results
+    runs-on: ubuntu-latest
+    needs: test-with-demo
+    if: always()
+    steps:
+      - name: 📊 Create Summary
+        run: |
+          echo "## 🤖 INGRID AI Testing Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| 🔄 Workflow | ${{ github.workflow }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 📌 Branch | ${{ github.ref_name }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🔗 Commit | ${{ github.sha }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 👤 Actor | ${{ github.actor }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 📅 Date | $(date -u +'%Y-%m-%d %H:%M:%S UTC') |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📦 Artifacts" >> $GITHUB_STEP_SUMMARY
+          echo "- 📊 Allure Report" >> $GITHUB_STEP_SUMMARY
+          echo "- 📄 PDF Report" >> $GITHUB_STEP_SUMMARY
+          echo "- 🎬 Test Videos" >> $GITHUB_STEP_SUMMARY
+          echo "- 📈 Metrics Store" >> $GITHUB_STEP_SUMMARY
+
+      # Optional: Slack notification (configure SLACK_WEBHOOK_URL secret to enable)
+      # - name: 📢 Slack Notification
+      #   if: env.SLACK_WEBHOOK_URL != ''
+      #   uses: 8398a7/action-slack@v3
+      #   with:
+      #     status: ${{ needs.test-with-demo.result }}
+      #     fields: repo,message,commit,author,action,eventName,ref,workflow
+      #   env:
+      #     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

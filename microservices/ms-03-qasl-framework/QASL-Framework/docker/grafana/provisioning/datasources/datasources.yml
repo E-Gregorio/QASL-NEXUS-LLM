@@ -1,0 +1,36 @@
+apiVersion: 1
+
+datasources:
+  # InfluxDB - Métricas de K6 Performance
+  - name: InfluxDB-K6
+    type: influxdb
+    uid: influxdb
+    access: proxy
+    url: http://influxdb:8086
+    database: k6
+    isDefault: false
+    editable: true
+
+  # InfluxDB - Métricas de QA (E2E, API, ZAP)
+  - name: InfluxDB-QA
+    type: influxdb
+    uid: influxdb-qa
+    access: proxy
+    url: http://influxdb:8086
+    database: qa_metrics
+    isDefault: true
+    editable: true
+
+  # Loki - Logs de Infraestructura (Fase 7: Observability)
+  - name: Loki
+    type: loki
+    uid: loki
+    access: proxy
+    url: http://loki:3100
+    editable: true
+    jsonData:
+      maxLines: 1000
+      derivedFields:
+        - name: ContainerID
+          matcherRegex: 'container_id=([a-f0-9]+)'
+          url: 'http://localhost:3001/explore?orgId=1&left=%5B%22now-1h%22,%22now%22,%22Loki%22,%7B%22expr%22:%22%7Bcontainer_id%3D%5C%22$${__value.raw}%5C%22%7D%22%7D%5D'

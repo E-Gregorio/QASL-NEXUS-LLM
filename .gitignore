@@ -1,0 +1,60 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# Environment variables (NUNCA subir credenciales)
+.env
+.env.local
+.env.production
+
+# Build outputs
+dist/
+build/
+*.js.map
+
+# Test artifacts
+allure-results/
+allure-report/
+screenshots/
+test-results/
+*.mp4
+coverage/
+
+# Generated reports
+public/allure/
+public/api/
+public/k6/
+public/newman/
+public/zap/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Docker volumes
+pgdata/
+grafana-data/
+prometheus-data/
+influxdb-data/
+
+# Logs
+*.log
+logs/
+
+# Temp
+*.tmp
+*.bak
+*.rar

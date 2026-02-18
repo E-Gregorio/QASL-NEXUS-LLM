@@ -1,0 +1,186 @@
+{
+  "name": "SaaS Platform",
+  "description": "Template for Software as a Service platforms with multi-tenant architecture",
+  "industry": "technology",
+  "apis": [
+    {
+      "id": "POST__auth_login",
+      "name": "POST /auth/login",
+      "url": "{{BASE_URL}}/auth/login",
+      "method": "POST",
+      "priority": "critical",
+      "threshold_ms": 300,
+      "category": "authentication",
+      "body": {
+        "email": "test@example.com",
+        "password": "test123"
+      }
+    },
+    {
+      "id": "POST__auth_register",
+      "name": "POST /auth/register",
+      "url": "{{BASE_URL}}/auth/register",
+      "method": "POST",
+      "priority": "high",
+      "threshold_ms": 500,
+      "category": "authentication",
+      "body": {
+        "email": "newuser@example.com",
+        "password": "test123",
+        "name": "Test User"
+      }
+    },
+    {
+      "id": "GET__users_me",
+      "name": "GET /users/me",
+      "url": "{{BASE_URL}}/users/me",
+      "method": "GET",
+      "priority": "high",
+      "threshold_ms": 200,
+      "category": "users",
+      "requiresAuth": true
+    },
+    {
+      "id": "PUT__users_me",
+      "name": "PUT /users/me",
+      "url": "{{BASE_URL}}/users/me",
+      "method": "PUT",
+      "priority": "normal",
+      "threshold_ms": 300,
+      "category": "users",
+      "requiresAuth": true,
+      "body": {
+        "name": "Updated Name"
+      }
+    },
+    {
+      "id": "GET__tenants_current",
+      "name": "GET /tenants/current",
+      "url": "{{BASE_URL}}/tenants/current",
+      "method": "GET",
+      "priority": "high",
+      "threshold_ms": 200,
+      "category": "multi-tenancy",
+      "requiresAuth": true
+    },
+    {
+      "id": "GET__subscriptions",
+      "name": "GET /subscriptions",
+      "url": "{{BASE_URL}}/subscriptions",
+      "method": "GET",
+      "priority": "high",
+      "threshold_ms": 300,
+      "category": "billing",
+      "requiresAuth": true
+    },
+    {
+      "id": "POST__subscriptions",
+      "name": "POST /subscriptions",
+      "url": "{{BASE_URL}}/subscriptions",
+      "method": "POST",
+      "priority": "critical",
+      "threshold_ms": 500,
+      "category": "billing",
+      "requiresAuth": true,
+      "body": {
+        "plan_id": "pro",
+        "payment_method": "card"
+      }
+    },
+    {
+      "id": "GET__invoices",
+      "name": "GET /invoices",
+      "url": "{{BASE_URL}}/invoices",
+      "method": "GET",
+      "priority": "normal",
+      "threshold_ms": 400,
+      "category": "billing",
+      "requiresAuth": true
+    },
+    {
+      "id": "GET__api_keys",
+      "name": "GET /api-keys",
+      "url": "{{BASE_URL}}/api-keys",
+      "method": "GET",
+      "priority": "high",
+      "threshold_ms": 200,
+      "category": "developer",
+      "requiresAuth": true
+    },
+    {
+      "id": "POST__api_keys",
+      "name": "POST /api-keys",
+      "url": "{{BASE_URL}}/api-keys",
+      "method": "POST",
+      "priority": "high",
+      "threshold_ms": 300,
+      "category": "developer",
+      "requiresAuth": true,
+      "body": {
+        "name": "Production Key",
+        "scopes": ["read", "write"]
+      }
+    },
+    {
+      "id": "GET__webhooks",
+      "name": "GET /webhooks",
+      "url": "{{BASE_URL}}/webhooks",
+      "method": "GET",
+      "priority": "normal",
+      "threshold_ms": 300,
+      "category": "integrations",
+      "requiresAuth": true
+    },
+    {
+      "id": "GET__usage",
+      "name": "GET /usage",
+      "url": "{{BASE_URL}}/usage",
+      "method": "GET",
+      "priority": "normal",
+      "threshold_ms": 400,
+      "category": "analytics",
+      "requiresAuth": true
+    },
+    {
+      "id": "GET__health",
+      "name": "GET /health",
+      "url": "{{BASE_URL}}/health",
+      "method": "GET",
+      "priority": "critical",
+      "threshold_ms": 100,
+      "category": "infrastructure"
+    }
+  ],
+  "alerts": {
+    "critical_apis": [
+      "POST /auth/login",
+      "POST /subscriptions",
+      "GET /health"
+    ],
+    "notify_immediately": true,
+    "escalation_minutes": 5,
+    "channels": ["email", "slack", "pagerduty"]
+  },
+  "sla": {
+    "availability": 99.9,
+    "latency_p95": 500,
+    "latency_p99": 1000
+  },
+  "monitoring": {
+    "check_interval_seconds": 60,
+    "retry_attempts": 3,
+    "timeout_ms": 5000
+  },
+  "security": {
+    "require_https": true,
+    "min_tls_version": "1.2",
+    "rate_limiting": true,
+    "api_key_required": true
+  },
+  "features": {
+    "multi_tenancy": true,
+    "api_versioning": true,
+    "webhook_support": true,
+    "usage_tracking": true
+  }
+}

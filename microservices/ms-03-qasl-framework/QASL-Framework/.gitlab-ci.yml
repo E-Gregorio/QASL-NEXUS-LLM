@@ -1,0 +1,12 @@
+image: alpine:latest
+
+pages:
+  stage: deploy
+  script:
+    - echo "Desplegando GitLab Pages - SIGMA QA Framework"
+    - ls -la public/ || echo "Carpeta public/ no encontrada"
+  artifacts:
+    paths:
+      - public
+  only:
+    - main

@@ -1,0 +1,13 @@
+apiVersion: 1
+
+providers:
+  - name: 'QASL-MOBILE'
+    orgId: 1
+    folder: 'QASL-MOBILE'
+    folderUid: 'qasl-mobile'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 30
+    allowUiUpdates: true
+    options:
+      path: /var/lib/grafana/dashboards/qasl-mobile

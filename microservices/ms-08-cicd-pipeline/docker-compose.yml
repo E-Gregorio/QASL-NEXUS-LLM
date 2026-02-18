@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  cicd-pipeline:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: qasl-cicd-pipeline
+    restart: unless-stopped
+    ports:
+      - "8888:8888"
+    env_file:
+      - .env
+    environment:
+      DB_HOST: qasl-nexus-db
+      MS02_URL: http://qasl-pruebas-estaticas:4000
+      MS03_URL: http://qasl-framework:6001
+      MS04_URL: http://qasl-mobile:7500
+      MS06_URL: http://qasl-garak:7600
+      MS09_URL: http://qasl-orquestador-llm:8000
+      MS10_URL: http://qasl-mcp-interfaz:5000
+      MS11_URL: http://qasl-reportador:9000
+    networks:
+      - qasl-network
+
+networks:
+  qasl-network:
+    name: qasl-nexus-network
+    external: true

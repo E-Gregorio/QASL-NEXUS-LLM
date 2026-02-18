@@ -1,0 +1,65 @@
+{
+  "name": "qasl-mobile",
+  "version": "1.0.0",
+  "description": "QASL-MOBILE: Shift-Left Mobile Testing Framework with AI Validation",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "qasl-mobile": "./dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx watch src/index.ts",
+    "start": "node dist/index.js",
+    "test": "vitest",
+    "test:coverage": "vitest --coverage",
+    "lint": "eslint src --ext .ts",
+    "recorder": "tsx src/recorder/index.ts",
+    "generator": "tsx src/generator/index.ts",
+    "runner": "tsx src/runner/index.ts",
+    "cli": "tsx src/cli.ts"
+  },
+  "keywords": [
+    "mobile-testing",
+    "automation",
+    "maestro",
+    "android",
+    "ios",
+    "qa",
+    "shift-left",
+    "ai-testing"
+  ],
+  "author": "Elyer Maldonado",
+  "license": "MIT",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.52.0",
+    "@influxdata/influxdb-client": "^1.35.0",
+    "axios": "^1.7.9",
+    "chalk": "^5.3.0",
+    "commander": "^12.1.0",
+    "dotenv": "^16.4.7",
+    "influx": "^5.9.3",
+    "inquirer": "^12.3.0",
+    "js-yaml": "^4.1.0",
+    "ora": "^8.1.1",
+    "uuid": "^11.0.3",
+    "winston": "^3.17.0",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@types/inquirer": "^9.0.7",
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^22.10.2",
+    "@types/uuid": "^10.0.0",
+    "@types/ws": "^8.5.13",
+    "@typescript-eslint/eslint-plugin": "^8.18.2",
+    "@typescript-eslint/parser": "^8.18.2",
+    "eslint": "^9.17.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

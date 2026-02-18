@@ -1,0 +1,18 @@
+{
+  "intervals": {
+    "critical": 30,
+    "normal": 120,
+    "low": 300
+  },
+  "thresholds": {
+    "latency": {
+      "warning": 1000,
+      "critical": 3000
+    },
+    "errorRate": {
+      "warning": 0.05,
+      "critical": 0.1
+    }
+  },
+  "_comment": "Intervalos en segundos, latencia en ms, errorRate en porcentaje decimal"
+}

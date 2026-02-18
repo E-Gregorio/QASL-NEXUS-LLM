@@ -1,0 +1,44 @@
+{
+  "testCases": [
+    {
+      "id": "TC-CONTACTS-001",
+      "epic": "EPIC-MOBILE-001",
+      "userStory": "HU-CONTACTS-001",
+      "title": "Abrir app de Contactos y verificar pantalla principal",
+      "priority": "high",
+      "platform": "android",
+      "steps": [
+        {
+          "order": 1,
+          "action": "launchApp",
+          "description": "Abrir la aplicación de Contactos"
+        },
+        {
+          "order": 2,
+          "action": "waitForElement",
+          "description": "Esperar que cargue la pantalla principal",
+          "value": "Contacts"
+        },
+        {
+          "order": 3,
+          "action": "takeScreenshot",
+          "description": "Capturar pantalla principal",
+          "value": "contacts-home"
+        },
+        {
+          "order": 4,
+          "action": "assertVisible",
+          "description": "Verificar que existe botón de agregar contacto",
+          "value": "Create contact"
+        }
+      ],
+      "expectedResults": [
+        "La app de contactos se abre correctamente",
+        "Se muestra la pantalla principal"
+      ],
+      "tags": ["smoke", "contacts", "android"],
+      "createdAt": "2024-12-27T00:00:00Z",
+      "updatedAt": "2024-12-27T00:00:00Z"
+    }
+  ]
+}

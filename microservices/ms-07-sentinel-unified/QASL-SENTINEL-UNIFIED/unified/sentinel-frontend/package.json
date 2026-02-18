@@ -1,0 +1,39 @@
+{
+  "name": "qasl-sentinel-frontend-unified",
+  "version": "1.0.0",
+  "description": "QASL Frontend Sentinel Unified - DOM Monitoring with Playwright",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "monitor": "tsx src/guardian.ts",
+    "build": "tsc",
+    "dev": "tsx watch src/guardian.ts",
+    "snapshot": "tsx src/scripts/capture-snapshot.ts",
+    "check-vpn": "tsx src/scripts/check-vpn.ts",
+    "show-changes": "tsx src/scripts/show-changes.ts"
+  },
+  "keywords": ["qa", "testing", "monitoring", "playwright", "unified"],
+  "author": "Elyer Gregorio Maldonado <elyerm@epidataconsulting.com>",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.32.1",
+    "@playwright/test": "^1.48.2",
+    "dotenv": "^16.4.7",
+    "nodemailer": "^6.9.16",
+    "diff": "^7.0.0",
+    "chalk": "^5.3.0",
+    "ora": "^8.1.1",
+    "boxen": "^8.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@types/nodemailer": "^6.4.17",
+    "@types/diff": "^6.0.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}

@@ -1,0 +1,29 @@
+apiVersion: 1
+
+datasources:
+  # InfluxDB 1.x configuration (compatible with current setup)
+  - name: InfluxDB-QASL-Mobile
+    type: influxdb
+    access: proxy
+    url: http://qasl-influxdb:8086
+    database: qasl_mobile
+    user: admin
+    jsonData:
+      httpMode: GET
+    secureJsonData:
+      password: ${INFLUXDB_PASSWORD:-admin}
+    uid: influxdb-mobile
+    isDefault: false
+
+  # InfluxDB 2.x configuration (if you upgrade later)
+  # - name: InfluxDB-QASL-Mobile-v2
+  #   type: influxdb
+  #   access: proxy
+  #   url: http://qasl-influxdb:8086
+  #   jsonData:
+  #     version: Flux
+  #     organization: qasl
+  #     defaultBucket: qasl-mobile
+  #   secureJsonData:
+  #     token: ${INFLUXDB_TOKEN}
+  #   uid: influxdb-mobile-v2

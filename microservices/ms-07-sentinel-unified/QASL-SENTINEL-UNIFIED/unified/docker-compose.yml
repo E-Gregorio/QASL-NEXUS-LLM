@@ -1,0 +1,115 @@
+version: '3.8'
+
+services:
+  # ============================================
+  # BACKEND MONITORING (Prometheus)
+  # ============================================
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: qasl-prometheus-unified
+    ports:
+      - "9095:9090"
+    volumes:
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.enable-lifecycle'
+    networks:
+      - qasl-unified
+    restart: unless-stopped
+
+  # ============================================
+  # FRONTEND MONITORING (InfluxDB)
+  # ============================================
+  influxdb:
+    image: influxdb:2.7
+    container_name: qasl-influxdb-unified
+    ports:
+      - "8088:8086"
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=admin
+      - DOCKER_INFLUXDB_INIT_PASSWORD=sentinel2024
+      - DOCKER_INFLUXDB_INIT_ORG=sigma
+      - DOCKER_INFLUXDB_INIT_BUCKET=sentinel_metrics
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=sigma-sentinel-token-2024
+      - DOCKER_INFLUXDB_INIT_RETENTION=30d
+    volumes:
+      - influxdb-data:/var/lib/influxdb2
+      - influxdb-config:/etc/influxdb2
+    networks:
+      - qasl-unified
+    restart: unless-stopped
+
+  # ============================================
+  # UNIFIED GRAFANA
+  # ============================================
+  grafana:
+    build:
+      context: ./grafana
+      dockerfile: Dockerfile
+    image: qasl-grafana-ingrid:latest
+    container_name: qasl-grafana-unified
+    ports:
+      - "3003:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=sentinel2024
+      - GF_SERVER_ROOT_URL=http://localhost:3003
+      - GF_INSTALL_PLUGINS=marcusolsson-json-datasource,yesoreyeram-infinity-datasource
+      - GF_FEATURE_TOGGLES_ENABLE=publicDashboards
+      - GF_PANELS_DISABLE_SANITIZE_HTML=true
+      - GF_SECURITY_ALLOW_EMBEDDING=true
+      # Cookie unica para NO conflictar con Grafana Mobile (:3004)
+      - GF_SESSION_COOKIE_NAME=grafana_session_sentinel
+      - GF_SECURITY_COOKIE_SAMESITE=lax
+    volumes:
+      - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+      - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
+      - grafana-data:/var/lib/grafana
+    networks:
+      - qasl-unified
+    depends_on:
+      - prometheus
+      - influxdb
+    restart: unless-stopped
+
+  # ============================================
+  # QASL-MOBILE VIDEO SERVER (solo lectura)
+  # Sirve el video MP4 grabado por QASL-MOBILE
+  # ============================================
+  video-server:
+    image: nginx:alpine
+    container_name: qasl-video-server
+    ports:
+      - "8766:80"
+    volumes:
+      - /c/Users/Epidater/Desktop/Proyectos/QASL-MOBILE/video:/usr/share/nginx/html:ro
+    networks:
+      - qasl-unified
+    restart: unless-stopped
+
+  # ============================================
+  # SENTINEL METRICS GATEWAY
+  # ============================================
+  pushgateway:
+    image: prom/pushgateway:latest
+    container_name: qasl-sentinel-metrics
+    ports:
+      - "9096:9091"
+    networks:
+      - qasl-unified
+    restart: unless-stopped
+
+networks:
+  qasl-unified:
+    driver: bridge
+
+volumes:
+  prometheus-data:
+  influxdb-data:
+  influxdb-config:
+  grafana-data:

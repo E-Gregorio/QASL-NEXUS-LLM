@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>INGRID - Grafana Theme</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0b0c0e;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    /* ========================================
+       CONTENEDOR PRINCIPAL
+       ======================================== */
+    .chat-container {
+      width: 100%;
+      max-width: 500px;
+      height: 750px;
+      background: #1f1f1f;
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      border: 1px solid #2d2d2d;
+    }
+
+    /* ========================================
+       HEADER
+       ======================================== */
+    .chat-header {
+      background: #1f1f1f;
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #2d2d2d;
+    }
+
+    .header-info {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .avatar {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, #73BF69 0%, #5FA855 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      box-shadow: 0 0 20px rgba(115, 191, 105, 0.4);
+    }
+
+    .header-text h2 {
+      color: #ffffff;
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .header-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #b0b0b0;
+      font-size: 13px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background: #73BF69;
+      border-radius: 50%;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; box-shadow: 0 0 8px rgba(115, 191, 105, 0.6); }
+      50% { opacity: 0.6; box-shadow: 0 0 16px rgba(115, 191, 105, 0.8); }
+    }
+
+    .close-btn {
+      width: 36px;
+      height: 36px;
+      background: transparent;
+      border: 1px solid #3d3d3d;
+      border-radius: 6px;
+      color: #b0b0b0;
+      font-size: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .close-btn:hover {
+      background: #2d2d2d;
+      color: #ffffff;
+      border-color: #73BF69;
+    }
+
+    /* ========================================
+       ÁREA DE MENSAJES
+       ======================================== */
+    .messages-area {
+      flex: 1;
+      padding: 28px 24px;
+      background: #181818;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    .messages-area::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .messages-area::-webkit-scrollbar-track {
+      background: #1f1f1f;
+    }
+
+    .messages-area::-webkit-scrollbar-thumb {
+      background: #73BF69;
+      border-radius: 3px;
+    }
+
+    /* ========================================
+       MENSAJES
+       ======================================== */
+    .message {
+      display: flex;
+      flex-direction: column;
+      animation: slideIn 0.3s ease;
+      max-width: 85%;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(15px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Mensaje INGRID */
+    .message-ingrid {
+      align-self: flex-start;
+    }
+
+    .message-bubble-ingrid {
+      background: #262626;
+      color: #e8e8e8;
+      padding: 18px 22px;
+      border-radius: 0 16px 16px 16px;
+      border-left: 3px solid #73BF69;
+      line-height: 1.7;
+      font-size: 15px;
+    }
+
+    .message-bubble-ingrid p {
+      margin: 0 0 14px 0;
+    }
+
+    .message-bubble-ingrid p:last-child {
+      margin-bottom: 0;
+    }
+
+    .message-bubble-ingrid strong {
+      color: #73BF69;
+      font-weight: 600;
+    }
+
+    .message-bubble-ingrid ul {
+      margin: 10px 0;
+      padding-left: 22px;
+    }
+
+    .message-bubble-ingrid li {
+      margin: 7px 0;
+      line-height: 1.6;
+    }
+
+    /* Mensaje Usuario */
+    .message-user {
+      align-self: flex-end;
+    }
+
+    .message-bubble-user {
+      background: linear-gradient(135deg, #73BF69 0%, #5FA855 100%);
+      color: #000000;
+      padding: 14px 22px;
+      border-radius: 16px 16px 0 16px;
+      font-size: 15px;
+      font-weight: 500;
+      line-height: 1.6;
+      box-shadow: 0 0 20px rgba(115, 191, 105, 0.3);
+    }
+
+    /* Timestamp */
+    .message-time {
+      font-size: 12px;
+      color: #666666;
+      margin-top: 6px;
+      padding: 0 8px;
+      font-weight: 400;
+    }
+
+    /* ========================================
+       TYPING INDICATOR
+       ======================================== */
+    .typing {
+      align-self: flex-start;
+      max-width: 70px;
+    }
+
+    .typing-bubble {
+      background: #262626;
+      padding: 14px 18px;
+      border-radius: 0 16px 16px 16px;
+      border-left: 3px solid #73BF69;
+      display: flex;
+      gap: 5px;
+    }
+
+    .typing-dot {
+      width: 8px;
+      height: 8px;
+      background: #73BF69;
+      border-radius: 50%;
+      animation: typing 1.4s infinite;
+    }
+
+    .typing-dot:nth-child(1) { animation-delay: 0s; }
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes typing {
+      0%, 60%, 100% {
+        opacity: 0.3;
+        transform: translateY(0);
+      }
+      30% {
+        opacity: 1;
+        transform: translateY(-8px);
+      }
+    }
+
+    /* ========================================
+       INPUT ÁREA
+       ======================================== */
+    .input-container {
+      padding: 18px 24px 20px;
+      background: #1f1f1f;
+      border-top: 1px solid #2d2d2d;
+      display: flex;
+      gap: 12px;
+      align-items: flex-end;
+    }
+
+    .input-wrapper {
+      flex: 1;
+      position: relative;
+    }
+
+    .input-field {
+      width: 100%;
+      background: #262626;
+      border: 1px solid #3d3d3d;
+      border-radius: 8px;
+      padding: 14px 18px;
+      color: #e8e8e8;
+      font-size: 15px;
+      font-family: inherit;
+      outline: none;
+      resize: none;
+      min-height: 50px;
+      max-height: 120px;
+      line-height: 1.5;
+      transition: all 0.2s ease;
+    }
+
+    .input-field:focus {
+      border-color: #73BF69;
+      background: #2d2d2d;
+      box-shadow: 0 0 0 3px rgba(115, 191, 105, 0.15);
+    }
+
+    .input-field::placeholder {
+      color: #6a6a6a;
+    }
+
+    .send-btn {
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(135deg, #73BF69 0%, #5FA855 100%);
+      border: none;
+      border-radius: 8px;
+      color: #000000;
+      font-size: 22px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      box-shadow: 0 0 20px rgba(115, 191, 105, 0.3);
+      flex-shrink: 0;
+    }
+
+    .send-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 30px rgba(115, 191, 105, 0.5);
+    }
+
+    .send-btn:active {
+      transform: scale(0.95);
+    }
+
+    /* ========================================
+       QUICK ACTIONS
+       ======================================== */
+    .quick-actions {
+      padding: 0 24px 16px;
+      background: #1f1f1f;
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      border-top: 1px solid #2d2d2d;
+    }
+
+    .quick-actions::-webkit-scrollbar {
+      display: none;
+    }
+
+    .quick-btn {
+      background: #262626;
+      border: 1px solid #3d3d3d;
+      color: #b0b0b0;
+      padding: 9px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+      font-weight: 500;
+    }
+
+    .quick-btn:hover {
+      background: #73BF69;
+      border-color: #73BF69;
+      color: #000000;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(115, 191, 105, 0.3);
+    }
+
+    /* ========================================
+       RESPONSIVE
+       ======================================== */
+    @media (max-width: 540px) {
+      .chat-container {
+        max-width: 100%;
+        height: 100vh;
+        border-radius: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="chat-container">
+    
+    <!-- HEADER -->
+    <div class="chat-header">
+      <div class="header-info">
+        <div class="avatar">🤖</div>
+        <div class="header-text">
+          <h2>INGRID Assistant</h2>
+          <div class="header-status">
+            <span class="status-dot"></span>
+            <span>Conectado</span>
+          </div>
+        </div>
+      </div>
+      <button class="close-btn">×</button>
+    </div>
+
+    <!-- MENSAJES -->
+    <div class="messages-area">
+      
+      <!-- Mensaje INGRID bienvenida -->
+      <div class="message message-ingrid">
+        <div class="message-bubble-ingrid">
+          <p>👋 <strong>¡Hola!</strong></p>
+          <p>Soy INGRID, tu asistente de monitoreo QA. Puedo ayudarte con información sobre APIs, uptime, seguridad y compliance.</p>
+        </div>
+        <div class="message-time">10:32</div>
+      </div>
+
+      <!-- Mensaje Usuario -->
+      <div class="message message-user">
+        <div class="message-bubble-user">
+          ¿Cuál es el estado actual de seguridad?
+        </div>
+        <div class="message-time">10:33</div>
+      </div>
+
+      <!-- Mensaje INGRID respuesta -->
+      <div class="message message-ingrid">
+        <div class="message-bubble-ingrid">
+          <p><strong>📊 Estado de Seguridad OWASP ZAP:</strong></p>
+          <p>Total de vulnerabilidades: <strong>22</strong></p>
+          <ul>
+            <li>🔴 <strong>Críticas:</strong> 0 ✅</li>
+            <li>🟡 <strong>Altas:</strong> 2 ⚠️</li>
+            <li>🟠 <strong>Medias:</strong> 8</li>
+            <li>🔵 <strong>Bajas:</strong> 12</li>
+          </ul>
+          <p><strong>Top 3 vulnerabilidades:</strong></p>
+          <ul>
+            <li>Content Security Policy faltante (alta)</li>
+            <li>Permissions Policy sin configurar (media)</li>
+            <li>Protección insuficiente contra Spectre (media)</li>
+          </ul>
+          <p>✅ Sistema sin vulnerabilidades críticas activas.</p>
+        </div>
+        <div class="message-time">10:33</div>
+      </div>
+
+      <!-- Mensaje Usuario -->
+      <div class="message message-user">
+        <div class="message-bubble-user">
+          ¿Qué tal el uptime de las APIs?
+        </div>
+        <div class="message-time">10:34</div>
+      </div>
+
+      <!-- Mensaje INGRID -->
+      <div class="message message-ingrid">
+        <div class="message-bubble-ingrid">
+          <p><strong>⏱️ Uptime últimas 24 horas:</strong></p>
+          <ul>
+            <li><strong>SIGMA Frontend:</strong> 99.8% ✅</li>
+            <li><strong>SADE Token:</strong> 99.9% ✅</li>
+            <li><strong>Selecciones:</strong> 99.7% ✅</li>
+            <li><strong>Expedientes:</strong> 99.6% ✅</li>
+            <li><strong>Inconsistencias:</strong> 99.8% ✅</li>
+            <li><strong>Inspecciones:</strong> 99.5% ✅</li>
+            <li><strong>Caratulación:</strong> 99.4% ⚠️</li>
+          </ul>
+          <p><strong>Promedio general:</strong> 99.7%</p>
+          <p>Total de checks: <strong>1,226</strong> | Exitosos: <strong>1,222</strong></p>
+        </div>
+        <div class="message-time">10:34</div>
+      </div>
+
+      <!-- Typing indicator -->
+      <div class="message typing">
+        <div class="typing-bubble">
+          <span class="typing-dot"></span>
+          <span class="typing-dot"></span>
+          <span class="typing-dot"></span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- QUICK ACTIONS -->
+    <div class="quick-actions">
+      <button class="quick-btn">📊 Estado APIs</button>
+      <button class="quick-btn">⏱️ Uptime</button>
+      <button class="quick-btn">🔒 Seguridad</button>
+      <button class="quick-btn">📈 Compliance</button>
+      <button class="quick-btn">📋 Resumen</button>
+    </div>
+
+    <!-- INPUT -->
+    <div class="input-container">
+      <div class="input-wrapper">
+        <textarea 
+          class="input-field" 
+          placeholder="Escribe tu consulta..."
+          rows="1"
+        ></textarea>
+      </div>
+      <button class="send-btn">➤</button>
+    </div>
+
+  </div>
+
+  <script>
+    // Auto-resize textarea
+    const textarea = document.querySelector('.input-field');
+    textarea.addEventListener('input', function() {
+      this.style.height = 'auto';
+      this.style.height = this.scrollHeight + 'px';
+    });
+
+    // Auto-scroll mensajes
+    const messagesArea = document.querySelector('.messages-area');
+    messagesArea.scrollTop = messagesArea.scrollHeight;
+  </script>
+
+</body>
+</html>

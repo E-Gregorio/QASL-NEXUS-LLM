@@ -1,0 +1,30 @@
+# ═══════════════════════════════════════════════════════════════════════════
+# 🧪 TC-CONTACTS-001: Abrir app de Contactos y verificar pantalla principal
+# ═══════════════════════════════════════════════════════════════════════════
+#
+# QASL-MOBILE Generated Flow
+# DO NOT EDIT MANUALLY - Regenerate from Test Case if changes needed
+#
+# Epic:        EPIC-MOBILE-001
+# User Story:  HU-CONTACTS-001
+# Priority:    high
+# Platform:    android
+# Generated:   2025-12-27T08:18:06.228Z
+#
+# ═══════════════════════════════════════════════════════════════════════════
+appId: ${APP_ID}
+name: Abrir app de Contactos y verificar pantalla principal
+tags:
+  - smoke
+  - contacts
+  - android
+commands:
+  - launchApp:
+      clearState: true
+  - extendedWaitUntil:
+      visible: Contacts
+      timeout: 30000
+  - takeScreenshot: contacts-home
+  - assertVisible: Create contact
+  - assertVisible: La app de contactos se abre correctamente
+  - assertVisible: Se muestra la pantalla principal

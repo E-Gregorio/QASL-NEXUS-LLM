@@ -1,0 +1,135 @@
+{
+  "name": "Fintech Platform",
+  "description": "Template for financial technology APIs with high security requirements",
+  "industry": "finance",
+  "apis": [
+    {
+      "id": "POST__auth_login",
+      "name": "POST /auth/login",
+      "url": "{{BASE_URL}}/auth/login",
+      "method": "POST",
+      "priority": "critical",
+      "threshold_ms": 200,
+      "category": "authentication",
+      "body": {
+        "email": "test@example.com",
+        "password": "test123"
+      }
+    },
+    {
+      "id": "POST__transactions",
+      "name": "POST /transactions",
+      "url": "{{BASE_URL}}/transactions",
+      "method": "POST",
+      "priority": "critical",
+      "threshold_ms": 150,
+      "category": "core",
+      "requiresAuth": true,
+      "body": {
+        "amount": 100,
+        "currency": "USD",
+        "type": "payment"
+      }
+    },
+    {
+      "id": "GET__transactions_id",
+      "name": "GET /transactions/:id",
+      "url": "{{BASE_URL}}/transactions/123",
+      "method": "GET",
+      "priority": "high",
+      "threshold_ms": 200,
+      "category": "core",
+      "requiresAuth": true
+    },
+    {
+      "id": "GET__balance",
+      "name": "GET /accounts/balance",
+      "url": "{{BASE_URL}}/accounts/balance",
+      "method": "GET",
+      "priority": "critical",
+      "threshold_ms": 150,
+      "category": "core",
+      "requiresAuth": true
+    },
+    {
+      "id": "POST__transfers",
+      "name": "POST /transfers",
+      "url": "{{BASE_URL}}/transfers",
+      "method": "POST",
+      "priority": "critical",
+      "threshold_ms": 200,
+      "category": "core",
+      "requiresAuth": true,
+      "body": {
+        "to_account": "123456",
+        "amount": 100,
+        "currency": "USD"
+      }
+    },
+    {
+      "id": "GET__statement",
+      "name": "GET /accounts/statement",
+      "url": "{{BASE_URL}}/accounts/statement",
+      "method": "GET",
+      "priority": "normal",
+      "threshold_ms": 500,
+      "category": "reporting",
+      "requiresAuth": true
+    },
+    {
+      "id": "POST__kyc",
+      "name": "POST /kyc/verify",
+      "url": "{{BASE_URL}}/kyc/verify",
+      "method": "POST",
+      "priority": "high",
+      "threshold_ms": 1000,
+      "category": "compliance",
+      "requiresAuth": true,
+      "body": {
+        "document_type": "passport",
+        "document_number": "123456"
+      }
+    },
+    {
+      "id": "GET__exchange_rates",
+      "name": "GET /exchange-rates",
+      "url": "{{BASE_URL}}/exchange-rates",
+      "method": "GET",
+      "priority": "high",
+      "threshold_ms": 300,
+      "category": "data"
+    }
+  ],
+  "alerts": {
+    "critical_apis": [
+      "POST /transactions",
+      "POST /transfers",
+      "GET /accounts/balance"
+    ],
+    "notify_immediately": true,
+    "escalation_minutes": 2,
+    "channels": ["email", "slack", "sms", "pagerduty"]
+  },
+  "sla": {
+    "availability": 99.99,
+    "latency_p95": 500,
+    "latency_p99": 1000,
+    "max_downtime_minutes_per_month": 4.38
+  },
+  "monitoring": {
+    "check_interval_seconds": 30,
+    "retry_attempts": 3,
+    "timeout_ms": 3000
+  },
+  "security": {
+    "require_https": true,
+    "min_tls_version": "1.2",
+    "require_authentication": true,
+    "audit_all_requests": true
+  },
+  "compliance": {
+    "standards": ["PCI-DSS", "SOC2", "ISO27001"],
+    "data_retention_days": 2555,
+    "encryption_required": true
+  }
+}

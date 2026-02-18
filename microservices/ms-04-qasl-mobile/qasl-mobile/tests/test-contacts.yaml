@@ -1,0 +1,15 @@
+# ═══════════════════════════════════════════════════════════════════════════
+# 🧪 Test Contactos - Prueba Simple
+# ═══════════════════════════════════════════════════════════════════════════
+# QASL-MOBILE Demo Flow
+# ═══════════════════════════════════════════════════════════════════════════
+
+appId: com.google.android.contacts
+---
+- launchApp:
+    clearState: true
+
+- assertVisible: ".*"
+  # Verificar que la app cargó (cualquier elemento visible)
+
+- takeScreenshot: "contacts-launched"

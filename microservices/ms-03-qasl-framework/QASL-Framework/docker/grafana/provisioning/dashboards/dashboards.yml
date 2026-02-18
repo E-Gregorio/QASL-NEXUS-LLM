@@ -1,0 +1,13 @@
+apiVersion: 1
+
+providers:
+  - name: 'SIGMA QA Dashboards'
+    orgId: 1
+    folder: 'QA Control Center'
+    folderUid: 'qa-control'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 10
+    allowUiUpdates: true
+    options:
+      path: /var/lib/grafana/dashboards

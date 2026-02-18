@@ -1,0 +1,18 @@
+{
+  "appId": "com.example.app",
+  "device": "Pixel_6",
+  "platform": "android",
+  "maestroTimeout": 30000,
+  "retryCount": 3,
+  "autoScreenshot": true,
+  "recordVideo": false,
+  "enableINGRID": true,
+  "outputDir": "./output",
+  "testsDir": "./tests",
+  "screenshotsDir": "./screenshots",
+  "reportsDir": "./reports",
+  "influxdb": {
+    "url": "http://localhost:8086",
+    "database": "qasl_mobile"
+  }
+}

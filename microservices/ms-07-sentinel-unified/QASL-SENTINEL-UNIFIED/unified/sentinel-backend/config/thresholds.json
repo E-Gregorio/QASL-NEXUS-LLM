@@ -1,0 +1,61 @@
+{
+  "_comment": "Configuracion de umbrales para alertas - QASL-API-SENTINEL",
+  "_project": "SIGMA",
+  "_client": "AGIP",
+
+  "latency": {
+    "_description": "Umbrales de latencia en milisegundos",
+    "warning": 500,
+    "critical": 1000,
+    "timeout": 30000
+  },
+
+  "availability": {
+    "_description": "Umbrales de disponibilidad en porcentaje",
+    "warning": 99,
+    "critical": 95
+  },
+
+  "consecutiveFailures": {
+    "_description": "Cantidad de fallos consecutivos antes de alertar",
+    "warning": 2,
+    "critical": 5
+  },
+
+  "errorRate": {
+    "_description": "Tasa de error en porcentaje (en ventana de tiempo)",
+    "window": 300000,
+    "warning": 5,
+    "critical": 20
+  },
+
+  "healthCheck": {
+    "_description": "Configuracion de health checks",
+    "interval": 30000,
+    "timeout": 10000,
+    "retries": 2
+  },
+
+  "notifications": {
+    "_description": "Configuracion de notificaciones",
+    "cooldown": 300000,
+    "grouping": true,
+    "groupWindow": 60000
+  },
+
+  "severityColors": {
+    "ok": "#6bcb77",
+    "warning": "#ffd93d",
+    "critical": "#ff6b6b"
+  },
+
+  "customThresholds": {
+    "_description": "Umbrales personalizados por API (opcional)",
+    "_example": {
+      "api-critica": {
+        "latency": { "warning": 200, "critical": 500 },
+        "consecutiveFailures": { "warning": 1, "critical": 2 }
+      }
+    }
+  }
+}

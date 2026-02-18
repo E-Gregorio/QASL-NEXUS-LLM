@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  # ============================================================
+  # PostgreSQL - Single Source of Truth
+  # ============================================================
+  postgres:
+    image: postgres:16-alpine
+    container_name: qasl-nexus-db
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-qasl_nexus}
+      POSTGRES_USER: ${POSTGRES_USER:-qasl_admin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-qasl_nexus_2026}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./sql/01_schema.sql:/docker-entrypoint-initdb.d/01_schema.sql
+      - ./sql/02_indexes.sql:/docker-entrypoint-initdb.d/02_indexes.sql
+      - ./sql/03_views.sql:/docker-entrypoint-initdb.d/03_views.sql
+      - ./sql/04_triggers.sql:/docker-entrypoint-initdb.d/04_triggers.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-qasl_admin} -d ${POSTGRES_DB:-qasl_nexus}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - qasl-network
+
+  # ============================================================
+  # pgAdmin - Administracion visual de la BD
+  # ============================================================
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: qasl-nexus-pgadmin
+    restart: unless-stopped
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@qaslnexus.io}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin2026}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - qasl-network
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  qasl-network:
+    name: qasl-nexus-network
+    driver: bridge

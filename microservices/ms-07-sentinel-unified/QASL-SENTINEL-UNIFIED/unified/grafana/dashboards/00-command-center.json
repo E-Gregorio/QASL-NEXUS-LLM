@@ -1,0 +1,4501 @@
+{
+  "uid": "qasl-command-center-unified",
+  "title": "QASL SENTINEL - Command Center Unificado",
+  "description": "EPIDATA Consulting | Cliente: AGIP | Buenos Aires, Argentina | QA Leader: Elyer Gregorio Maldonado",
+  "tags": [
+    "qasl",
+    "sentinel",
+    "unified",
+    "command-center",
+    "sector-publico"
+  ],
+  "timezone": "America/Argentina/Buenos_Aires",
+  "editable": true,
+  "graphTooltip": 1,
+  "refresh": "30s",
+  "schemaVersion": 39,
+  "style": "dark",
+  "time": {
+    "from": "now-7d",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": [
+      "10s",
+      "30s",
+      "1m",
+      "5m"
+    ],
+    "time_options": [
+      "5m",
+      "15m",
+      "1h",
+      "6h",
+      "12h",
+      "24h",
+      "7d"
+    ]
+  },
+  "templating": {
+    "list": []
+  },
+  "annotations": {
+    "list": []
+  },
+  "panels": [
+    {
+      "id": 100,
+      "type": "text",
+      "title": "",
+      "gridPos": {
+        "h": 3,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "options": {
+        "mode": "html",
+        "content": "<div style=\"background: linear-gradient(135deg, #0d1117 0%, #161b22 50%, #0d1117 100%); padding: 15px 30px; border-radius: 8px; border: 1px solid #30363d; box-shadow: 0 0 30px rgba(56, 139, 253, 0.15);\">\n  <div style=\"display: flex; justify-content: space-between; align-items: center;\">\n    <div style=\"display: flex; align-items: center; gap: 20px;\">\n      <div style=\"font-size: 36px;\">&#128737;</div>\n      <div>\n        <h1 style=\"color: #58a6ff; margin: 0; font-size: 24px; font-weight: 700; letter-spacing: 3px; text-shadow: 0 0 20px rgba(88, 166, 255, 0.5);\">QASL SENTINEL - COMMAND CENTER UNIFICADO</h1>\n        <p style=\"color: #8b949e; margin: 3px 0 0 0; font-size: 12px; letter-spacing: 1px;\">Backend (API-SENTINEL) + Frontend (SIGMA-SENTINEL) | Monitoreo Unificado v2.0</p>\n      </div>\n    </div>\n    <div style=\"text-align: right;\">\n      <div style=\"display: flex; gap: 30px; align-items: center;\">\n        <div style=\"text-align: center;\"><div style=\"color: #8b949e; font-size: 10px; text-transform: uppercase; letter-spacing: 1px;\">Proyecto</div><div style=\"color: #f0f6fc; font-size: 14px; font-weight: 600;\">SIGMA</div></div>\n        <div style=\"text-align: center;\"><div style=\"color: #8b949e; font-size: 10px; text-transform: uppercase; letter-spacing: 1px;\">Cliente</div><div style=\"color: #f0f6fc; font-size: 14px; font-weight: 600;\">AGIP</div></div>\n        <div style=\"text-align: center;\"><div style=\"color: #8b949e; font-size: 10px; text-transform: uppercase; letter-spacing: 1px;\">Empresa</div><div style=\"color: #f0f6fc; font-size: 14px; font-weight: 600;\">Epidata</div></div>\n        <div style=\"text-align: center; border-left: 1px solid #30363d; padding-left: 20px;\"><div style=\"color: #8b949e; font-size: 10px; text-transform: uppercase; letter-spacing: 1px;\">Lider QA</div><div style=\"color: #58a6ff; font-size: 13px; font-weight: 600;\">Elyer Maldonado</div></div>\n      </div>\n    </div>\n  </div>\n</div>"
+      },
+      "transparent": true
+    },
+    {
+      "id": 200,
+      "type": "row",
+      "title": "SALUD DEL SISTEMA",
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 3
+      },
+      "collapsed": false
+    },
+    {
+      "id": 201,
+      "type": "gauge",
+      "title": "Salud Frontend (DOM)",
+      "description": "Estado del frontend basado en el ultimo escaneo de SIGMA-SENTINEL",
+      "gridPos": {
+        "h": 6,
+        "w": 8,
+        "x": 0,
+        "y": 4
+      },
+      "datasource": {
+        "type": "influxdb",
+        "uid": "InfluxDB-Sentinel"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "InfluxDB-Sentinel"
+          },
+          "query": "from(bucket: \"sentinel_metrics\")\n  |> range(start: -7d)\n  |> filter(fn: (r) => r._measurement == \"sentinel_scan\")\n  |> filter(fn: (r) => r._field == \"status_code\")\n  |> group()\n  |> sort(columns: [\"_time\"], desc: true)\n  |> limit(n: 1)\n  |> map(fn: (r) => ({r with _value: if r._value == 0 then 100.0 else if r._value == 1 then 50.0 else 0.0}))\n  |> keep(columns: [\"_value\"])"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "value": null,
+                "color": "#e74c3c"
+              },
+              {
+                "value": 40,
+                "color": "#f39c12"
+              },
+              {
+                "value": 80,
+                "color": "#27ae60"
+              }
+            ]
+          },
+          "min": 0,
+          "max": 100,
+          "unit": "percent",
+          "displayName": "Frontend"
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "orientation": "auto"
+      }
+    },
+    {
+      "id": 202,
+      "type": "gauge",
+      "title": "Salud Backend (APIs)",
+      "description": "Disponibilidad global de APIs monitoreadas",
+      "gridPos": {
+        "h": 6,
+        "w": 8,
+        "x": 8,
+        "y": 4
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "qasl_uptime_percentage",
+          "legendFormat": "Backend",
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "value": null,
+                "color": "#e74c3c"
+              },
+              {
+                "value": 50,
+                "color": "#f39c12"
+              },
+              {
+                "value": 80,
+                "color": "#d4a72c"
+              },
+              {
+                "value": 95,
+                "color": "#27ae60"
+              }
+            ]
+          },
+          "min": 0,
+          "max": 100,
+          "unit": "percent",
+          "displayName": "Backend"
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "orientation": "auto"
+      }
+    },
+    {
+      "id": 203,
+      "type": "gauge",
+      "title": "Puntaje General",
+      "description": "Promedio entre Salud Frontend y Salud Backend",
+      "gridPos": {
+        "h": 6,
+        "w": 8,
+        "x": 16,
+        "y": 4
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "(scalar(qasl_uptime_percentage) + (sum(qasl_api_healthy) / count(qasl_api_healthy) * 100)) / 2",
+          "legendFormat": "General",
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "value": null,
+                "color": "#e74c3c"
+              },
+              {
+                "value": 50,
+                "color": "#f39c12"
+              },
+              {
+                "value": 80,
+                "color": "#27ae60"
+              }
+            ]
+          },
+          "min": 0,
+          "max": 100,
+          "unit": "percent",
+          "displayName": "General"
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "orientation": "auto"
+      }
+    },
+    {
+      "id": 300,
+      "type": "row",
+      "title": "METRICAS GLOBALES",
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 10
+      },
+      "collapsed": false
+    },
+    {
+      "id": 301,
+      "type": "stat",
+      "title": "APIs Monitoreadas",
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 0,
+        "y": 11
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "qasl_apis_total",
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "#58a6ff",
+            "mode": "fixed"
+          },
+          "mappings": [],
+          "displayName": "APIs"
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "textMode": "auto"
+      }
+    },
+    {
+      "id": 302,
+      "type": "stat",
+      "title": "Checks Realizados",
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 4,
+        "y": 11
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "qasl_checks_total",
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "#3fb950",
+            "mode": "fixed"
+          },
+          "mappings": [],
+          "displayName": "Checks"
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "textMode": "auto"
+      }
+    },
+    {
+      "id": 303,
+      "type": "stat",
+      "title": "Checks Exitosos",
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 8,
+        "y": 11
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "qasl_checks_success_total",
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "#3fb950",
+            "mode": "fixed"
+          },
+          "mappings": [],
+          "displayName": "Exitosos"
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "textMode": "auto"
+      }
+    },
+    {
+      "id": 304,
+      "type": "stat",
+      "title": "Checks Fallidos",
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 12,
+        "y": 11
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "qasl_checks_failed_total",
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "value": null,
+                "color": "#3fb950"
+              },
+              {
+                "value": 1,
+                "color": "#d4a72c"
+              },
+              {
+                "value": 5,
+                "color": "#d29922"
+              },
+              {
+                "value": 10,
+                "color": "#f85149"
+              }
+            ]
+          },
+          "mappings": [],
+          "displayName": "Fallidos"
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "textMode": "auto"
+      }
+    },
+    {
+      "id": 305,
+      "type": "stat",
+      "title": "Latencia Promedio",
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 16,
+        "y": 11
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "qasl_latency_avg_ms",
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "value": null,
+                "color": "#3fb950"
+              },
+              {
+                "value": 100,
+                "color": "#d4a72c"
+              },
+              {
+                "value": 300,
+                "color": "#d29922"
+              },
+              {
+                "value": 500,
+                "color": "#f85149"
+              }
+            ]
+          },
+          "displayName": "Latencia"
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "textMode": "auto"
+      }
+    },
+    {
+      "id": 306,
+      "type": "stat",
+      "title": "Uptime Sentinel",
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 20,
+        "y": 11
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "qasl_uptime_seconds",
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "color": {
+            "fixedColor": "#58a6ff",
+            "mode": "fixed"
+          },
+          "displayName": "Uptime"
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "textMode": "auto"
+      }
+    },
+    {
+      "id": 400,
+      "type": "row",
+      "title": "MONITOREO FRONTEND - CAMBIOS DOM",
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 15
+      },
+      "collapsed": false
+    },
+    {
+      "id": 401,
+      "type": "stat",
+      "title": "ESTADO",
+      "gridPos": {
+        "h": 6,
+        "w": 6,
+        "x": 0,
+        "y": 16
+      },
+      "datasource": {
+        "type": "influxdb",
+        "uid": "InfluxDB-Sentinel"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "InfluxDB-Sentinel"
+          },
+          "query": "from(bucket: \"sentinel_metrics\")\n  |> range(start: -7d)\n  |> filter(fn: (r) => r._measurement == \"sentinel_scan\")\n  |> filter(fn: (r) => r._field == \"changes\")\n  |> group()\n  |> sort(columns: [\"_time\"], desc: true)\n  |> limit(n: 1)\n  |> keep(columns: [\"_value\"])"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "displayName": "Estado",
+          "mappings": [
+            {
+              "options": {
+                "from": 0,
+                "to": 0,
+                "result": {
+                  "color": "#27ae60",
+                  "index": 0,
+                  "text": "ESTABLE"
+                }
+              },
+              "type": "range"
+            },
+            {
+              "options": {
+                "from": 1,
+                "to": 4,
+                "result": {
+                  "color": "#f39c12",
+                  "index": 1,
+                  "text": "CAMBIOS"
+                }
+              },
+              "type": "range"
+            },
+            {
+              "options": {
+                "from": 5,
+                "to": 999,
+                "result": {
+                  "color": "#e74c3c",
+                  "index": 2,
+                  "text": "CRITICO"
+                }
+              },
+              "type": "range"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#27ae60",
+                "value": null
+              },
+              {
+                "color": "#f39c12",
+                "value": 1
+              },
+              {
+                "color": "#e74c3c",
+                "value": 5
+              }
+            ]
+          }
+        }
+      },
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value"
+      }
+    },
+    {
+      "id": 402,
+      "type": "stat",
+      "title": "CAMBIOS",
+      "gridPos": {
+        "h": 6,
+        "w": 6,
+        "x": 6,
+        "y": 16
+      },
+      "datasource": {
+        "type": "influxdb",
+        "uid": "InfluxDB-Sentinel"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "InfluxDB-Sentinel"
+          },
+          "query": "from(bucket: \"sentinel_metrics\")\n  |> range(start: -7d)\n  |> filter(fn: (r) => r._measurement == \"sentinel_scan\")\n  |> filter(fn: (r) => r._field == \"changes\")\n  |> group()\n  |> sort(columns: [\"_time\"], desc: true)\n  |> limit(n: 1)\n  |> keep(columns: [\"_value\"])"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "displayName": "Cambios",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#27ae60",
+                "value": null
+              },
+              {
+                "color": "#f39c12",
+                "value": 1
+              },
+              {
+                "color": "#e74c3c",
+                "value": 10
+              }
+            ]
+          },
+          "unit": "none"
+        }
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value"
+      }
+    },
+    {
+      "id": 403,
+      "type": "gauge",
+      "title": "CONFIANZA IA",
+      "gridPos": {
+        "h": 6,
+        "w": 6,
+        "x": 12,
+        "y": 16
+      },
+      "datasource": {
+        "type": "influxdb",
+        "uid": "InfluxDB-Sentinel"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "InfluxDB-Sentinel"
+          },
+          "query": "from(bucket: \"sentinel_metrics\")\n  |> range(start: -7d)\n  |> filter(fn: (r) => r._measurement == \"sentinel_scan\")\n  |> filter(fn: (r) => r._field == \"confidence\")\n  |> group()\n  |> sort(columns: [\"_time\"], desc: true)\n  |> limit(n: 1)\n  |> keep(columns: [\"_value\"])"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 0,
+          "displayName": "Confianza",
+          "max": 100,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#e74c3c",
+                "value": null
+              },
+              {
+                "color": "#f39c12",
+                "value": 50
+              },
+              {
+                "color": "#27ae60",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "percent"
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "orientation": "auto"
+      }
+    },
+    {
+      "id": 404,
+      "type": "stat",
+      "title": "TESTS EN RIESGO",
+      "gridPos": {
+        "h": 6,
+        "w": 6,
+        "x": 18,
+        "y": 16
+      },
+      "datasource": {
+        "type": "influxdb",
+        "uid": "InfluxDB-Sentinel"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "InfluxDB-Sentinel"
+          },
+          "query": "from(bucket: \"sentinel_metrics\")\n  |> range(start: -7d)\n  |> filter(fn: (r) => r._measurement == \"sentinel_scan\")\n  |> filter(fn: (r) => r._field == \"impacted_tests\")\n  |> group()\n  |> sort(columns: [\"_time\"], desc: true)\n  |> limit(n: 1)\n  |> keep(columns: [\"_value\"])"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "displayName": "Tests",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#27ae60",
+                "value": null
+              },
+              {
+                "color": "#f39c12",
+                "value": 1
+              },
+              {
+                "color": "#e74c3c",
+                "value": 5
+              }
+            ]
+          },
+          "unit": "none"
+        }
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value"
+      }
+    },
+    {
+      "id": 405,
+      "type": "timeseries",
+      "title": "Cambios por Dia (7 dias)",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 22
+      },
+      "datasource": {
+        "type": "influxdb",
+        "uid": "InfluxDB-Sentinel"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "InfluxDB-Sentinel"
+          },
+          "query": "from(bucket: \"sentinel_metrics\")\n  |> range(start: -7d)\n  |> filter(fn: (r) => r._measurement == \"sentinel_scan\")\n  |> filter(fn: (r) => r._field == \"changes\")\n  |> aggregateWindow(every: 1d, fn: sum, createEmpty: false)\n  |> keep(columns: [\"_time\", \"_value\"])"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "bars",
+            "fillOpacity": 80,
+            "lineWidth": 1,
+            "pointSize": 5,
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            }
+          },
+          "displayName": "Cambios",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "none"
+        }
+      },
+      "options": {
+        "legend": {
+          "calcs": [
+            "sum",
+            "mean"
+          ],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      }
+    },
+    {
+      "id": 406,
+      "type": "timeseries",
+      "title": "Confianza IA (7 dias)",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 22
+      },
+      "datasource": {
+        "type": "influxdb",
+        "uid": "InfluxDB-Sentinel"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "InfluxDB-Sentinel"
+          },
+          "query": "from(bucket: \"sentinel_metrics\")\n  |> range(start: -7d)\n  |> filter(fn: (r) => r._measurement == \"sentinel_scan\")\n  |> filter(fn: (r) => r._field == \"confidence\")\n  |> keep(columns: [\"_time\", \"_value\"])"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 20,
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "showPoints": "always",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "area"
+            }
+          },
+          "displayName": "Confianza",
+          "max": 100,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#e74c3c",
+                "value": null
+              },
+              {
+                "color": "#f39c12",
+                "value": 50
+              },
+              {
+                "color": "#27ae60",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "percent"
+        }
+      },
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull",
+            "mean"
+          ],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      }
+    },
+    {
+      "id": 500,
+      "type": "row",
+      "title": "ESTADO DE CADA API",
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 30
+      },
+      "collapsed": false
+    },
+    {
+      "id": 501,
+      "type": "table",
+      "title": "Codigos de Respuesta HTTP por API",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 31
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "qasl_api_status",
+          "format": "table",
+          "instant": true
+        }
+      ],
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "__name__": true,
+              "api_id": true,
+              "auth_type": true,
+              "instance": true,
+              "job": true,
+              "method": true,
+              "priority": true,
+              "environment": true,
+              "project": true
+            },
+            "indexByName": {
+              "api_name": 0,
+              "Value": 1
+            },
+            "renameByName": {
+              "Value": "Codigo HTTP",
+              "api_name": "API"
+            }
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "center",
+            "cellOptions": {
+              "type": "color-background"
+            },
+            "inspect": false
+          },
+          "mappings": [
+            {
+              "options": {
+                "200": {
+                  "color": "#3fb950",
+                  "index": 0,
+                  "text": "200 OK"
+                },
+                "201": {
+                  "color": "#3fb950",
+                  "index": 1,
+                  "text": "201 Created"
+                },
+                "400": {
+                  "color": "#d29922",
+                  "index": 2,
+                  "text": "400 Bad Request"
+                },
+                "401": {
+                  "color": "#d4a72c",
+                  "index": 3,
+                  "text": "401 Unauthorized"
+                },
+                "404": {
+                  "color": "#d4a72c",
+                  "index": 4,
+                  "text": "404 Not Found"
+                },
+                "500": {
+                  "color": "#f85149",
+                  "index": 5,
+                  "text": "500 Server Error"
+                },
+                "502": {
+                  "color": "#f85149",
+                  "index": 6,
+                  "text": "502 Bad Gateway"
+                },
+                "503": {
+                  "color": "#f85149",
+                  "index": 7,
+                  "text": "503 Unavailable"
+                }
+              },
+              "type": "value"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#3fb950",
+                "value": null
+              },
+              {
+                "color": "#d29922",
+                "value": 400
+              },
+              {
+                "color": "#f85149",
+                "value": 500
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "API"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 350
+              },
+              {
+                "id": "custom.align",
+                "value": "left"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Codigo HTTP"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 180
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "show": false
+        },
+        "showHeader": true
+      }
+    },
+    {
+      "id": 502,
+      "type": "bargauge",
+      "title": "Disponibilidad por API (%)",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 31
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "max(qasl_api_uptime_percentage{api_id=\"GET__sigma_frontend\"})",
+          "legendFormat": "SIGMA Frontend",
+          "instant": true
+        },
+        {
+          "refId": "B",
+          "expr": "max(qasl_api_uptime_percentage{api_id=\"POST__selections_query\"})",
+          "legendFormat": "selections/query",
+          "instant": true
+        },
+        {
+          "refId": "C",
+          "expr": "max(qasl_api_uptime_percentage{api_id=\"POST__expedient_query\"})",
+          "legendFormat": "expedient/query",
+          "instant": true
+        },
+        {
+          "refId": "D",
+          "expr": "max(qasl_api_uptime_percentage{api_id=\"POST__inconsistencies_query\"})",
+          "legendFormat": "inconsistencies/query",
+          "instant": true
+        },
+        {
+          "refId": "E",
+          "expr": "max(qasl_api_uptime_percentage{api_id=\"POST__inspection_query\"})",
+          "legendFormat": "inspection/query",
+          "instant": true
+        },
+        {
+          "refId": "F",
+          "expr": "max(qasl_api_uptime_percentage{api_id=\"POST__sade_token\"})",
+          "legendFormat": "SADE Token",
+          "instant": true
+        },
+        {
+          "refId": "G",
+          "expr": "max(qasl_api_uptime_percentage{api_id=\"POST__sade_caratulacion\"})",
+          "legendFormat": "SADE Caratulacion",
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "max": 100,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#f85149",
+                "value": null
+              },
+              {
+                "color": "#d29922",
+                "value": 50
+              },
+              {
+                "color": "#d4a72c",
+                "value": 80
+              },
+              {
+                "color": "#3fb950",
+                "value": 95
+              }
+            ]
+          },
+          "unit": "percent"
+        }
+      },
+      "options": {
+        "displayMode": "lcd",
+        "minVizHeight": 10,
+        "minVizWidth": 0,
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "valueMode": "color"
+      }
+    },
+    {
+      "id": 503,
+      "type": "timeseries",
+      "title": "Latencia por API en el Tiempo",
+      "description": "Evolucion de la latencia de cada endpoint (sin duplicados)",
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 39
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "avg by(api_name) (qasl_api_latency_ms)",
+          "legendFormat": "{{api_name}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 20,
+            "gradientMode": "scheme",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        }
+      },
+      "options": {
+        "legend": {
+          "calcs": [
+            "mean",
+            "last"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      }
+    },
+    {
+      "id": 600,
+      "type": "row",
+      "title": "SEGURIDAD OWASP ZAP (Frontend)",
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 47
+      },
+      "collapsed": false
+    },
+    {
+      "id": 601,
+      "type": "stat",
+      "title": "ESTADO",
+      "gridPos": {
+        "h": 6,
+        "w": 4,
+        "x": 0,
+        "y": 48
+      },
+      "datasource": {
+        "type": "influxdb",
+        "uid": "InfluxDB-Sentinel"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "InfluxDB-Sentinel"
+          },
+          "query": "from(bucket: \"sentinel_metrics\")\n  |> range(start: -7d)\n  |> filter(fn: (r) => r._measurement == \"sentinel_security\")\n  |> filter(fn: (r) => r._field == \"security_status_code\")\n  |> group()\n  |> sort(columns: [\"_time\"], desc: true)\n  |> limit(n: 1)\n  |> keep(columns: [\"_value\"])"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "displayName": "Estado",
+          "mappings": [
+            {
+              "options": {
+                "from": 0,
+                "to": 0,
+                "result": {
+                  "color": "#27ae60",
+                  "index": 0,
+                  "text": "SEGURO"
+                }
+              },
+              "type": "range"
+            },
+            {
+              "options": {
+                "from": 1,
+                "to": 1,
+                "result": {
+                  "color": "#27ae60",
+                  "index": 1,
+                  "text": "ESTABLE"
+                }
+              },
+              "type": "range"
+            },
+            {
+              "options": {
+                "from": 2,
+                "to": 2,
+                "result": {
+                  "color": "#f39c12",
+                  "index": 2,
+                  "text": "ALERTA"
+                }
+              },
+              "type": "range"
+            },
+            {
+              "options": {
+                "from": 3,
+                "to": 999,
+                "result": {
+                  "color": "#e74c3c",
+                  "index": 3,
+                  "text": "CRITICO"
+                }
+              },
+              "type": "range"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#27ae60",
+                "value": null
+              },
+              {
+                "color": "#27ae60",
+                "value": 1
+              },
+              {
+                "color": "#f39c12",
+                "value": 2
+              },
+              {
+                "color": "#e74c3c",
+                "value": 3
+              }
+            ]
+          }
+        }
+      },
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value"
+      }
+    },
+    {
+      "id": 602,
+      "type": "stat",
+      "title": "CRITICAS",
+      "gridPos": {
+        "h": 6,
+        "w": 4,
+        "x": 4,
+        "y": 48
+      },
+      "datasource": {
+        "type": "influxdb",
+        "uid": "InfluxDB-Sentinel"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "InfluxDB-Sentinel"
+          },
+          "query": "from(bucket: \"sentinel_metrics\")\n  |> range(start: -7d)\n  |> filter(fn: (r) => r._measurement == \"sentinel_security\")\n  |> filter(fn: (r) => r._field == \"high\")\n  |> group()\n  |> sort(columns: [\"_time\"], desc: true)\n  |> limit(n: 1)\n  |> keep(columns: [\"_value\"])"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "displayName": "Criticas",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#27ae60",
+                "value": null
+              },
+              {
+                "color": "#e74c3c",
+                "value": 1
+              }
+            ]
+          },
+          "unit": "none"
+        }
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value"
+      }
+    },
+    {
+      "id": 603,
+      "type": "stat",
+      "title": "ALTAS",
+      "gridPos": {
+        "h": 6,
+        "w": 4,
+        "x": 8,
+        "y": 48
+      },
+      "datasource": {
+        "type": "influxdb",
+        "uid": "InfluxDB-Sentinel"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "InfluxDB-Sentinel"
+          },
+          "query": "from(bucket: \"sentinel_metrics\")\n  |> range(start: -7d)\n  |> filter(fn: (r) => r._measurement == \"sentinel_security\")\n  |> filter(fn: (r) => r._field == \"medium\")\n  |> group()\n  |> sort(columns: [\"_time\"], desc: true)\n  |> limit(n: 1)\n  |> keep(columns: [\"_value\"])"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "displayName": "Altas",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#27ae60",
+                "value": null
+              },
+              {
+                "color": "#f39c12",
+                "value": 1
+              },
+              {
+                "color": "#e74c3c",
+                "value": 5
+              }
+            ]
+          },
+          "unit": "none"
+        }
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value"
+      }
+    },
+    {
+      "id": 604,
+      "type": "stat",
+      "title": "MEDIAS",
+      "gridPos": {
+        "h": 6,
+        "w": 4,
+        "x": 12,
+        "y": 48
+      },
+      "datasource": {
+        "type": "influxdb",
+        "uid": "InfluxDB-Sentinel"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "InfluxDB-Sentinel"
+          },
+          "query": "from(bucket: \"sentinel_metrics\")\n  |> range(start: -7d)\n  |> filter(fn: (r) => r._measurement == \"sentinel_security\")\n  |> filter(fn: (r) => r._field == \"low\")\n  |> group()\n  |> sort(columns: [\"_time\"], desc: true)\n  |> limit(n: 1)\n  |> keep(columns: [\"_value\"])"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "displayName": "Medias",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#27ae60",
+                "value": null
+              },
+              {
+                "color": "#f39c12",
+                "value": 1
+              }
+            ]
+          },
+          "unit": "none"
+        }
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value"
+      }
+    },
+    {
+      "id": 605,
+      "type": "stat",
+      "title": "BAJAS",
+      "gridPos": {
+        "h": 6,
+        "w": 4,
+        "x": 16,
+        "y": 48
+      },
+      "datasource": {
+        "type": "influxdb",
+        "uid": "InfluxDB-Sentinel"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "InfluxDB-Sentinel"
+          },
+          "query": "from(bucket: \"sentinel_metrics\")\n  |> range(start: -7d)\n  |> filter(fn: (r) => r._measurement == \"sentinel_security\")\n  |> filter(fn: (r) => r._field == \"informational\")\n  |> group()\n  |> sort(columns: [\"_time\"], desc: true)\n  |> limit(n: 1)\n  |> keep(columns: [\"_value\"])"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "displayName": "Bajas",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#7f8c8d",
+                "value": null
+              }
+            ]
+          },
+          "unit": "none"
+        }
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value"
+      }
+    },
+    {
+      "id": 606,
+      "type": "stat",
+      "title": "TOTAL",
+      "gridPos": {
+        "h": 6,
+        "w": 4,
+        "x": 20,
+        "y": 48
+      },
+      "datasource": {
+        "type": "influxdb",
+        "uid": "InfluxDB-Sentinel"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "InfluxDB-Sentinel"
+          },
+          "query": "from(bucket: \"sentinel_metrics\")\n  |> range(start: -7d)\n  |> filter(fn: (r) => r._measurement == \"sentinel_security\")\n  |> filter(fn: (r) => r._field == \"total\")\n  |> group()\n  |> sort(columns: [\"_time\"], desc: true)\n  |> limit(n: 1)\n  |> keep(columns: [\"_value\"])"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "displayName": "Total",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#3498db",
+                "value": null
+              }
+            ]
+          },
+          "unit": "none"
+        }
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value"
+      }
+    },
+    {
+      "id": 607,
+      "type": "timeseries",
+      "title": "Vulnerabilidades (7 dias)",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 54
+      },
+      "datasource": {
+        "type": "influxdb",
+        "uid": "InfluxDB-Sentinel"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "InfluxDB-Sentinel"
+          },
+          "query": "from(bucket: \"sentinel_metrics\")\n  |> range(start: -7d)\n  |> filter(fn: (r) => r._measurement == \"sentinel_security\")\n  |> filter(fn: (r) => r._field == \"high\" or r._field == \"medium\" or r._field == \"low\")\n  |> keep(columns: [\"_time\", \"_value\", \"_field\"])"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 20,
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "showPoints": "always",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*high.*"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#e74c3c",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "displayName",
+                "value": "Criticas"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*medium.*"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#f39c12",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "displayName",
+                "value": "Altas"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*low.*"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#27ae60",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "displayName",
+                "value": "Medias"
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull",
+            "mean"
+          ],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      }
+    },
+    {
+      "id": 608,
+      "type": "table",
+      "title": "Top Vulnerabilidades",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 54
+      },
+      "datasource": {
+        "type": "influxdb",
+        "uid": "InfluxDB-Sentinel"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "InfluxDB-Sentinel"
+          },
+          "query": "from(bucket: \"sentinel_metrics\")\n  |> range(start: -7d)\n  |> filter(fn: (r) => r._measurement == \"sentinel_security_alert\")\n  |> pivot(rowKey: [\"_time\", \"risk\", \"alert_name\"], columnKey: [\"_field\"], valueColumn: \"_value\")\n  |> group()\n  |> sort(columns: [\"_time\"], desc: true)\n  |> limit(n: 10)\n  |> keep(columns: [\"risk\", \"alert_name\", \"instances\"])"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "left",
+            "cellOptions": {
+              "type": "color-text"
+            },
+            "filterable": false,
+            "inspect": false
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#7f8c8d",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "risk"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Severidad"
+              },
+              {
+                "id": "custom.width",
+                "value": 100
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "options": {
+                      "High": {
+                        "color": "#e74c3c",
+                        "index": 0,
+                        "text": "CRITICA"
+                      }
+                    },
+                    "type": "value"
+                  },
+                  {
+                    "options": {
+                      "Medium": {
+                        "color": "#f39c12",
+                        "index": 1,
+                        "text": "ALTA"
+                      }
+                    },
+                    "type": "value"
+                  },
+                  {
+                    "options": {
+                      "Low": {
+                        "color": "#27ae60",
+                        "index": 2,
+                        "text": "MEDIA"
+                      }
+                    },
+                    "type": "value"
+                  },
+                  {
+                    "options": {
+                      "Informational": {
+                        "color": "#7f8c8d",
+                        "index": 3,
+                        "text": "BAJA"
+                      }
+                    },
+                    "type": "value"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "alert_name"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Vulnerabilidad"
+              },
+              {
+                "id": "custom.width",
+                "value": 350
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "instances"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Casos"
+              },
+              {
+                "id": "custom.width",
+                "value": 80
+              },
+              {
+                "id": "custom.align",
+                "value": "center"
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "cellHeight": "md",
+        "footer": {
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "Casos"
+          }
+        ]
+      }
+    },
+    {
+      "id": 700,
+      "type": "row",
+      "title": "ENTERPRISE: SECURITY, ML & COMPLIANCE",
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 62
+      },
+      "collapsed": false
+    },
+    {
+      "id": 701,
+      "type": "gauge",
+      "title": "Security Score",
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 0,
+        "y": 63
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "qasl_security_score",
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "max": 100,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#f85149",
+                "value": null
+              },
+              {
+                "color": "#d29922",
+                "value": 50
+              },
+              {
+                "color": "#d4a72c",
+                "value": 70
+              },
+              {
+                "color": "#3fb950",
+                "value": 85
+              }
+            ]
+          },
+          "unit": "percent"
+        }
+      },
+      "options": {
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      }
+    },
+    {
+      "id": 702,
+      "type": "stat",
+      "title": "Anomalias ML",
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 6,
+        "y": 63
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "qasl_anomaly_detected_total",
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#3fb950",
+                "value": null
+              },
+              {
+                "color": "#d4a72c",
+                "value": 1
+              },
+              {
+                "color": "#d29922",
+                "value": 5
+              },
+              {
+                "color": "#f85149",
+                "value": 10
+              }
+            ]
+          },
+          "unit": "none"
+        }
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      }
+    },
+    {
+      "id": 703,
+      "type": "stat",
+      "title": "Fallos Predichos 24h",
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 12,
+        "y": 63
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "qasl_prediction_failures_24h",
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#3fb950",
+                "value": null
+              },
+              {
+                "color": "#d4a72c",
+                "value": 1
+              },
+              {
+                "color": "#d29922",
+                "value": 3
+              },
+              {
+                "color": "#f85149",
+                "value": 5
+              }
+            ]
+          },
+          "unit": "none"
+        }
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      }
+    },
+    {
+      "id": 704,
+      "type": "gauge",
+      "title": "Confianza ML",
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 16,
+        "y": 63
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "qasl_prediction_confidence",
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "max": 100,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#f85149",
+                "value": null
+              },
+              {
+                "color": "#d29922",
+                "value": 50
+              },
+              {
+                "color": "#d4a72c",
+                "value": 70
+              },
+              {
+                "color": "#3fb950",
+                "value": 85
+              }
+            ]
+          },
+          "unit": "percent"
+        }
+      },
+      "options": {
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      }
+    },
+    {
+      "id": 705,
+      "type": "stat",
+      "title": "APIs en Riesgo",
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 20,
+        "y": 63
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "qasl_prediction_apis_at_risk",
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#3fb950",
+                "value": null
+              },
+              {
+                "color": "#d4a72c",
+                "value": 1
+              },
+              {
+                "color": "#d29922",
+                "value": 2
+              },
+              {
+                "color": "#f85149",
+                "value": 3
+              }
+            ]
+          },
+          "unit": "none"
+        }
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      }
+    },
+    {
+      "id": 706,
+      "type": "bargauge",
+      "title": "Cumplimiento Normativo",
+      "gridPos": {
+        "h": 5,
+        "w": 12,
+        "x": 0,
+        "y": 68
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "max(qasl_compliance_score{framework=\"SOC2\"})",
+          "legendFormat": "SOC2",
+          "instant": true
+        },
+        {
+          "refId": "B",
+          "expr": "max(qasl_compliance_score{framework=\"ISO27001\"})",
+          "legendFormat": "ISO27001",
+          "instant": true
+        },
+        {
+          "refId": "C",
+          "expr": "max(qasl_compliance_score{framework=\"PCI-DSS\"})",
+          "legendFormat": "PCI-DSS",
+          "instant": true
+        },
+        {
+          "refId": "D",
+          "expr": "max(qasl_compliance_score{framework=\"HIPAA\"})",
+          "legendFormat": "HIPAA",
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "max": 100,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#f85149",
+                "value": null
+              },
+              {
+                "color": "#d29922",
+                "value": 50
+              },
+              {
+                "color": "#d4a72c",
+                "value": 70
+              },
+              {
+                "color": "#3fb950",
+                "value": 85
+              }
+            ]
+          },
+          "unit": "percent"
+        }
+      },
+      "options": {
+        "displayMode": "lcd",
+        "minVizHeight": 10,
+        "minVizWidth": 0,
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "valueMode": "color"
+      }
+    },
+    {
+      "id": 707,
+      "type": "stat",
+      "title": "Problemas CORS",
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 12,
+        "y": 68
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "qasl_connectivity_issues_total{type=\"cors\"}",
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#3fb950",
+                "value": null
+              },
+              {
+                "color": "#d4a72c",
+                "value": 1
+              },
+              {
+                "color": "#f85149",
+                "value": 5
+              }
+            ]
+          },
+          "unit": "none"
+        }
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      }
+    },
+    {
+      "id": 708,
+      "type": "stat",
+      "title": "APIs Conectadas",
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 16,
+        "y": 68
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "qasl_connectivity_healthy",
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "#3fb950",
+            "mode": "fixed"
+          },
+          "unit": "none"
+        }
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      }
+    },
+    {
+      "id": 709,
+      "type": "stat",
+      "title": "SSL (dias)",
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 20,
+        "y": 68
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "qasl_connectivity_ssl_days",
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#f85149",
+                "value": null
+              },
+              {
+                "color": "#d29922",
+                "value": 15
+              },
+              {
+                "color": "#3fb950",
+                "value": 30
+              }
+            ]
+          },
+          "unit": "none",
+          "displayName": "Dias"
+        }
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      }
+    },
+    {
+      "id": 800,
+      "type": "row",
+      "title": "TENDENCIAS HISTORICAS",
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 73
+      },
+      "collapsed": false
+    },
+    {
+      "id": 801,
+      "type": "timeseries",
+      "title": "Tendencia de Disponibilidad",
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 0,
+        "y": 74
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "max(qasl_uptime_percentage)",
+          "legendFormat": "Disponibilidad Global"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 20,
+            "gradientMode": "scheme",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "percent"
+        }
+      },
+      "options": {
+        "legend": {
+          "calcs": [
+            "mean",
+            "last"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      }
+    },
+    {
+      "id": 802,
+      "type": "timeseries",
+      "title": "Historial Escaneos Frontend",
+      "description": "Cambios DOM y tiempo de ejecucion de cada escaneo SIGMA-SENTINEL",
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 12,
+        "y": 74
+      },
+      "datasource": {
+        "type": "influxdb",
+        "uid": "InfluxDB-Sentinel"
+      },
+      "targets": [
+        {
+          "refId": "Cambios",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "InfluxDB-Sentinel"
+          },
+          "query": "from(bucket: \"sentinel_metrics\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sentinel_scan\")\n  |> filter(fn: (r) => r._field == \"changes\")\n  |> keep(columns: [\"_time\", \"_value\"])"
+        },
+        {
+          "refId": "Tiempo",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "InfluxDB-Sentinel"
+          },
+          "query": "from(bucket: \"sentinel_metrics\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sentinel_scan\")\n  |> filter(fn: (r) => r._field == \"execution_time\")\n  |> keep(columns: [\"_time\", \"_value\"])"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 15,
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "pointSize": 6,
+            "showPoints": "always",
+            "spanNulls": false
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "Cambios"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#667eea",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.axisPlacement",
+                "value": "left"
+              },
+              {
+                "id": "custom.axisLabel",
+                "value": "Cambios DOM"
+              },
+              {
+                "id": "displayName",
+                "value": "Cambios DOM"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "Tiempo"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#f59e0b",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.axisPlacement",
+                "value": "right"
+              },
+              {
+                "id": "custom.axisLabel",
+                "value": "Tiempo (seg)"
+              },
+              {
+                "id": "unit",
+                "value": "s"
+              },
+              {
+                "id": "displayName",
+                "value": "Tiempo Ejecucion (s)"
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max",
+            "lastNotNull"
+          ]
+        }
+      }
+    },
+    {
+      "id": 850,
+      "type": "row",
+      "title": "SEGURIDAD IA / LLM (NVIDIA GARAK)",
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 81
+      },
+      "collapsed": true,
+      "panels": [
+        {
+          "id": 851,
+          "type": "stat",
+          "title": "Estado",
+          "gridPos": {
+            "h": 4,
+            "w": 3,
+            "x": 0,
+            "y": 82
+          },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "garak_in_progress",
+              "instant": true
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [
+                {
+                  "options": {
+                    "0": {
+                      "color": "#73bf69",
+                      "index": 0,
+                      "text": "COMPLETADO"
+                    },
+                    "1": {
+                      "color": "#ff9830",
+                      "index": 1,
+                      "text": "EN PROGRESO"
+                    }
+                  },
+                  "type": "value"
+                }
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "#73bf69",
+                    "value": null
+                  }
+                ]
+              },
+              "noValue": "SIN DATOS"
+            }
+          },
+          "options": {
+            "colorMode": "background",
+            "graphMode": "none",
+            "justifyMode": "center",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "textMode": "auto"
+          }
+        },
+        {
+          "id": 852,
+          "type": "stat",
+          "title": "Modelo Bajo Prueba",
+          "description": "Modelo de IA siendo evaluado",
+          "gridPos": {
+            "h": 4,
+            "w": 5,
+            "x": 3,
+            "y": 82
+          },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "garak_model_info{model!=\"\"}",
+              "legendFormat": "{{model}}",
+              "instant": true
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "#00d4ff",
+                    "value": null
+                  }
+                ]
+              },
+              "noValue": "Esperando test..."
+            }
+          },
+          "options": {
+            "colorMode": "background",
+            "graphMode": "none",
+            "justifyMode": "center",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "textMode": "name"
+          }
+        },
+        {
+          "id": 853,
+          "type": "stat",
+          "title": "Nivel DEFCON",
+          "description": "DC-1=Critico, DC-2=Alto, DC-3=Medio, DC-4=Bajo, DC-5=Seguro",
+          "gridPos": {
+            "h": 4,
+            "w": 4,
+            "x": 8,
+            "y": 82
+          },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "garak_defcon_level",
+              "instant": true
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [
+                {
+                  "options": {
+                    "1": {
+                      "color": "#f2495c",
+                      "index": 0,
+                      "text": "DC-1 CRITICO"
+                    },
+                    "2": {
+                      "color": "#ff6b6b",
+                      "index": 1,
+                      "text": "DC-2 ALTO"
+                    },
+                    "3": {
+                      "color": "#ff9830",
+                      "index": 2,
+                      "text": "DC-3 MEDIO"
+                    },
+                    "4": {
+                      "color": "#fade2a",
+                      "index": 3,
+                      "text": "DC-4 BAJO"
+                    },
+                    "5": {
+                      "color": "#73bf69",
+                      "index": 4,
+                      "text": "DC-5 SEGURO"
+                    }
+                  },
+                  "type": "value"
+                }
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "#73bf69",
+                    "value": null
+                  }
+                ]
+              },
+              "noValue": "DC-5"
+            }
+          },
+          "options": {
+            "colorMode": "background",
+            "graphMode": "none",
+            "justifyMode": "center",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "textMode": "auto"
+          }
+        },
+        {
+          "id": 854,
+          "type": "stat",
+          "title": "Total Probes",
+          "gridPos": {
+            "h": 4,
+            "w": 3,
+            "x": 12,
+            "y": 82
+          },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "garak_probes_total",
+              "instant": true
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "#6ed0e0",
+                    "value": null
+                  }
+                ]
+              },
+              "noValue": "0"
+            }
+          },
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "center",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "textMode": "auto"
+          }
+        },
+        {
+          "id": 855,
+          "type": "stat",
+          "title": "Resistidos",
+          "description": "Probes que el modelo resistio correctamente",
+          "gridPos": {
+            "h": 4,
+            "w": 3,
+            "x": 15,
+            "y": 82
+          },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "garak_probes_passed",
+              "instant": true
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "#73bf69",
+                    "value": null
+                  }
+                ]
+              },
+              "noValue": "0"
+            }
+          },
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "center",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "textMode": "auto"
+          }
+        },
+        {
+          "id": 856,
+          "type": "stat",
+          "title": "Vulnerados",
+          "description": "Ataques que lograron vulnerar el modelo",
+          "gridPos": {
+            "h": 4,
+            "w": 3,
+            "x": 18,
+            "y": 82
+          },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "garak_probes_failed",
+              "instant": true
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "#f2495c",
+                    "value": null
+                  }
+                ]
+              },
+              "noValue": "0"
+            }
+          },
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "center",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "textMode": "auto"
+          }
+        },
+        {
+          "id": 857,
+          "type": "stat",
+          "title": "Duracion",
+          "gridPos": {
+            "h": 4,
+            "w": 3,
+            "x": 21,
+            "y": 82
+          },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "garak_elapsed_seconds",
+              "instant": true
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "#b877d9",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "s",
+              "noValue": "0s"
+            }
+          },
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "center",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "textMode": "auto"
+          }
+        },
+        {
+          "id": 858,
+          "type": "bargauge",
+          "title": "Tasa de Resistencia por Probe (%)",
+          "description": "Porcentaje de ataques resistidos por tipo de probe",
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 86
+          },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "garak_probe_pass_rate",
+              "legendFormat": "{{probe}}",
+              "instant": true
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "max": 100,
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "#f2495c",
+                    "value": null
+                  },
+                  {
+                    "color": "#ff9830",
+                    "value": 40
+                  },
+                  {
+                    "color": "#73bf69",
+                    "value": 70
+                  }
+                ]
+              },
+              "unit": "percent",
+              "noValue": "0%"
+            }
+          },
+          "options": {
+            "displayMode": "gradient",
+            "minVizHeight": 10,
+            "minVizWidth": 0,
+            "orientation": "horizontal",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showUnfilled": true,
+            "valueMode": "color"
+          }
+        },
+        {
+          "id": 859,
+          "type": "timeseries",
+          "title": "Progreso del Test en Tiempo Real",
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 86
+          },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "garak_probes_total",
+              "legendFormat": "Total"
+            },
+            {
+              "refId": "B",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "garak_probes_passed",
+              "legendFormat": "Resistidos"
+            },
+            {
+              "refId": "C",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "garak_probes_failed",
+              "legendFormat": "Vulnerados"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "drawStyle": "line",
+                "fillOpacity": 20,
+                "gradientMode": "opacity",
+                "lineInterpolation": "smooth",
+                "lineWidth": 2,
+                "pointSize": 5,
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Total"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "#6ed0e0",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Resistidos"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "#73bf69",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Vulnerados"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "#f2495c",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          }
+        },
+        {
+          "id": 860,
+          "type": "stat",
+          "title": "Vulnerabilidades por Probe",
+          "description": "Probes que encontraron vulnerabilidades",
+          "gridPos": {
+            "h": 5,
+            "w": 5,
+            "x": 0,
+            "y": 94
+          },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "garak_probe_failed > 0",
+              "legendFormat": "{{probe}}",
+              "instant": true
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "#f2495c",
+                    "value": null
+                  }
+                ]
+              },
+              "noValue": "0"
+            }
+          },
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "horizontal",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "textMode": "value_and_name"
+          }
+        },
+        {
+          "id": 861,
+          "type": "stat",
+          "title": "Resistidos por Probe",
+          "description": "Probes que el modelo resistio",
+          "gridPos": {
+            "h": 5,
+            "w": 5,
+            "x": 5,
+            "y": 94
+          },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "garak_probe_passed > 0",
+              "legendFormat": "{{probe}}",
+              "instant": true
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "#73bf69",
+                    "value": null
+                  }
+                ]
+              },
+              "noValue": "0"
+            }
+          },
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "horizontal",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "textMode": "value_and_name"
+          }
+        },
+        {
+          "id": 862,
+          "type": "gauge",
+          "title": "Tasa Resistencia Global",
+          "description": "Porcentaje de ataques que el modelo resistio",
+          "gridPos": {
+            "h": 5,
+            "w": 4,
+            "x": 10,
+            "y": 94
+          },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "garak_pass_rate",
+              "instant": true
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "max": 100,
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "#f2495c",
+                    "value": null
+                  },
+                  {
+                    "color": "#ff9830",
+                    "value": 50
+                  },
+                  {
+                    "color": "#73bf69",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "percent",
+              "noValue": "0%"
+            }
+          },
+          "options": {
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showThresholdLabels": false,
+            "showThresholdMarkers": true
+          }
+        },
+        {
+          "id": 863,
+          "type": "gauge",
+          "title": "Tasa Vulnerabilidad Global",
+          "description": "Porcentaje de ataques exitosos contra el modelo",
+          "gridPos": {
+            "h": 5,
+            "w": 4,
+            "x": 14,
+            "y": 94
+          },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "garak_vulnerability_rate",
+              "instant": true
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "max": 100,
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "#73bf69",
+                    "value": null
+                  },
+                  {
+                    "color": "#ff9830",
+                    "value": 20
+                  },
+                  {
+                    "color": "#f2495c",
+                    "value": 50
+                  }
+                ]
+              },
+              "unit": "percent",
+              "noValue": "0%"
+            }
+          },
+          "options": {
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showThresholdLabels": false,
+            "showThresholdMarkers": true
+          }
+        },
+        {
+          "id": 864,
+          "type": "piechart",
+          "title": "Distribucion",
+          "gridPos": {
+            "h": 5,
+            "w": 6,
+            "x": 18,
+            "y": 94
+          },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "garak_probes_passed",
+              "legendFormat": "Resistidos",
+              "instant": true
+            },
+            {
+              "refId": "B",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "garak_probes_failed",
+              "legendFormat": "Vulnerados",
+              "instant": true
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Resistidos"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "#73bf69",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Vulnerados"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "#f2495c",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "options": {
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "pieType": "donut",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          }
+        },
+        {
+          "id": 865,
+          "type": "bargauge",
+          "title": "Resistencia por Categoria (%)",
+          "description": "Tasa de resistencia por categoria de ataque (dan, encoding, jailbreak, etc.)",
+          "gridPos": {
+            "h": 5,
+            "w": 12,
+            "x": 0,
+            "y": 99
+          },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "garak_category_pass_rate",
+              "legendFormat": "{{category}}",
+              "instant": true
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "max": 100,
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "#f2495c",
+                    "value": null
+                  },
+                  {
+                    "color": "#ff9830",
+                    "value": 40
+                  },
+                  {
+                    "color": "#73bf69",
+                    "value": 70
+                  }
+                ]
+              },
+              "unit": "percent",
+              "noValue": "0%"
+            }
+          },
+          "options": {
+            "displayMode": "lcd",
+            "minVizHeight": 10,
+            "minVizWidth": 0,
+            "orientation": "horizontal",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showUnfilled": true,
+            "valueMode": "color"
+          }
+        },
+        {
+          "id": 866,
+          "type": "text",
+          "title": "",
+          "gridPos": {
+            "h": 5,
+            "w": 12,
+            "x": 12,
+            "y": 99
+          },
+          "options": {
+            "mode": "html",
+            "content": "<div style=\"padding: 12px; background: #1a1a2e; border-radius: 8px; height: 100%;\">\n  <div style=\"color: #00d4ff; font-size: 14px; font-weight: bold; margin-bottom: 10px; border-bottom: 1px solid #333; padding-bottom: 6px;\">NIVELES DEFCON - SEVERIDAD (NVIDIA Garak)</div>\n  <div style=\"display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; font-size: 11px; text-align: center;\">\n    <div style=\"padding: 8px 4px; background: #f2495c; border-radius: 4px;\"><div style=\"font-weight: bold; color: white;\">DC-1</div><div style=\"color: #ffd9d9;\">CRITICO</div><div style=\"color: #ffb3b3; font-size: 9px;\">Jailbreak, XSS, Malware</div></div>\n    <div style=\"padding: 8px 4px; background: #ff6b6b; border-radius: 4px;\"><div style=\"font-weight: bold; color: white;\">DC-2</div><div style=\"color: #ffd9d9;\">ALTO</div><div style=\"color: #ffb3b3; font-size: 9px;\">Prompt Inject, Data Leak</div></div>\n    <div style=\"padding: 8px 4px; background: #ff9830; border-radius: 4px;\"><div style=\"font-weight: bold; color: white;\">DC-3</div><div style=\"color: #fff3cd;\">MEDIO</div><div style=\"color: #ffe5b3; font-size: 9px;\">DAN, Encoding</div></div>\n    <div style=\"padding: 8px 4px; background: #fade2a; border-radius: 4px;\"><div style=\"font-weight: bold; color: #333;\">DC-4</div><div style=\"color: #555;\">BAJO</div><div style=\"color: #666; font-size: 9px;\">Hallucination</div></div>\n    <div style=\"padding: 8px 4px; background: #73bf69; border-radius: 4px;\"><div style=\"font-weight: bold; color: white;\">DC-5</div><div style=\"color: #d9f2d9;\">SEGURO</div><div style=\"color: #b3e6b3; font-size: 9px;\">Sin vulnerabilidades</div></div>\n  </div>\n  <div style=\"margin-top: 10px; color: #666; font-size: 10px; text-align: center;\">Powered by NVIDIA Garak v0.14 | Generative AI Red-teaming & Assessment Kit</div>\n</div>"
+          },
+          "transparent": true
+        }
+      ]
+    },
+    {
+      "id": 870,
+      "type": "row",
+      "title": "QASL-MOBILE - TESTING MOBILE CON IA",
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 83
+      },
+      "collapsed": false
+    },
+    {
+      "id": 871,
+      "type": "gauge",
+      "title": "Pass Rate",
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 0,
+        "y": 84
+      },
+      "datasource": {
+        "type": "influxdb",
+        "uid": "InfluxDB-Mobile"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "rawQuery": true,
+          "query": "SELECT (sum(\"passed\") / (sum(\"passed\") + sum(\"failed\"))) * 100 FROM \"test_execution\" WHERE $timeFilter",
+          "resultFormat": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "value": null,
+                "color": "#e74c3c"
+              },
+              {
+                "value": 50,
+                "color": "#f39c12"
+              },
+              {
+                "value": 80,
+                "color": "#27ae60"
+              }
+            ]
+          }
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      }
+    },
+    {
+      "id": 872,
+      "type": "stat",
+      "title": "Total Tests",
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 4,
+        "y": 84
+      },
+      "datasource": {
+        "type": "influxdb",
+        "uid": "InfluxDB-Mobile"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "rawQuery": true,
+          "query": "SELECT count(\"duration_ms\") AS \"total\" FROM \"test_execution\" WHERE $timeFilter",
+          "resultFormat": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#6c5ce7"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "value": null,
+                "color": "#6c5ce7"
+              }
+            ]
+          }
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "colorMode": "value",
+        "textMode": "auto"
+      }
+    },
+    {
+      "id": 873,
+      "type": "stat",
+      "title": "Passed",
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 8,
+        "y": 84
+      },
+      "datasource": {
+        "type": "influxdb",
+        "uid": "InfluxDB-Mobile"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "rawQuery": true,
+          "query": "SELECT sum(\"passed\") AS \"passed\" FROM \"test_execution\" WHERE $timeFilter",
+          "resultFormat": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#27ae60"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "value": null,
+                "color": "#27ae60"
+              }
+            ]
+          }
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "colorMode": "value",
+        "textMode": "auto"
+      }
+    },
+    {
+      "id": 874,
+      "type": "stat",
+      "title": "Failed",
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 12,
+        "y": 84
+      },
+      "datasource": {
+        "type": "influxdb",
+        "uid": "InfluxDB-Mobile"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "rawQuery": true,
+          "query": "SELECT sum(\"failed\") AS \"failed\" FROM \"test_execution\" WHERE $timeFilter",
+          "resultFormat": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "value": null,
+                "color": "#27ae60"
+              },
+              {
+                "value": 1,
+                "color": "#f39c12"
+              },
+              {
+                "value": 5,
+                "color": "#e74c3c"
+              }
+            ]
+          }
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "colorMode": "value",
+        "textMode": "auto"
+      }
+    },
+    {
+      "id": 875,
+      "type": "stat",
+      "title": "Avg Duration",
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 16,
+        "y": 84
+      },
+      "datasource": {
+        "type": "influxdb",
+        "uid": "InfluxDB-Mobile"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "rawQuery": true,
+          "query": "SELECT mean(\"duration_ms\") / 1000 AS \"duration\" FROM \"test_execution\" WHERE $timeFilter",
+          "resultFormat": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#ff9830"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "value": null,
+                "color": "#ff9830"
+              }
+            ]
+          }
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "colorMode": "value",
+        "textMode": "auto"
+      }
+    },
+    {
+      "id": 876,
+      "type": "stat",
+      "title": "Screenshots",
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 20,
+        "y": 84
+      },
+      "datasource": {
+        "type": "influxdb",
+        "uid": "InfluxDB-Mobile"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "rawQuery": true,
+          "query": "SELECT sum(\"screenshots_count\") AS \"screenshots\" FROM \"test_execution\" WHERE $timeFilter",
+          "resultFormat": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#d2a8ff"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "value": null,
+                "color": "#d2a8ff"
+              }
+            ]
+          }
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "colorMode": "value",
+        "textMode": "auto"
+      }
+    },
+    {
+      "id": 877,
+      "type": "text",
+      "title": "Video - Ultima Ejecucion Mobile",
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 88
+      },
+      "options": {
+        "mode": "html",
+        "content": "<div style=\"background: #0d1117; border-radius: 8px; padding: 12px; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 1px solid #30363d;\">\n  <video src=\"http://localhost:8766/test-execution.mp4\" controls autoplay muted loop style=\"width: 100%; max-height: 230px; border-radius: 6px; background: #000;\"></video>\n  <p style=\"color: #8b949e; font-size: 10px; margin-top: 8px;\">Grabacion automatica - Ejecucion de tests en dispositivo Android</p>\n</div>"
+      },
+      "transparent": true
+    },
+    {
+      "id": 878,
+      "type": "text",
+      "title": "",
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 88
+      },
+      "options": {
+        "mode": "html",
+        "content": "<div style=\"background: #161b22; border-radius: 8px; padding: 20px; height: 100%; border: 1px solid #30363d;\">\n  <div style=\"display: flex; align-items: center; gap: 12px; margin-bottom: 15px;\">\n    <span style=\"font-size: 28px;\">&#128241;</span>\n    <div>\n      <h2 style=\"color: #d2a8ff; margin: 0; font-size: 18px; font-weight: 700; letter-spacing: 2px;\">QASL-MOBILE</h2>\n      <p style=\"color: #8b949e; margin: 2px 0 0; font-size: 11px;\">Shift-Left Mobile Testing with AI</p>\n    </div>\n  </div>\n  <div style=\"display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px;\">\n    <div style=\"background: #0d1117; border-radius: 6px; padding: 8px; text-align: center; border: 1px solid #30363d;\">\n      <div style=\"color: #8b949e; font-size: 9px; text-transform: uppercase;\">Motor</div>\n      <div style=\"color: #f0f6fc; font-size: 13px; font-weight: 600;\">Maestro</div>\n    </div>\n    <div style=\"background: #0d1117; border-radius: 6px; padding: 8px; text-align: center; border: 1px solid #30363d;\">\n      <div style=\"color: #8b949e; font-size: 9px; text-transform: uppercase;\">Plataforma</div>\n      <div style=\"color: #f0f6fc; font-size: 13px; font-weight: 600;\">Android</div>\n    </div>\n  </div>\n  <a href=\"http://localhost:3004\" target=\"_blank\" style=\"display: block; background: linear-gradient(135deg, #238636, #2ea043); color: white; padding: 10px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 13px; text-align: center; margin-bottom: 10px;\">&#128202; Abrir Dashboard Grafana Mobile</a>\n  <a href=\"http://localhost:8765/viewer\" target=\"_blank\" style=\"display: block; background: linear-gradient(135deg, #1f6feb, #388bfd); color: white; padding: 10px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 13px; text-align: center; margin-bottom: 10px;\">&#128241; Ver Streaming en Vivo</a>\n  <div style=\"padding: 8px; background: #0d1117; border-radius: 6px; border: 1px solid #30363d;\">\n    <div style=\"color: #8b949e; font-size: 10px; margin-bottom: 4px;\">&#129302; Comandos INGRID:</div>\n    <div style=\"color: #7ee787; font-size: 10px; font-family: monospace; line-height: 1.8;\">\"levanta mobile\" | \"grafana mobile\"<br>\"estado mobile\" | \"apaga mobile\"<br>\"reporte mobile\" (email)</div>\n  </div>\n</div>"
+      },
+      "transparent": true
+    },
+    {
+      "id": 879,
+      "type": "table",
+      "title": "Ejecuciones Recientes",
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 88
+      },
+      "datasource": {
+        "type": "influxdb",
+        "uid": "InfluxDB-Mobile"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "rawQuery": true,
+          "query": "SELECT \"status\", \"duration_ms\" / 1000 AS \"duration_s\", \"passed\", \"failed\", \"screenshots_count\" AS \"screenshots\" FROM \"test_execution\" WHERE $timeFilter ORDER BY time DESC LIMIT 10",
+          "resultFormat": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "status"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-text"
+                }
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "type": "value",
+                    "options": {
+                      "passed": {
+                        "text": "PASSED",
+                        "color": "green"
+                      },
+                      "failed": {
+                        "text": "FAILED",
+                        "color": "red"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "duration_s"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "s"
+              },
+              {
+                "id": "decimals",
+                "value": 1
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Time"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "dateTimeFromNow"
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "sortBy": [
+          {
+            "displayName": "Time",
+            "desc": true
+          }
+        ]
+      }
+    },
+    {
+      "id": 900,
+      "type": "text",
+      "title": "",
+      "gridPos": {
+        "h": 2,
+        "w": 24,
+        "x": 0,
+        "y": 96
+      },
+      "options": {
+        "mode": "html",
+        "content": "<div style=\"text-align: center; padding: 10px; background: #0d1117; border-top: 1px solid #30363d;\">\n  <p style=\"margin: 0; color: #8b949e; font-size: 12px;\">QASL SENTINEL v3.0 Unificado | Monitoreo E2E: Backend + Frontend + Seguridad + IA/LLM + Mobile</p>\n  <p style=\"margin: 5px 0 0; color: #58a6ff; font-size: 11px;\">Creado por: ELYER GREGORIO MALDONADO - Lider Tecnico QA</p>\n</div>"
+      },
+      "transparent": true
+    }
+  ],
+  "links": [],
+  "liveNow": false,
+  "version": 3,
+  "weekStart": "monday"
+}

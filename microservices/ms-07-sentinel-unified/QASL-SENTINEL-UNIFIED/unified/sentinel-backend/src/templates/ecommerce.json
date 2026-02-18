@@ -1,0 +1,129 @@
+{
+  "name": "E-commerce Platform",
+  "description": "Template for typical e-commerce APIs monitoring",
+  "industry": "retail",
+  "apis": [
+    {
+      "id": "GET__products",
+      "name": "GET /products",
+      "url": "{{BASE_URL}}/products",
+      "method": "GET",
+      "priority": "normal",
+      "threshold_ms": 500,
+      "category": "catalog",
+      "headers": {
+        "Accept": "application/json"
+      }
+    },
+    {
+      "id": "GET__products_id",
+      "name": "GET /products/:id",
+      "url": "{{BASE_URL}}/products/1",
+      "method": "GET",
+      "priority": "high",
+      "threshold_ms": 300,
+      "category": "catalog"
+    },
+    {
+      "id": "POST__products_search",
+      "name": "POST /products/search",
+      "url": "{{BASE_URL}}/products/search",
+      "method": "POST",
+      "priority": "high",
+      "threshold_ms": 400,
+      "category": "catalog",
+      "body": {
+        "query": "test",
+        "limit": 10
+      }
+    },
+    {
+      "id": "GET__cart",
+      "name": "GET /cart",
+      "url": "{{BASE_URL}}/cart",
+      "method": "GET",
+      "priority": "high",
+      "threshold_ms": 300,
+      "category": "shopping",
+      "requiresAuth": true
+    },
+    {
+      "id": "POST__cart_items",
+      "name": "POST /cart/items",
+      "url": "{{BASE_URL}}/cart/items",
+      "method": "POST",
+      "priority": "critical",
+      "threshold_ms": 200,
+      "category": "shopping",
+      "requiresAuth": true,
+      "body": {
+        "product_id": "123",
+        "quantity": 1
+      }
+    },
+    {
+      "id": "DELETE__cart_items_id",
+      "name": "DELETE /cart/items/:id",
+      "url": "{{BASE_URL}}/cart/items/1",
+      "method": "DELETE",
+      "priority": "normal",
+      "threshold_ms": 300,
+      "category": "shopping",
+      "requiresAuth": true
+    },
+    {
+      "id": "POST__orders",
+      "name": "POST /orders",
+      "url": "{{BASE_URL}}/orders",
+      "method": "POST",
+      "priority": "critical",
+      "threshold_ms": 500,
+      "category": "checkout",
+      "requiresAuth": true,
+      "body": {
+        "cart_id": "123",
+        "shipping_address": {}
+      }
+    },
+    {
+      "id": "POST__payments",
+      "name": "POST /payments",
+      "url": "{{BASE_URL}}/payments",
+      "method": "POST",
+      "priority": "critical",
+      "threshold_ms": 1000,
+      "category": "checkout",
+      "requiresAuth": true,
+      "body": {
+        "order_id": "123",
+        "payment_method": "credit_card"
+      }
+    },
+    {
+      "id": "GET__orders_tracking",
+      "name": "GET /orders/:id/tracking",
+      "url": "{{BASE_URL}}/orders/123/tracking",
+      "method": "GET",
+      "priority": "normal",
+      "threshold_ms": 400,
+      "category": "fulfillment",
+      "requiresAuth": true
+    }
+  ],
+  "alerts": {
+    "critical_apis": ["POST /orders", "POST /payments", "POST /cart/items"],
+    "notify_immediately": true,
+    "escalation_minutes": 5,
+    "channels": ["email", "slack"]
+  },
+  "sla": {
+    "availability": 99.5,
+    "latency_p95": 800,
+    "latency_p99": 1500
+  },
+  "monitoring": {
+    "check_interval_seconds": 60,
+    "retry_attempts": 3,
+    "timeout_ms": 5000
+  }
+}

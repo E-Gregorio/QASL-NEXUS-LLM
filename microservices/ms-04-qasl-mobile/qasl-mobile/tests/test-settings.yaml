@@ -1,0 +1,26 @@
+# ═══════════════════════════════════════════════════════════════════════════
+# 🧪 Test Settings - Navegación en Configuración
+# ═══════════════════════════════════════════════════════════════════════════
+# QASL-MOBILE Demo Flow
+# TC-SETTINGS-001 | EPIC-DEMO | HU-001
+# ═══════════════════════════════════════════════════════════════════════════
+
+appId: com.android.settings
+---
+# Step 1: Abrir app de Settings
+- launchApp:
+    clearState: true
+
+# Step 2: Esperar que cargue
+- assertVisible: "Search settings"
+
+# Step 3: Scroll down
+- scroll
+
+# Step 4: Scroll up
+- swipe:
+    start: "50%,30%"
+    end: "50%,70%"
+
+# NOTA: Screenshots automáticos por QASL-MOBILE Runner
+# Se guardan en screenshots/ (before y after del test)

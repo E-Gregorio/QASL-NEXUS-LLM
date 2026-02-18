@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  orquestador-llm:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: qasl-orquestador-llm
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      PORT: 8000
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      GOOGLE_AI_API_KEY: ${GOOGLE_AI_API_KEY}
+      DB_HOST: qasl-nexus-db
+      DB_PORT: 5432
+      DB_NAME: qasl_nexus
+      DB_USER: qasl_admin
+      DB_PASSWORD: qasl_nexus_2026
+    networks:
+      - qasl-network
+
+networks:
+  qasl-network:
+    name: qasl-nexus-network
+    external: true

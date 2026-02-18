@@ -1,0 +1,181 @@
+Página de inicio
+Primary navigation
+Proyecto
+Q
+qa-shiftleft-methodology-suite
+
+Pinned
+Tickets
+0
+Solicitudes de fusión
+0
+
+Manage
+
+Plan
+
+Code
+
+Build
+
+Secure
+
+Implementación
+
+Operate
+
+Monitor
+
+Analyze
+
+Ajustes
+Elyer Maldonado
+qa-shiftleft-methodology-suite
+qa-shiftleft-methodology-suite
+informesFormatoHtml
+03_Planes
+plantillaUS_ISQTB.html
+plantillaUS_ISQTB.html
+Avatar de Elyer Maldonado
+Initial commit: EPIDATA QA Framework - Shift Left Testing Methodology Suite
+Elyer Maldonado authored hace 1 mes
+184cbd8a
+plantillaUS_ISQTB.html
+4,90 KiB
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Historia de Usuario — Plantilla Completa</title>
+<style>
+  body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; }
+  .us-container { max-width: 900px; margin: 0 auto; }
+  .us-header { background: #5C85D6; color: white; padding: 15px; text-align: center; font-weight: bold; font-size: 20px; margin-bottom: 0; }
+  .us-table { width: 100%; border-collapse: collapse; margin: 0; }
+  .us-table td { border: 1px solid #000; padding: 12px; vertical-align: top; }
+  .label { background: #5C85D6; color: white; font-weight: bold; width: 200px; }
+  .content { background: white; }
+  .link-ref { color: #2196F3; text-decoration: underline; font-style: italic; }
+  .description-format { margin: 5px 0; }
+  .scenario-title { font-weight: bold; margin-top: 10px; }
+  .scenario-content { margin-bottom: 10px; }
+  .bullet-point { margin-left: 0; margin-bottom: 5px; }
+  .out-scope-item { margin-bottom: 10px; }
+</style>
+</head>
+<body>
+<div class="us-container">
+  <div class="us-header">HISTORIA DE USUARIO</div>
+  <table class="us-table">
+    <tr>
+      <td class="label">ID</td>
+      <td class="content">US_XX</td>
+    </tr>
+    <tr>
+      <td class="label">Nombre</td>
+      <td class="content">Título descriptivo de la historia</td>
+    </tr>
+    <tr>
+      <td class="label">Épica</td>
+      <td class="content">
+        EP-XXX: Nombre de la Épica<br>
+        <span class="link-ref">Enlace a documentación de la Épica</span>
+      </td>
+    </tr>
+    <tr>
+      <td class="label">Prioridad</td>
+      <td class="content">Alta / Media / Baja</td>
+    </tr>
+    <tr>
+      <td class="label">Estado</td>
+      <td class="content">En análisis / Refinada / Lista para desarrollo / En desarrollo / Cerrada</td>
+    </tr>
+    <tr>
+      <td class="label">Descripción</td>
+      <td class="content">
+        <div class="description-format"><strong>Como</strong> [rol o actor]</div>
+        <div class="description-format"><strong>Quiero</strong> [objetivo o funcionalidad]</div>
+        <div class="description-format"><strong>Para</strong> [beneficio o resultado de negocio]</div>
+      </td>
+    </tr>
+    <tr>
+      <td class="label">Usuarios / Roles</td>
+      <td class="content">Roles o perfiles involucrados en la historia</td>
+    </tr>
+    <tr>
+      <td class="label">Reglas de Negocio</td>
+      <td class="content">
+        BR1: …<br>
+        BR2: …<br>
+        <span class="link-ref">CU-XXX | Casos de uso relacionados</span>
+      </td>
+    </tr>
+    <tr>
+      <td class="label">Precondiciones</td>
+      <td class="content">
+        • Sistemas o servicios que deben estar disponibles<br>
+        • Datos de prueba necesarios<br>
+        • Configuración del entorno
+      </td>
+    </tr>
+    <tr>
+      <td class="label">Dependencias</td>
+      <td class="content">
+        • Otras historias, épicas o componentes que deben completarse primero<br>
+        • APIs o servicios externos
+      </td>
+    </tr>
+    <tr>
+  <td class="label">Estimaciones</td>
+  <td class="content">
+    Story Points (SP): ____<br>
+    Valor (V 1–3): ____<br>
+    Costo (C 1–3): ____<br>
+    Probabilidad (P 1–3): ____<br>
+    Impacto (I 1–3): ____<br>
+    <strong>Riesgo (R) = P × I = ____ × ____ = ____</strong><br>
+    <strong>Total VCR = V + C + R = ____ + ____ + ____ = ____</strong><br>
+    <em>Política:</em> si <strong>VCR ≥ 9</strong> → Deuda técnica (automatizar y pasa a regresión); si es menor → Pruebas manuales.
+  </td>
+</tr>
+    <tr>
+      <td class="label">Escenarios de Prueba (Criterios de Aceptación)</td>
+      <td class="content">
+        <div class="scenario-title">E1: [Escenario 1]</div>
+        <div class="scenario-content">Descripción detallada del flujo y resultado esperado.</div>
+        <div class="scenario-title">E2: [Escenario 2]</div>
+        <div class="scenario-content">Descripción detallada del flujo y resultado esperado.</div>
+      </td>
+    </tr>
+    <tr>
+      <td class="label">Dentro del Alcance</td>
+      <td class="content">
+        <div class="bullet-point">• Funcionalidades incluidas</div>
+        <div class="bullet-point">• Reglas cubiertas</div>
+      </td>
+    </tr>
+    <tr>
+      <td class="label">Fuera del Alcance</td>
+      <td class="content">
+        <div class="out-scope-item">• Funcionalidades explícitamente excluidas<br>
+        * Cubiertas por: <span class="link-ref">US_XX</span></div>
+      </td>
+    </tr>
+    <tr>
+      <td class="label">Referencias</td>
+      <td class="content">
+        <span class="link-ref">Documento de Requerimientos</span><br>
+        <span class="link-ref">Casos de Uso asociados</span><br>
+        <span class="link-ref">Reglamentos o Normas aplicables</span>
+      </td>
+    </tr>
+    <tr>
+      <td class="label">Notas / Comentarios</td>
+      <td class="content">
+        Observaciones relevantes, decisiones de diseño, acuerdos del equipo, etc.
+      </td>
+    </tr>
+  </table>
+</div>
+</body>
+</html>

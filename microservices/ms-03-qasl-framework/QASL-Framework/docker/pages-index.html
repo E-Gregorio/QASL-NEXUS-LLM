@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIGMA QA - Reportes</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #fff;
+            padding: 40px 20px;
+        }
+        .container { max-width: 800px; margin: 0 auto; }
+        h1 { text-align: center; font-size: 2.5rem; margin-bottom: 10px; color: #00d4ff; }
+        .subtitle { text-align: center; color: #888; margin-bottom: 40px; }
+        .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 30px;
+            text-decoration: none;
+            color: #fff;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .card:hover { transform: translateY(-5px); background: rgba(255,255,255,0.1); border-color: #00d4ff; }
+        .card-icon { font-size: 3rem; margin-bottom: 15px; }
+        .card-title { font-size: 1.3rem; font-weight: bold; margin-bottom: 10px; }
+        .card-desc { color: #aaa; font-size: 0.9rem; }
+        .e2e { border-left: 4px solid #4ade80; }
+        .api { border-left: 4px solid #60a5fa; }
+        .footer { text-align: center; margin-top: 40px; color: #666; font-size: 0.85rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>SIGMA QA - Reportes</h1>
+        <p class="subtitle">EPIDATA Consulting | Proyecto SIGMA | Lider Tecnico: Elyer Maldonado</p>
+        <div class="cards">
+            <a href="allure/index.html" class="card e2e">
+                <div class="card-icon">E2E</div>
+                <div class="card-title">E2E Tests (Allure)</div>
+                <div class="card-desc">Pruebas end-to-end con Playwright. Screenshots, videos y trazabilidad.</div>
+            </a>
+            <a href="api/" class="card api">
+                <div class="card-icon">API</div>
+                <div class="card-title">API Tests (Newman)</div>
+                <div class="card-desc">Pruebas de API con Newman. Validacion de endpoints.</div>
+            </a>
+        </div>
+        <p class="footer">EPIDATA - Proyecto SIGMA | TeamQA</p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,479 @@
+{
+  "annotations": {
+    "list": []
+  },
+  "description": "QASL-MOBILE - Professional Mobile Testing Dashboard | By Elyer Gregorio Maldonado",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "liveNow": true,
+  "panels": [
+    {
+      "gridPos": { "h": 3, "w": 24, "x": 0, "y": 0 },
+      "id": 100,
+      "options": {
+        "code": { "language": "plaintext", "showLineNumbers": false },
+        "content": "<div style=\"display: flex; align-items: center; justify-content: space-between; padding: 15px 25px; background: linear-gradient(135deg, #1e3a5f 0%, #0d1b2a 100%); border-radius: 12px; border: 1px solid #3d5a80; box-shadow: 0 4px 15px rgba(0,0,0,0.3);\">\n  <div style=\"display: flex; align-items: center; gap: 20px;\">\n    <div style=\"width: 50px; height: 50px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 2px 10px rgba(102,126,234,0.4);\">M</div>\n    <div>\n      <h1 style=\"margin: 0; font-size: 28px; color: #ffffff; font-weight: 700; letter-spacing: 1px;\">QASL-MOBILE</h1>\n      <p style=\"margin: 4px 0 0 0; color: #98c1d9; font-size: 13px; font-weight: 400;\">Shift-Left Mobile Testing Framework with AI Validation</p>\n    </div>\n  </div>\n  <div style=\"text-align: right;\">\n    <p style=\"margin: 0; font-size: 16px; font-weight: 600; color: #ffffff;\">Elyer Gregorio Maldonado</p>\n    <p style=\"margin: 4px 0 0 0; font-size: 12px; color: #98c1d9;\">Lider Tecnico QA</p>\n    <p style=\"margin: 6px 0 0 0; font-size: 11px; color: #667eea;\">Powered by Maestro + INGRID AI</p>\n  </div>\n</div>",
+        "mode": "html"
+      },
+      "title": "",
+      "transparent": true,
+      "type": "text"
+    },
+    {
+      "datasource": { "type": "influxdb", "uid": "influxdb-qasl" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "#F2495C", "value": null },
+              { "color": "#FF9830", "value": 70 },
+              { "color": "#73BF69", "value": 90 }
+            ]
+          },
+          "unit": "percent",
+          "min": 0,
+          "max": 100
+        }
+      },
+      "gridPos": { "h": 6, "w": 5, "x": 0, "y": 3 },
+      "id": 1,
+      "options": {
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      },
+      "targets": [
+        {
+          "alias": "Pass Rate",
+          "query": "SELECT (sum(\"passed\") / (sum(\"passed\") + sum(\"failed\") + 0.0001)) * 100 as \"pass_rate\" FROM \"test_execution\" WHERE $timeFilter",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "Pass Rate",
+      "type": "gauge"
+    },
+    {
+      "datasource": { "type": "influxdb", "uid": "influxdb-qasl" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "fixedColor": "#6C63FF", "mode": "fixed" },
+          "mappings": [],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "#6C63FF", "value": null }] }
+        }
+      },
+      "gridPos": { "h": 3, "w": 4, "x": 5, "y": 3 },
+      "id": 2,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["sum"], "fields": "", "values": false },
+        "textMode": "value_and_name"
+      },
+      "targets": [
+        {
+          "alias": "Total Tests",
+          "query": "SELECT count(\"duration_ms\") FROM \"test_execution\" WHERE $timeFilter",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "Total Tests",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "influxdb", "uid": "influxdb-qasl" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "fixedColor": "#73BF69", "mode": "fixed" },
+          "mappings": [],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "#73BF69", "value": null }] }
+        }
+      },
+      "gridPos": { "h": 3, "w": 3, "x": 9, "y": 3 },
+      "id": 3,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["sum"], "fields": "", "values": false },
+        "textMode": "value_and_name"
+      },
+      "targets": [
+        {
+          "alias": "Passed",
+          "query": "SELECT sum(\"passed\") FROM \"test_execution\" WHERE $timeFilter",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "Passed",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "influxdb", "uid": "influxdb-qasl" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "fixedColor": "#F2495C", "mode": "fixed" },
+          "mappings": [],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "#F2495C", "value": null }] }
+        }
+      },
+      "gridPos": { "h": 3, "w": 3, "x": 12, "y": 3 },
+      "id": 4,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["sum"], "fields": "", "values": false },
+        "textMode": "value_and_name"
+      },
+      "targets": [
+        {
+          "alias": "Failed",
+          "query": "SELECT sum(\"failed\") FROM \"test_execution\" WHERE $timeFilter",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "Failed",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "influxdb", "uid": "influxdb-qasl" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "fixedColor": "#FF9830", "mode": "fixed" },
+          "mappings": [],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "#FF9830", "value": null }] },
+          "unit": "ms"
+        }
+      },
+      "gridPos": { "h": 3, "w": 3, "x": 15, "y": 3 },
+      "id": 5,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["mean"], "fields": "", "values": false },
+        "textMode": "value_and_name"
+      },
+      "targets": [
+        {
+          "alias": "Avg Duration",
+          "query": "SELECT mean(\"duration_ms\") FROM \"test_execution\" WHERE $timeFilter",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "Avg Duration",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "influxdb", "uid": "influxdb-qasl" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "#F2495C", "value": null },
+              { "color": "#FF9830", "value": 60 },
+              { "color": "#73BF69", "value": 80 }
+            ]
+          },
+          "unit": "percent"
+        }
+      },
+      "gridPos": { "h": 3, "w": 4, "x": 5, "y": 6 },
+      "id": 6,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "value_and_name"
+      },
+      "targets": [
+        {
+          "alias": "Selector Confidence",
+          "query": "SELECT mean(\"selector_confidence\") FROM \"test_execution\" WHERE $timeFilter",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "Selector Confidence",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "influxdb", "uid": "influxdb-qasl" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "fixedColor": "#8F3BB8", "mode": "fixed" },
+          "mappings": [],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "#8F3BB8", "value": null }] }
+        }
+      },
+      "gridPos": { "h": 3, "w": 9, "x": 9, "y": 6 },
+      "id": 7,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["sum"], "fields": "", "values": false },
+        "textMode": "value_and_name"
+      },
+      "targets": [
+        {
+          "alias": "Screenshots",
+          "query": "SELECT sum(\"screenshots_count\") FROM \"test_execution\" WHERE $timeFilter",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "Screenshots Captured",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "influxdb", "uid": "influxdb-qasl" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "Duration",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 25,
+            "gradientMode": "opacity",
+            "hideFrom": { "legend": false, "tooltip": false, "viz": false },
+            "lineInterpolation": "smooth",
+            "lineWidth": 3,
+            "pointSize": 8,
+            "scaleDistribution": { "type": "linear" },
+            "showPoints": "always",
+            "spanNulls": false,
+            "stacking": { "group": "A", "mode": "none" },
+            "thresholdsStyle": { "mode": "off" }
+          },
+          "mappings": [],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }] },
+          "unit": "ms"
+        },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "Duration" }, "properties": [{ "id": "color", "value": { "fixedColor": "#667eea", "mode": "fixed" } }] }
+        ]
+      },
+      "gridPos": { "h": 8, "w": 9, "x": 0, "y": 9 },
+      "id": 9,
+      "options": {
+        "legend": { "calcs": ["mean", "max", "min"], "displayMode": "table", "placement": "bottom", "showLegend": true },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "targets": [
+        {
+          "alias": "Duration",
+          "query": "SELECT \"duration_ms\" FROM \"test_execution\" WHERE $timeFilter",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "Test Duration Over Time",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "influxdb", "uid": "influxdb-qasl" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "hideFrom": { "legend": false, "tooltip": false, "viz": false },
+            "lineWidth": 1,
+            "scaleDistribution": { "type": "linear" },
+            "thresholdsStyle": { "mode": "off" }
+          },
+          "mappings": [],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }] }
+        },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "Passed" }, "properties": [{ "id": "color", "value": { "fixedColor": "#73BF69", "mode": "fixed" } }] },
+          { "matcher": { "id": "byName", "options": "Failed" }, "properties": [{ "id": "color", "value": { "fixedColor": "#F2495C", "mode": "fixed" } }] }
+        ]
+      },
+      "gridPos": { "h": 8, "w": 9, "x": 9, "y": 9 },
+      "id": 10,
+      "options": {
+        "barRadius": 0.2,
+        "barWidth": 0.7,
+        "groupWidth": 0.7,
+        "legend": { "calcs": ["sum"], "displayMode": "table", "placement": "bottom", "showLegend": true },
+        "orientation": "auto",
+        "showValue": "always",
+        "stacking": "normal",
+        "tooltip": { "mode": "multi", "sort": "none" },
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 0
+      },
+      "targets": [
+        {
+          "alias": "Passed",
+          "query": "SELECT sum(\"passed\") FROM \"test_execution\" WHERE $timeFilter GROUP BY time(1h) fill(0)",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series"
+        },
+        {
+          "alias": "Failed",
+          "query": "SELECT sum(\"failed\") FROM \"test_execution\" WHERE $timeFilter GROUP BY time(1h) fill(0)",
+          "rawQuery": true,
+          "refId": "B",
+          "resultFormat": "time_series"
+        }
+      ],
+      "title": "Test Results Distribution",
+      "type": "barchart"
+    },
+    {
+      "gridPos": { "h": 14, "w": 6, "x": 18, "y": 3 },
+      "id": 12,
+      "options": {
+        "code": { "language": "plaintext", "showLineNumbers": false },
+        "content": "<div style=\"display: flex; flex-direction: column; align-items: center; height: 100%; background: linear-gradient(135deg, #0d1b2a 0%, #1b2838 100%); border-radius: 10px; padding: 10px; border: 1px solid #3d5a80;\">\n  <div style=\"margin-bottom: 8px; display: flex; align-items: center; gap: 8px;\">\n    <span style=\"font-size: 14px; font-weight: 600; color: #667eea;\">Device Stream</span>\n    <span style=\"background: #73BF69; color: #000; padding: 3px 8px; border-radius: 10px; font-size: 10px; font-weight: 700;\">LIVE</span>\n  </div>\n  <a href=\"http://localhost:8765/viewer\" target=\"_blank\" style=\"flex: 1; display: flex; align-items: center; justify-content: center;\">\n    <img src=\"http://localhost:8765/frame\" style=\"max-height: 100%; width: auto; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.5);\" alt=\"Device\" />\n  </a>\n  <p style=\"margin-top: 8px; font-size: 10px; color: #98c1d9;\">Click para pantalla completa</p>\n</div>",
+        "mode": "html"
+      },
+      "title": "",
+      "transparent": true,
+      "type": "text"
+    },
+    {
+      "datasource": { "type": "influxdb", "uid": "influxdb-qasl" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "custom": {
+            "align": "auto",
+            "cellOptions": { "type": "auto" },
+            "inspect": false
+          },
+          "mappings": [
+            { "options": { "passed": { "color": "green", "index": 0, "text": "PASSED" } }, "type": "value" },
+            { "options": { "failed": { "color": "red", "index": 1, "text": "FAILED" } }, "type": "value" }
+          ],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }] }
+        },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "time" }, "properties": [{ "id": "displayName", "value": "Time" }, { "id": "custom.width", "value": 180 }] },
+          { "matcher": { "id": "byName", "options": "status" }, "properties": [{ "id": "displayName", "value": "Status" }, { "id": "custom.cellOptions", "value": { "type": "color-text" } }, { "id": "custom.width", "value": 100 }] },
+          { "matcher": { "id": "byName", "options": "duration_ms" }, "properties": [{ "id": "displayName", "value": "Duration" }, { "id": "unit", "value": "ms" }, { "id": "custom.width", "value": 100 }] },
+          { "matcher": { "id": "byName", "options": "test_id" }, "properties": [{ "id": "displayName", "value": "Test ID" }, { "id": "custom.width", "value": 140 }] },
+          { "matcher": { "id": "byName", "options": "device" }, "properties": [{ "id": "displayName", "value": "Device" }, { "id": "custom.width", "value": 180 }] },
+          { "matcher": { "id": "byName", "options": "platform" }, "properties": [{ "id": "displayName", "value": "Platform" }, { "id": "custom.width", "value": 100 }] },
+          { "matcher": { "id": "byName", "options": "screenshots_count" }, "properties": [{ "id": "displayName", "value": "Screenshots" }, { "id": "custom.width", "value": 100 }] }
+        ]
+      },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 17 },
+      "id": 11,
+      "options": {
+        "cellHeight": "sm",
+        "footer": { "countRows": false, "fields": "", "reducer": ["sum"], "show": false },
+        "showHeader": true,
+        "sortBy": [{ "desc": true, "displayName": "Time" }]
+      },
+      "targets": [
+        {
+          "query": "SELECT \"test_id\", \"status\", \"duration_ms\", \"device\", \"platform\", \"screenshots_count\" FROM \"test_execution\" WHERE $timeFilter ORDER BY time DESC LIMIT 20",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "table"
+        }
+      ],
+      "title": "Recent Test Executions",
+      "type": "table"
+    },
+    {
+      "gridPos": { "h": 2, "w": 24, "x": 0, "y": 25 },
+      "id": 99,
+      "options": {
+        "code": { "language": "plaintext", "showLineNumbers": false },
+        "content": "<div style=\"text-align: center; padding: 12px 20px; background: linear-gradient(135deg, #1e3a5f 0%, #0d1b2a 100%); border-radius: 8px; border: 1px solid #3d5a80;\">\n  <span style=\"color: #667eea; font-weight: 600;\">QASL-MOBILE v1.0.0</span>\n  <span style=\"color: #3d5a80; margin: 0 12px;\">|</span>\n  <span style=\"color: #98c1d9;\">Framework: Maestro</span>\n  <span style=\"color: #3d5a80; margin: 0 12px;\">|</span>\n  <span style=\"color: #98c1d9;\">AI Analysis: INGRID (Claude Vision)</span>\n  <span style=\"color: #3d5a80; margin: 0 12px;\">|</span>\n  <span style=\"color: #98c1d9;\">Metrics: InfluxDB</span>\n  <span style=\"color: #3d5a80; margin: 0 12px;\">|</span>\n  <span style=\"color: #98c1d9;\">Reports: Allure</span>\n  <span style=\"color: #3d5a80; margin: 0 12px;\">|</span>\n  <span style=\"color: #667eea; font-weight: 600;\">By Elyer Gregorio Maldonado - Lider Tecnico QA</span>\n</div>",
+        "mode": "html"
+      },
+      "title": "",
+      "transparent": true,
+      "type": "text"
+    }
+  ],
+  "refresh": "5s",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": ["qasl", "mobile", "testing", "maestro", "elyer-maldonado"],
+  "templating": {
+    "list": [
+      {
+        "current": { "selected": false, "text": "All", "value": "$__all" },
+        "datasource": { "type": "influxdb", "uid": "influxdb-qasl" },
+        "definition": "SHOW TAG VALUES FROM \"test_execution\" WITH KEY = \"device\"",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Device",
+        "multi": false,
+        "name": "device",
+        "query": "SHOW TAG VALUES FROM \"test_execution\" WITH KEY = \"device\"",
+        "refresh": 1,
+        "type": "query"
+      },
+      {
+        "current": { "selected": false, "text": "All", "value": "$__all" },
+        "datasource": { "type": "influxdb", "uid": "influxdb-qasl" },
+        "definition": "SHOW TAG VALUES FROM \"test_execution\" WITH KEY = \"platform\"",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Platform",
+        "multi": false,
+        "name": "platform",
+        "query": "SHOW TAG VALUES FROM \"test_execution\" WITH KEY = \"platform\"",
+        "refresh": 1,
+        "type": "query"
+      }
+    ]
+  },
+  "time": { "from": "now-24h", "to": "now" },
+  "timepicker": {
+    "refresh_intervals": ["5s", "10s", "30s", "1m", "5m"]
+  },
+  "timezone": "",
+  "title": "QASL-MOBILE Dashboard",
+  "uid": "qasl-mobile-main",
+  "version": 1
+}

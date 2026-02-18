@@ -1,0 +1,18 @@
+# ═══════════════════════════════════════════════════════════════
+# INGRID - AI TESTING FRAMEWORK
+# Grafana Dashboard Provisioning
+# ═══════════════════════════════════════════════════════════════
+
+apiVersion: 1
+
+providers:
+  - name: 'INGRID Dashboards'
+    orgId: 1
+    folder: 'AI Testing'
+    folderUid: 'ai-testing-folder'
+    type: file
+    disableDeletion: false
+    editable: true
+    updateIntervalSeconds: 10
+    options:
+      path: /var/lib/grafana/dashboards

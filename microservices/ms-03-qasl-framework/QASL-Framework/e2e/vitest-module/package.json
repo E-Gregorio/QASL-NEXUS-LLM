@@ -1,0 +1,66 @@
+{
+  "name": "qa-hu-template",
+  "version": "2.0.0",
+  "description": "QA Automation Template - E2E, API, Unit, Performance, Security Testing",
+  "author": "Elyer Maldonado <elyer.maldonado@epidata.com>",
+  "license": "MIT",
+  "scripts": {
+    "============= UNIT TESTS (Vitest) =============": "",
+    "test:unit": "vitest run",
+    "test:unit:watch": "vitest",
+    "test:unit:ui": "vitest --ui",
+    "test:unit:coverage": "vitest run --coverage",
+    "test:unit:report": "vitest run --reporter=json --outputFile=./reports/unit/results.json",
+    
+    "============= E2E TESTS (Playwright) =============": "",
+    "test:e2e": "playwright test",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:debug": "playwright test --debug",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:report": "playwright show-report",
+    
+    "============= API TESTS (Newman) =============": "",
+    "test:api": "newman run ./api/collections/*.json -r cli,json,htmlextra --reporter-json-export ./reports/api/results.json",
+    
+    "============= PERFORMANCE (K6) =============": "",
+    "test:perf": "k6 run ./performance/scripts/*.js",
+    "test:perf:smoke": "k6 run --vus 1 --duration 10s ./performance/scripts/smoke.js",
+    "test:perf:load": "k6 run --vus 50 --duration 5m ./performance/scripts/load.js",
+    
+    "============= SECURITY (ZAP) =============": "",
+    "test:security": "docker-compose -f docker-compose.yml run zap",
+    
+    "============= ALL TESTS =============": "",
+    "test:all": "npm run test:unit && npm run test:e2e && npm run test:api",
+    "test:ci": "npm run test:unit:coverage && npm run test:e2e -- --reporter=junit",
+    
+    "============= REPORTS =============": "",
+    "report:merge": "node scripts/merge-reports.js",
+    "report:allure": "allure generate ./allure-results -o ./allure-report --clean && allure open",
+    
+    "============= UTILITIES =============": "",
+    "lint": "eslint . --ext .ts",
+    "format": "prettier --write \"**/*.ts\"",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.40.0",
+    "@types/node": "^20.10.0",
+    "@vitest/coverage-v8": "^1.0.0",
+    "@vitest/ui": "^1.0.0",
+    "allure-commandline": "^2.25.0",
+    "allure-playwright": "^2.10.0",
+    "eslint": "^8.55.0",
+    "newman": "^6.0.0",
+    "newman-reporter-htmlextra": "^1.22.0",
+    "prettier": "^3.1.0",
+    "typescript": "^5.3.0",
+    "vitest": "^1.0.0"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

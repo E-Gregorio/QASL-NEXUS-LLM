@@ -1,0 +1,64 @@
+# Dependencies
+node_modules/
+
+# Reports (generated)
+reports/
+allure-results/
+.api-captures/
+
+# Temp files
+.temp-k6/
+.temp-newman/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Environment
+.env
+.env.local
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Test artifacts
+test-results/
+playwright-report/
+
+# Cache files (metrics)
+.e2e-last-results.json
+.api-last-results.json
+.zap-last-results.json
+.k6-last-results.json
+
+# Allure report (generated)
+allure-report/
+
+# Windows
+nul
+*.nul
+
+# Docker volumes
+docker/postgres/data/
+docker/grafana/data/
+docker/influxdb/data/
+
+# Compressed archives
+*.rar
+*.zip
+*.tar.gz
+
+# Sigma analyzer cache
+sigma_analyzer/__pycache__/
+sigma_analyzer/*.pyc

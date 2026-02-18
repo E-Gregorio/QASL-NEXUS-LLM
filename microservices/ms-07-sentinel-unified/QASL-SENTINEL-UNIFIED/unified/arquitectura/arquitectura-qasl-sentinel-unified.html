@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QASL-SENTINEL-UNIFIED v3.0.0 - Arquitectura del Sistema</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            color: #333;
+            padding: 30px;
+        }
+
+        .page-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+            padding: 40px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 25px;
+            border-bottom: 3px solid #1a73e8;
+        }
+        .header h1 {
+            font-size: 28px;
+            color: #1a237e;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+        }
+        .header .subtitle {
+            font-size: 16px;
+            color: #5f6368;
+            margin-bottom: 4px;
+        }
+        .header .version {
+            display: inline-block;
+            background: #1a73e8;
+            color: white;
+            padding: 4px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            margin-top: 8px;
+        }
+        .header .org-line {
+            font-size: 13px;
+            color: #80868b;
+            margin-top: 8px;
+        }
+
+        /* Layer */
+        .layer {
+            margin-bottom: 20px;
+            position: relative;
+        }
+        .layer-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 8px 8px 0 0;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+        .layer-content {
+            border: 2px solid #e0e0e0;
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            padding: 20px;
+            background: #fafbfc;
+        }
+
+        /* Color themes for layers */
+        .layer-targets .layer-title { background: #d32f2f; }
+        .layer-targets .layer-content { border-color: #ef9a9a; }
+
+        .layer-monitors .layer-title { background: #e65100; }
+        .layer-monitors .layer-content { border-color: #ffcc80; }
+
+        .layer-storage .layer-title { background: #1565c0; }
+        .layer-storage .layer-content { border-color: #90caf9; }
+
+        .layer-visualization .layer-title { background: #2e7d32; }
+        .layer-visualization .layer-content { border-color: #a5d6a7; }
+
+        .layer-infra .layer-title { background: #4527a0; }
+        .layer-infra .layer-content { border-color: #b39ddb; }
+
+        .layer-output .layer-title { background: #00695c; }
+        .layer-output .layer-content { border-color: #80cbc4; }
+
+        /* Target sections */
+        .targets-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+        }
+        .target-section {
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .target-section.sigma { border-color: #1a73e8; }
+        .target-section.openai { border-color: #10a37f; }
+
+        .target-header {
+            padding: 10px 16px;
+            font-weight: 700;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .target-section.sigma .target-header {
+            background: #e8f0fe;
+            color: #1a237e;
+            border-bottom: 2px solid #1a73e8;
+        }
+        .target-section.openai .target-header {
+            background: #e6f7f1;
+            color: #064e3b;
+            border-bottom: 2px solid #10a37f;
+        }
+        .target-section.mobile { border-color: #7c3aed; }
+        .target-section.mobile .target-header {
+            background: #f3e8ff;
+            color: #5b21b6;
+            border-bottom: 2px solid #7c3aed;
+        }
+
+        .target-body {
+            padding: 16px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        /* Box component */
+        .box {
+            border: 1.5px solid #d0d5dd;
+            border-radius: 6px;
+            padding: 12px 16px;
+            background: white;
+            text-align: center;
+            min-width: 140px;
+            flex: 1;
+            transition: box-shadow 0.2s;
+        }
+        .box:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .box .box-title {
+            font-weight: 700;
+            font-size: 13px;
+            color: #1a237e;
+            margin-bottom: 4px;
+        }
+        .box .box-detail {
+            font-size: 11px;
+            color: #5f6368;
+            line-height: 1.4;
+        }
+        .box .box-port {
+            display: inline-block;
+            background: #e8f0fe;
+            color: #1a73e8;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 600;
+            margin-top: 6px;
+        }
+        .box .box-port.green {
+            background: #e6f7f1;
+            color: #10a37f;
+        }
+        .box .box-port.orange {
+            background: #fff3e0;
+            color: #e65100;
+        }
+        .box .box-port.purple {
+            background: #f3e5f5;
+            color: #6a1b9a;
+        }
+
+        /* Tag */
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        .tag-sigma { background: #1a73e8; color: white; }
+        .tag-openai { background: #10a37f; color: white; }
+        .tag-both { background: #6a1b9a; color: white; }
+        .tag-mobile { background: #7c3aed; color: white; }
+
+        /* Monitor grid */
+        .monitor-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+        }
+
+        /* Storage grid */
+        .storage-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+        }
+        .storage-box {
+            border: 2px solid #90caf9;
+            border-radius: 8px;
+            overflow: hidden;
+            background: white;
+        }
+        .storage-box .storage-header {
+            background: #e3f2fd;
+            padding: 10px 16px;
+            font-weight: 700;
+            color: #1565c0;
+            font-size: 14px;
+            border-bottom: 1px solid #90caf9;
+        }
+        .storage-box .storage-body {
+            padding: 12px 16px;
+        }
+        .storage-box .storage-body ul {
+            list-style: none;
+            padding: 0;
+        }
+        .storage-box .storage-body li {
+            padding: 3px 0;
+            font-size: 12px;
+            color: #333;
+        }
+        .storage-box .storage-body li::before {
+            content: "← ";
+            color: #1565c0;
+            font-weight: bold;
+        }
+
+        /* Grafana dashboards */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 12px;
+        }
+        .dashboard-card {
+            border: 1.5px solid #a5d6a7;
+            border-radius: 6px;
+            padding: 10px;
+            background: white;
+            text-align: center;
+        }
+        .dashboard-card .dash-name {
+            font-weight: 700;
+            font-size: 12px;
+            color: #1b5e20;
+        }
+        .dashboard-card .dash-source {
+            font-size: 10px;
+            color: #5f6368;
+            margin-top: 2px;
+        }
+
+        /* INGRID section */
+        .ingrid-box {
+            border: 2px solid #ff6f00;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-top: 16px;
+            background: white;
+        }
+        .ingrid-header {
+            background: #fff3e0;
+            padding: 10px 16px;
+            font-weight: 700;
+            color: #e65100;
+            font-size: 14px;
+            border-bottom: 2px solid #ff6f00;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .ingrid-body {
+            padding: 16px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+        .ingrid-feature {
+            border: 1px solid #ffe0b2;
+            border-radius: 6px;
+            padding: 10px;
+            background: #fffbf5;
+            text-align: center;
+        }
+        .ingrid-feature .feat-title {
+            font-weight: 700;
+            font-size: 12px;
+            color: #e65100;
+            margin-bottom: 4px;
+        }
+        .ingrid-feature .feat-detail {
+            font-size: 11px;
+            color: #5f6368;
+        }
+
+        /* Infrastructure */
+        .infra-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 16px;
+        }
+        .infra-section {
+            border: 1.5px solid #b39ddb;
+            border-radius: 8px;
+            overflow: hidden;
+            background: white;
+        }
+        .infra-section .infra-header {
+            background: #ede7f6;
+            padding: 8px 14px;
+            font-weight: 700;
+            color: #4527a0;
+            font-size: 13px;
+            border-bottom: 1px solid #b39ddb;
+        }
+        .infra-section .infra-body {
+            padding: 10px 14px;
+        }
+        .infra-section .infra-body .infra-item {
+            font-size: 12px;
+            padding: 3px 0;
+            color: #333;
+        }
+
+        /* Output */
+        .output-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+        .output-card {
+            border: 2px solid #80cbc4;
+            border-radius: 8px;
+            padding: 16px;
+            background: white;
+            text-align: center;
+        }
+        .output-card .output-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+        .output-card .output-title {
+            font-weight: 700;
+            font-size: 14px;
+            color: #00695c;
+            margin-bottom: 4px;
+        }
+        .output-card .output-detail {
+            font-size: 11px;
+            color: #5f6368;
+            line-height: 1.5;
+        }
+
+        /* Arrows between layers */
+        .arrow-row {
+            text-align: center;
+            padding: 8px 0;
+            color: #9e9e9e;
+            font-size: 20px;
+            letter-spacing: 40px;
+        }
+
+        /* Flow label */
+        .flow-label {
+            text-align: center;
+            font-size: 11px;
+            color: #9e9e9e;
+            font-weight: 600;
+            letter-spacing: 1px;
+            padding: 2px 0;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e0e0e0;
+            text-align: center;
+            color: #80868b;
+            font-size: 12px;
+        }
+        .footer .company {
+            font-size: 14px;
+            font-weight: 600;
+            color: #5f6368;
+            margin-bottom: 4px;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .targets-grid, .storage-grid, .infra-grid { grid-template-columns: 1fr; }
+            .monitor-grid { grid-template-columns: repeat(2, 1fr); }
+            .dashboard-grid { grid-template-columns: repeat(2, 1fr); }
+            .output-grid { grid-template-columns: 1fr; }
+            .ingrid-body { grid-template-columns: 1fr; }
+        }
+
+        /* Print styles */
+        @media print {
+            body { background: white; padding: 10px; }
+            .page-container { box-shadow: none; padding: 20px; }
+            .box:hover { box-shadow: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+
+        <!-- ============ HEADER ============ -->
+        <div class="header">
+            <h1>QASL-SENTINEL-UNIFIED</h1>
+            <div class="subtitle">Sistema de Monitoreo Unificado E2E: Backend APIs + Frontend DOM + Seguridad IA/LLM + Testing Mobile</div>
+            <div class="subtitle">Proyecto SIGMA</div>
+            <span class="version">v3.0.0</span>
+            <div class="org-line">AGIP (Administracion Gubernamental de Ingresos Publicos) &middot; Buenos Aires Ciudad</div>
+            <div class="org-line">Epidata Consulting &middot; Lider Tecnico QA: Elyer Gregorio Maldonado</div>
+        </div>
+
+        <!-- ============ LAYER 1: TARGETS ============ -->
+        <div class="layer layer-targets">
+            <div class="layer-title">&#x1F3AF; Capa 1 &mdash; Targets (Lo que monitoreamos)</div>
+            <div class="layer-content">
+                <div class="targets-grid">
+
+                    <!-- SIGMA -->
+                    <div class="target-section sigma">
+                        <div class="target-header">
+                            <span class="tag tag-sigma">SIGMA</span>
+                            Sistema SIGMA &mdash; AGIP
+                        </div>
+                        <div class="target-body">
+                            <div class="box">
+                                <div class="box-title">APIs Backend</div>
+                                <div class="box-detail">
+                                    7 endpoints criticos<br>
+                                    Token, selections, expedient,<br>
+                                    inconsistencies, inspection,<br>
+                                    caratulacion, SIGMA Frontend
+                                </div>
+                            </div>
+                            <div class="box">
+                                <div class="box-title">Frontend DOM</div>
+                                <div class="box-detail">
+                                    4 paginas monitoreadas<br>
+                                    Dashboard, Alta Inconsistencias,<br>
+                                    Seleccion Candidatos,<br>
+                                    Fiscalizacion
+                                </div>
+                            </div>
+                            <div class="box">
+                                <div class="box-title">Seguridad Web</div>
+                                <div class="box-detail">
+                                    OWASP ZAP Scanner<br>
+                                    Vulnerabilidades web<br>
+                                    XSS, SQL Injection,<br>
+                                    CSRF, Headers
+                                </div>
+                            </div>
+                            <div class="box">
+                                <div class="box-title">Machine Learning</div>
+                                <div class="box-detail">
+                                    Analisis predictivo<br>
+                                    Tendencias SIGMA<br>
+                                    Deteccion anomalias<br>
+                                    Clasificacion
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- OPENAI -->
+                    <div class="target-section openai">
+                        <div class="target-header">
+                            <span class="tag tag-openai">OPENAI</span>
+                            Modelos IA/LLM &mdash; OpenAI
+                        </div>
+                        <div class="target-body">
+                            <div class="box">
+                                <div class="box-title">Modelos IA/LLM</div>
+                                <div class="box-detail">
+                                    GPT-4, GPT-3.5, otros<br>
+                                    Evaluacion de seguridad<br>
+                                    Robustez ante ataques<br>
+                                    Inyeccion de prompts
+                                </div>
+                            </div>
+                            <div class="box">
+                                <div class="box-title">NVIDIA Garak</div>
+                                <div class="box-detail">
+                                    34 detectores de seguridad<br>
+                                    Multiples categorias de ataque<br>
+                                    Probes especializados<br>
+                                    Benchmarks automatizados
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- QASL-MOBILE -->
+                    <div class="target-section mobile">
+                        <div class="target-header">
+                            <span class="tag tag-mobile">MOBILE</span>
+                            QASL-MOBILE &mdash; Canal Satelite
+                        </div>
+                        <div class="target-body">
+                            <div class="box">
+                                <div class="box-title">Testing Mobile con IA</div>
+                                <div class="box-detail">
+                                    Maestro + Android<br>
+                                    27 tests automatizados<br>
+                                    Video MP4 + Streaming<br>
+                                    INGRID (Claude Vision)
+                                </div>
+                            </div>
+                            <div class="box">
+                                <div class="box-title">Metricas</div>
+                                <div class="box-detail">
+                                    InfluxDB :8089<br>
+                                    Pass rate, duration<br>
+                                    Screenshots: 458<br>
+                                    Selector confidence
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="arrow-row">&#x25BC; &#x25BC; &#x25BC; &#x25BC; &#x25BC;</div>
+        <div class="flow-label">RECOLECCION DE DATOS</div>
+
+        <!-- ============ LAYER 2: MONITORS ============ -->
+        <div class="layer layer-monitors">
+            <div class="layer-title">&#x1F50D; Capa 2 &mdash; Plataforma de Monitoreo</div>
+            <div class="layer-content">
+                <div class="monitor-grid">
+                    <div class="box">
+                        <div class="box-title">sentinel-backend</div>
+                        <div class="box-detail">
+                            Node.js<br>
+                            Prometheus Exporter<br>
+                            Monitor de APIs
+                        </div>
+                        <span class="box-port">:9097</span><br>
+                        <span class="tag tag-sigma" style="margin-top:6px">SIGMA</span>
+                    </div>
+                    <div class="box">
+                        <div class="box-title">sentinel-frontend</div>
+                        <div class="box-detail">
+                            Playwright + TypeScript<br>
+                            Guardian DOM<br>
+                            Monitor de paginas
+                        </div>
+                        <span class="box-port green">Playwright</span><br>
+                        <span class="tag tag-sigma" style="margin-top:6px">SIGMA</span>
+                    </div>
+                    <div class="box">
+                        <div class="box-title">OWASP ZAP</div>
+                        <div class="box-detail">
+                            Scanner de seguridad<br>
+                            Vulnerabilidades web<br>
+                            Reportes automaticos
+                        </div>
+                        <span class="box-port orange">Docker</span><br>
+                        <span class="tag tag-sigma" style="margin-top:6px">SIGMA</span>
+                    </div>
+                    <div class="box">
+                        <div class="box-title">Machine Learning</div>
+                        <div class="box-detail">
+                            Analisis predictivo<br>
+                            Deteccion anomalias<br>
+                            Tendencias y patrones
+                        </div>
+                        <span class="box-port purple">ML Engine</span><br>
+                        <span class="tag tag-sigma" style="margin-top:6px">SIGMA</span>
+                    </div>
+                    <div class="box">
+                        <div class="box-title">garak-importer</div>
+                        <div class="box-detail">
+                            JSONL &rarr; Pushgateway<br>
+                            12 metricas Prometheus<br>
+                            Importacion automatica
+                        </div>
+                        <span class="box-port green">:9096</span><br>
+                        <span class="tag tag-openai" style="margin-top:6px">OPENAI</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="arrow-row">&#x25BC; &#x25BC; &#x25BC; &#x25BC; &#x25BC;</div>
+        <div class="flow-label">PERSISTENCIA DE METRICAS</div>
+
+        <!-- ============ LAYER 3: STORAGE ============ -->
+        <div class="layer layer-storage">
+            <div class="layer-title">&#x1F4BE; Capa 3 &mdash; Almacenamiento de Datos</div>
+            <div class="layer-content">
+                <div class="storage-grid">
+                    <div class="storage-box">
+                        <div class="storage-header">Prometheus &nbsp; <span style="font-weight:400;font-size:12px;color:#1976d2;">:9095</span></div>
+                        <div class="storage-body">
+                            <ul>
+                                <li>API metrics <span class="tag tag-sigma" style="font-size:9px">SIGMA</span> (sentinel-backend)</li>
+                                <li>ZAP metrics <span class="tag tag-sigma" style="font-size:9px">SIGMA</span> (OWASP scanner)</li>
+                                <li>ML metrics <span class="tag tag-sigma" style="font-size:9px">SIGMA</span> (Machine Learning)</li>
+                                <li>Garak metrics x12 <span class="tag tag-openai" style="font-size:9px">OPENAI</span> (via Pushgateway :9096)</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="storage-box">
+                        <div class="storage-header">InfluxDB &nbsp; <span style="font-weight:400;font-size:12px;color:#1976d2;">:8088</span></div>
+                        <div class="storage-body">
+                            <ul>
+                                <li>DOM metrics <span class="tag tag-sigma" style="font-size:9px">SIGMA</span> (sentinel-frontend)</li>
+                                <li>Load time por pagina</li>
+                                <li>Errores JS detectados</li>
+                                <li>Screenshots automaticos</li>
+                                <li>Accesibilidad (a11y)</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="storage-box">
+                        <div class="storage-header">InfluxDB-Mobile &nbsp; <span style="font-weight:400;font-size:12px;color:#7c3aed;">:8089</span></div>
+                        <div class="storage-body">
+                            <ul>
+                                <li>test_execution <span class="tag tag-mobile" style="font-size:9px">MOBILE</span> (Canal Satelite)</li>
+                                <li>passed, failed, duration</li>
+                                <li>screenshots, device info</li>
+                                <li>Solo lectura desde Unified</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="arrow-row">&#x25BC; &#x25BC; &#x25BC; &#x25BC; &#x25BC;</div>
+        <div class="flow-label">CONSULTA Y VISUALIZACION</div>
+
+        <!-- ============ LAYER 4: VISUALIZATION ============ -->
+        <div class="layer layer-visualization">
+            <div class="layer-title">&#x1F4CA; Capa 4 &mdash; Visualizacion e Inteligencia</div>
+            <div class="layer-content">
+
+                <!-- Grafana -->
+                <div style="border:2px solid #2e7d32;border-radius:8px;overflow:hidden;background:white;">
+                    <div style="background:#e8f5e9;padding:10px 16px;font-weight:700;color:#1b5e20;font-size:14px;border-bottom:2px solid #2e7d32;display:flex;align-items:center;gap:8px;">
+                        <span style="font-size:18px;">&#x1F4CA;</span>
+                        GRAFANA COMMAND CENTER
+                        <span style="font-weight:400;font-size:12px;color:#388e3c;">:3003</span>
+                        <span style="margin-left:auto;font-size:11px;color:#5f6368;">admin / sentinel2024</span>
+                    </div>
+                    <div class="dashboard-grid" style="padding:12px;">
+                        <div class="dashboard-card">
+                            <div class="dash-name">1. Overview</div>
+                            <div class="dash-source"><span class="tag tag-both" style="font-size:9px">SIGMA + OPENAI</span></div>
+                        </div>
+                        <div class="dashboard-card">
+                            <div class="dash-name">2. APIs Backend</div>
+                            <div class="dash-source"><span class="tag tag-sigma" style="font-size:9px">SIGMA</span></div>
+                        </div>
+                        <div class="dashboard-card">
+                            <div class="dash-name">3. Frontend DOM</div>
+                            <div class="dash-source"><span class="tag tag-sigma" style="font-size:9px">SIGMA</span></div>
+                        </div>
+                        <div class="dashboard-card">
+                            <div class="dash-name">4. OWASP ZAP</div>
+                            <div class="dash-source"><span class="tag tag-sigma" style="font-size:9px">SIGMA</span></div>
+                        </div>
+                        <div class="dashboard-card">
+                            <div class="dash-name">5. NVIDIA Garak</div>
+                            <div class="dash-source"><span class="tag tag-openai" style="font-size:9px">OPENAI</span></div>
+                        </div>
+                        <div class="dashboard-card">
+                            <div class="dash-name">6. Compliance</div>
+                            <div class="dash-source"><span class="tag tag-sigma" style="font-size:9px">SIGMA</span></div>
+                        </div>
+                        <div class="dashboard-card">
+                            <div class="dash-name">7. Trends</div>
+                            <div class="dash-source"><span class="tag tag-both" style="font-size:9px">SIGMA + OPENAI</span></div>
+                        </div>
+                        <div class="dashboard-card">
+                            <div class="dash-name">8. INGRID Chat</div>
+                            <div class="dash-source"><span class="tag tag-both" style="font-size:9px">Widget integrado</span></div>
+                        </div>
+                        <div class="dashboard-card">
+                            <div class="dash-name">9. QASL-MOBILE</div>
+                            <div class="dash-source"><span class="tag tag-mobile" style="font-size:9px">MOBILE</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- INGRID -->
+                <div class="ingrid-box">
+                    <div class="ingrid-header">
+                        <span style="font-size:18px;">&#x1F916;</span>
+                        INGRID CHATBOT &mdash; Asistente de Inteligencia QA
+                        <span style="font-weight:400;font-size:12px;color:#bf360c;">:3100</span>
+                        <span style="margin-left:auto;font-size:11px;color:#5f6368;">Claude Sonnet 4.5</span>
+                    </div>
+                    <div class="ingrid-body">
+                        <div class="ingrid-feature">
+                            <div class="feat-title">RAG Prometheus</div>
+                            <div class="feat-detail">
+                                Consulta APIs, ZAP, Garak<br>
+                                <span class="tag tag-sigma" style="font-size:9px">SIGMA</span>
+                                <span class="tag tag-openai" style="font-size:9px">OPENAI</span>
+                            </div>
+                        </div>
+                        <div class="ingrid-feature">
+                            <div class="feat-title">RAG InfluxDB</div>
+                            <div class="feat-detail">
+                                Consulta Frontend DOM<br>
+                                <span class="tag tag-sigma" style="font-size:9px">SIGMA</span>
+                            </div>
+                        </div>
+                        <div class="ingrid-feature">
+                            <div class="feat-title">Generador PDF</div>
+                            <div class="feat-detail">
+                                5 tipos de reporte<br>
+                                Context-aware
+                            </div>
+                        </div>
+                        <div class="ingrid-feature">
+                            <div class="feat-title">Lenguaje Natural</div>
+                            <div class="feat-detail">
+                                Consultas en espanol<br>
+                                Analisis en tiempo real
+                            </div>
+                        </div>
+                        <div class="ingrid-feature">
+                            <div class="feat-title">Email Automatico</div>
+                            <div class="feat-detail">
+                                Envio de reportes PDF<br>
+                                Asunto context-aware
+                            </div>
+                        </div>
+                        <div class="ingrid-feature">
+                            <div class="feat-title">5 Reportes PDF</div>
+                            <div class="feat-detail">
+                                full | garak | apis<br>
+                                zap | compliance
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="arrow-row">&#x25BC; &#x25BC; &#x25BC; &#x25BC; &#x25BC;</div>
+
+        <!-- ============ LAYER 5: INFRASTRUCTURE ============ -->
+        <div class="layer layer-infra">
+            <div class="layer-title">&#x2699;&#xFE0F; Capa 5 &mdash; Infraestructura</div>
+            <div class="layer-content">
+                <div class="infra-grid">
+                    <div class="infra-section">
+                        <div class="infra-header">Docker Compose</div>
+                        <div class="infra-body">
+                            <div class="infra-item">&#x25B8; Prometheus :9095</div>
+                            <div class="infra-item">&#x25B8; Pushgateway :9096</div>
+                            <div class="infra-item">&#x25B8; InfluxDB :8088</div>
+                            <div class="infra-item">&#x25B8; Grafana :3003</div>
+                            <div class="infra-item">&#x25B8; Video Server :8766</div>
+                        </div>
+                    </div>
+                    <div class="infra-section">
+                        <div class="infra-header">Node.js Services</div>
+                        <div class="infra-body">
+                            <div class="infra-item">&#x25B8; sentinel-backend (API Monitor)</div>
+                            <div class="infra-item">&#x25B8; sentinel-frontend (DOM Monitor)</div>
+                            <div class="infra-item">&#x25B8; qasl-ingrid (Chatbot INGRID)</div>
+                            <div class="infra-item">&#x25B8; garak-importer (Importador)</div>
+                        </div>
+                    </div>
+                    <div class="infra-section">
+                        <div class="infra-header">Automatizacion</div>
+                        <div class="infra-body">
+                            <div class="infra-item">&#x25B8; run-unified.ps1 (9 pasos)</div>
+                            <div class="infra-item">&#x25B8; Arranque con 1 comando</div>
+                            <div class="infra-item">&#x25B8; Auto-import Garak al iniciar</div>
+                            <div class="infra-item">&#x25B8; Verificacion de dependencias</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="arrow-row">&#x25BC; &#x25BC; &#x25BC; &#x25BC; &#x25BC;</div>
+
+        <!-- ============ LAYER 6: OUTPUTS ============ -->
+        <div class="layer layer-output">
+            <div class="layer-title">&#x1F4E4; Capa 6 &mdash; Outputs (Entregables)</div>
+            <div class="layer-content">
+                <div class="output-grid">
+                    <div class="output-card">
+                        <div class="output-icon">&#x1F4CA;</div>
+                        <div class="output-title">Dashboards Real-time</div>
+                        <div class="output-detail">
+                            9 secciones en Grafana<br>
+                            Actualizacion automatica<br>
+                            Alertas configurables<br>
+                            Widget INGRID integrado
+                        </div>
+                    </div>
+                    <div class="output-card">
+                        <div class="output-icon">&#x1F4C4;</div>
+                        <div class="output-title">Reportes PDF Ejecutivos</div>
+                        <div class="output-detail">
+                            5 tipos context-aware<br>
+                            Full, Garak, APIs, ZAP, Compliance<br>
+                            Generados por INGRID<br>
+                            Marca Epidata + AGIP
+                        </div>
+                    </div>
+                    <div class="output-card">
+                        <div class="output-icon">&#x1F4E7;</div>
+                        <div class="output-title">Email Automatico</div>
+                        <div class="output-detail">
+                            Envio desde INGRID<br>
+                            Asunto y cuerpo context-aware<br>
+                            PDF adjunto automatico<br>
+                            Gmail SMTP integrado
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ TECHNOLOGY STACK ============ -->
+        <div style="margin-top:30px;padding:20px;background:#f8f9fa;border-radius:8px;border:1px solid #e0e0e0;">
+            <div style="font-weight:700;font-size:14px;color:#333;margin-bottom:12px;text-align:center;letter-spacing:1px;">STACK TECNOLOGICO</div>
+            <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:8px;">
+                <span style="background:#339933;color:white;padding:4px 12px;border-radius:4px;font-size:11px;font-weight:600;">Node.js</span>
+                <span style="background:#3178c6;color:white;padding:4px 12px;border-radius:4px;font-size:11px;font-weight:600;">TypeScript</span>
+                <span style="background:#2496ed;color:white;padding:4px 12px;border-radius:4px;font-size:11px;font-weight:600;">Docker</span>
+                <span style="background:#e6522c;color:white;padding:4px 12px;border-radius:4px;font-size:11px;font-weight:600;">Prometheus</span>
+                <span style="background:#22adf6;color:white;padding:4px 12px;border-radius:4px;font-size:11px;font-weight:600;">InfluxDB</span>
+                <span style="background:#f46800;color:white;padding:4px 12px;border-radius:4px;font-size:11px;font-weight:600;">Grafana</span>
+                <span style="background:#d97706;color:white;padding:4px 12px;border-radius:4px;font-size:11px;font-weight:600;">Claude AI</span>
+                <span style="background:#45a538;color:white;padding:4px 12px;border-radius:4px;font-size:11px;font-weight:600;">Playwright</span>
+                <span style="background:#76b900;color:white;padding:4px 12px;border-radius:4px;font-size:11px;font-weight:600;">NVIDIA Garak</span>
+                <span style="background:#d32f2f;color:white;padding:4px 12px;border-radius:4px;font-size:11px;font-weight:600;">OWASP ZAP</span>
+                <span style="background:#0070f3;color:white;padding:4px 12px;border-radius:4px;font-size:11px;font-weight:600;">PDFKit</span>
+                <span style="background:#ea4335;color:white;padding:4px 12px;border-radius:4px;font-size:11px;font-weight:600;">Gmail SMTP</span>
+                <span style="background:#7c3aed;color:white;padding:4px 12px;border-radius:4px;font-size:11px;font-weight:600;">Maestro</span>
+                <span style="background:#3ddc84;color:white;padding:4px 12px;border-radius:4px;font-size:11px;font-weight:600;">Android</span>
+                <span style="background:#009688;color:white;padding:4px 12px;border-radius:4px;font-size:11px;font-weight:600;">nginx</span>
+            </div>
+        </div>
+
+        <!-- ============ DATA FLOW DIAGRAM ============ -->
+        <div style="margin-top:30px;padding:20px;background:#f8f9fa;border-radius:8px;border:1px solid #e0e0e0;">
+            <div style="font-weight:700;font-size:14px;color:#333;margin-bottom:16px;text-align:center;letter-spacing:1px;">FLUJO DE DATOS</div>
+            <div style="display:grid;grid-template-columns:1fr;gap:8px;max-width:900px;margin:0 auto;">
+
+                <!-- SIGMA Flow -->
+                <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center;">
+                    <span class="tag tag-sigma" style="font-size:11px;padding:4px 10px;">SIGMA APIs</span>
+                    <span style="color:#9e9e9e;">&rarr;</span>
+                    <span style="background:#fff3e0;border:1px solid #ffcc80;padding:4px 10px;border-radius:4px;font-size:11px;">sentinel-backend</span>
+                    <span style="color:#9e9e9e;">&rarr;</span>
+                    <span style="background:#e3f2fd;border:1px solid #90caf9;padding:4px 10px;border-radius:4px;font-size:11px;">Prometheus :9095</span>
+                    <span style="color:#9e9e9e;">&rarr;</span>
+                    <span style="background:#e8f5e9;border:1px solid #a5d6a7;padding:4px 10px;border-radius:4px;font-size:11px;">Grafana :3003</span>
+                </div>
+
+                <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center;">
+                    <span class="tag tag-sigma" style="font-size:11px;padding:4px 10px;">SIGMA DOM</span>
+                    <span style="color:#9e9e9e;">&rarr;</span>
+                    <span style="background:#fff3e0;border:1px solid #ffcc80;padding:4px 10px;border-radius:4px;font-size:11px;">sentinel-frontend</span>
+                    <span style="color:#9e9e9e;">&rarr;</span>
+                    <span style="background:#e3f2fd;border:1px solid #90caf9;padding:4px 10px;border-radius:4px;font-size:11px;">InfluxDB :8088</span>
+                    <span style="color:#9e9e9e;">&rarr;</span>
+                    <span style="background:#e8f5e9;border:1px solid #a5d6a7;padding:4px 10px;border-radius:4px;font-size:11px;">Grafana :3003</span>
+                </div>
+
+                <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center;">
+                    <span class="tag tag-sigma" style="font-size:11px;padding:4px 10px;">SIGMA Web</span>
+                    <span style="color:#9e9e9e;">&rarr;</span>
+                    <span style="background:#fff3e0;border:1px solid #ffcc80;padding:4px 10px;border-radius:4px;font-size:11px;">OWASP ZAP</span>
+                    <span style="color:#9e9e9e;">&rarr;</span>
+                    <span style="background:#e3f2fd;border:1px solid #90caf9;padding:4px 10px;border-radius:4px;font-size:11px;">Prometheus :9095</span>
+                    <span style="color:#9e9e9e;">&rarr;</span>
+                    <span style="background:#e8f5e9;border:1px solid #a5d6a7;padding:4px 10px;border-radius:4px;font-size:11px;">Grafana :3003</span>
+                </div>
+
+                <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center;">
+                    <span class="tag tag-mobile" style="font-size:11px;padding:4px 10px;">QASL-MOBILE</span>
+                    <span style="color:#9e9e9e;">&rarr;</span>
+                    <span style="background:#f3e8ff;border:1px solid #c4b5fd;padding:4px 10px;border-radius:4px;font-size:11px;">Maestro + Android</span>
+                    <span style="color:#9e9e9e;">&rarr;</span>
+                    <span style="background:#e3f2fd;border:1px solid #90caf9;padding:4px 10px;border-radius:4px;font-size:11px;">InfluxDB :8089</span>
+                    <span style="color:#9e9e9e;">&larr; solo lectura &rarr;</span>
+                    <span style="background:#e8f5e9;border:1px solid #a5d6a7;padding:4px 10px;border-radius:4px;font-size:11px;">Grafana :3003</span>
+                </div>
+
+                <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center;">
+                    <span class="tag tag-openai" style="font-size:11px;padding:4px 10px;">OpenAI LLM</span>
+                    <span style="color:#9e9e9e;">&rarr;</span>
+                    <span style="background:#fff3e0;border:1px solid #ffcc80;padding:4px 10px;border-radius:4px;font-size:11px;">NVIDIA Garak</span>
+                    <span style="color:#9e9e9e;">&rarr;</span>
+                    <span style="background:#e3f2fd;border:1px solid #90caf9;padding:4px 10px;border-radius:4px;font-size:11px;">Pushgateway :9096</span>
+                    <span style="color:#9e9e9e;">&rarr;</span>
+                    <span style="background:#e3f2fd;border:1px solid #90caf9;padding:4px 10px;border-radius:4px;font-size:11px;">Prometheus :9095</span>
+                    <span style="color:#9e9e9e;">&rarr;</span>
+                    <span style="background:#e8f5e9;border:1px solid #a5d6a7;padding:4px 10px;border-radius:4px;font-size:11px;">Grafana :3003</span>
+                </div>
+
+                <!-- INGRID Flow -->
+                <div style="margin-top:8px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center;padding-top:8px;border-top:1px dashed #e0e0e0;">
+                    <span style="background:#fff3e0;border:2px solid #ff6f00;padding:4px 10px;border-radius:4px;font-size:11px;font-weight:700;color:#e65100;">INGRID</span>
+                    <span style="color:#9e9e9e;">&larr; RAG &rarr;</span>
+                    <span style="background:#e3f2fd;border:1px solid #90caf9;padding:4px 10px;border-radius:4px;font-size:11px;">Prometheus</span>
+                    <span style="color:#9e9e9e;">+</span>
+                    <span style="background:#e3f2fd;border:1px solid #90caf9;padding:4px 10px;border-radius:4px;font-size:11px;">InfluxDB</span>
+                    <span style="color:#9e9e9e;">&rarr;</span>
+                    <span style="background:#fce4ec;border:1px solid #ef9a9a;padding:4px 10px;border-radius:4px;font-size:11px;">PDF Report</span>
+                    <span style="color:#9e9e9e;">&rarr;</span>
+                    <span style="background:#fce4ec;border:1px solid #ef9a9a;padding:4px 10px;border-radius:4px;font-size:11px;">Email</span>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ============ PORT MAP ============ -->
+        <div style="margin-top:30px;padding:20px;background:#f8f9fa;border-radius:8px;border:1px solid #e0e0e0;">
+            <div style="font-weight:700;font-size:14px;color:#333;margin-bottom:12px;text-align:center;letter-spacing:1px;">MAPA DE PUERTOS</div>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:700px;margin:0 auto;">
+                <div style="text-align:center;padding:8px;background:white;border-radius:6px;border:1px solid #e0e0e0;">
+                    <div style="font-weight:700;color:#e6522c;font-size:13px;">:9095</div>
+                    <div style="font-size:11px;color:#5f6368;">Prometheus</div>
+                </div>
+                <div style="text-align:center;padding:8px;background:white;border-radius:6px;border:1px solid #e0e0e0;">
+                    <div style="font-weight:700;color:#e6522c;font-size:13px;">:9096</div>
+                    <div style="font-size:11px;color:#5f6368;">Pushgateway</div>
+                </div>
+                <div style="text-align:center;padding:8px;background:white;border-radius:6px;border:1px solid #e0e0e0;">
+                    <div style="font-weight:700;color:#e6522c;font-size:13px;">:9097</div>
+                    <div style="font-size:11px;color:#5f6368;">Backend Exporter</div>
+                </div>
+                <div style="text-align:center;padding:8px;background:white;border-radius:6px;border:1px solid #e0e0e0;">
+                    <div style="font-weight:700;color:#22adf6;font-size:13px;">:8088</div>
+                    <div style="font-size:11px;color:#5f6368;">InfluxDB</div>
+                </div>
+                <div style="text-align:center;padding:8px;background:white;border-radius:6px;border:1px solid #e0e0e0;">
+                    <div style="font-weight:700;color:#f46800;font-size:13px;">:3003</div>
+                    <div style="font-size:11px;color:#5f6368;">Grafana</div>
+                </div>
+                <div style="text-align:center;padding:8px;background:white;border-radius:6px;border:1px solid #e0e0e0;">
+                    <div style="font-weight:700;color:#d97706;font-size:13px;">:3100</div>
+                    <div style="font-size:11px;color:#5f6368;">INGRID Chatbot</div>
+                </div>
+                <div style="text-align:center;padding:8px;background:white;border-radius:6px;border:1px solid #e0e0e0;">
+                    <div style="font-weight:700;color:#7c3aed;font-size:13px;">:8766</div>
+                    <div style="font-size:11px;color:#5f6368;">Video Server</div>
+                </div>
+                <div style="text-align:center;padding:8px;background:white;border-radius:6px;border:1px solid #e0e0e0;">
+                    <div style="font-weight:700;color:#7c3aed;font-size:13px;">:8089</div>
+                    <div style="font-size:11px;color:#5f6368;">InfluxDB-Mobile</div>
+                </div>
+                <div style="text-align:center;padding:8px;background:white;border-radius:6px;border:1px solid #e0e0e0;">
+                    <div style="font-weight:700;color:#7c3aed;font-size:13px;">:3004</div>
+                    <div style="font-size:11px;color:#5f6368;">Grafana Mobile</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ FOOTER ============ -->
+        <div class="footer">
+            <div class="company">Epidata Consulting</div>
+            <div>AGIP &mdash; Administracion Gubernamental de Ingresos Publicos &mdash; Buenos Aires Ciudad</div>
+            <div style="margin-top:4px;">Proyecto SIGMA &mdash; QASL-SENTINEL-UNIFIED v3.0.0</div>
+            <div style="margin-top:4px;">Lider Tecnico QA: Elyer Gregorio Maldonado</div>
+            <div style="margin-top:8px;font-size:11px;color:#bdbdbd;">Documento generado automaticamente &mdash; Febrero 2026</div>
+        </div>
+
+    </div>
+</body>
+</html>

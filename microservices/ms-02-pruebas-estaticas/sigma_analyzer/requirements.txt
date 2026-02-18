@@ -1,0 +1,10 @@
+# SIGMA Shift-Left Analyzer - Dependencies
+# Python 3.8+
+
+# No external dependencies needed for MVP
+# Using only Python standard library:
+# - re (regex)
+# - dataclasses
+# - pathlib
+# - argparse
+# - datetime

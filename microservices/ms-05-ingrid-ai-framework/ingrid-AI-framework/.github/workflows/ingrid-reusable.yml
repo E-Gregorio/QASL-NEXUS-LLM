@@ -1,0 +1,312 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# INGRID AI Testing Framework - Reusable Workflow
+# ═══════════════════════════════════════════════════════════════════════════════
+# Este workflow puede ser llamado desde CUALQUIER repositorio para testear
+# su chatbot/AI usando INGRID.
+#
+# USO EN TU PROYECTO:
+# ───────────────────
+# Crea un archivo .github/workflows/ai-testing.yml con:
+#
+# name: AI Testing with INGRID
+# on: [push, pull_request]
+# jobs:
+#   test:
+#     uses: E-Gregorio/ingrid-AI-framework/.github/workflows/ingrid-reusable.yml@main
+#     with:
+#       chatbot_url: 'https://tu-chatbot.com'
+#     secrets:
+#       ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+#
+# ═══════════════════════════════════════════════════════════════════════════════
+
+name: 🤖 INGRID Reusable Workflow
+
+on:
+  workflow_call:
+    inputs:
+      chatbot_url:
+        description: 'URL del chatbot/AI a testear'
+        required: true
+        type: string
+      test_suite:
+        description: 'Suite de tests a ejecutar (all, functional, security, performance, api)'
+        required: false
+        default: 'all'
+        type: string
+      node_version:
+        description: 'Versión de Node.js'
+        required: false
+        default: '20'
+        type: string
+      generate_pdf:
+        description: 'Generar reporte PDF'
+        required: false
+        default: true
+        type: boolean
+      deploy_pages:
+        description: 'Desplegar reporte a GitHub Pages'
+        required: false
+        default: false
+        type: boolean
+      ingrid_ref:
+        description: 'Branch/tag de INGRID a usar'
+        required: false
+        default: 'main'
+        type: string
+    secrets:
+      ANTHROPIC_API_KEY:
+        description: 'API Key de Anthropic (Claude) para LLM-as-Judge'
+        required: false
+      GOOGLE_AI_API_KEY:
+        description: 'API Key de Google AI (Gemini)'
+        required: false
+      OPENAI_API_KEY:
+        description: 'API Key de OpenAI'
+        required: false
+      SLACK_WEBHOOK_URL:
+        description: 'Webhook de Slack para notificaciones'
+        required: false
+    outputs:
+      test_result:
+        description: 'Resultado de los tests (success/failure)'
+        value: ${{ jobs.ingrid-test.outputs.result }}
+      report_url:
+        description: 'URL del reporte (si se desplegó)'
+        value: ${{ jobs.ingrid-test.outputs.report_url }}
+
+jobs:
+  ingrid-test:
+    name: 🤖 INGRID AI Testing
+    runs-on: ubuntu-latest
+    outputs:
+      result: ${{ steps.test-result.outputs.result }}
+      report_url: ${{ steps.report-url.outputs.url }}
+    env:
+      CHATBOT_URL: ${{ inputs.chatbot_url }}
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      GOOGLE_AI_API_KEY: ${{ secrets.GOOGLE_AI_API_KEY }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+
+    steps:
+      - name: 📥 Clone INGRID Framework
+        uses: actions/checkout@v4
+        with:
+          repository: E-Gregorio/ingrid-AI-framework
+          ref: ${{ inputs.ingrid_ref }}
+
+      - name: 🟢 Setup Node.js ${{ inputs.node_version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node_version }}
+          cache: 'npm'
+
+      - name: 💾 Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            node_modules
+            ~/.cache/ms-playwright
+          key: ingrid-${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ingrid-${{ runner.os }}-node-
+
+      - name: 📦 Install INGRID dependencies
+        run: npm ci
+
+      - name: 🎭 Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: 🔍 Validate Target URL
+        run: |
+          echo "═══════════════════════════════════════════════════════════════"
+          echo "  🎯 Target: ${{ inputs.chatbot_url }}"
+          echo "═══════════════════════════════════════════════════════════════"
+          curl -f -s -o /dev/null -w "  📡 Status: %{http_code}\n  ⏱️  Response: %{time_total}s\n" "${{ inputs.chatbot_url }}" || echo "  ⚠️  Target may not be accessible"
+
+      - name: 🔍 Check API Keys
+        run: |
+          echo "═══════════════════════════════════════════════════════════════"
+          echo "  INGRID - Configuration Status"
+          echo "═══════════════════════════════════════════════════════════════"
+          [ -n "$ANTHROPIC_API_KEY" ] && echo "  ✅ ANTHROPIC_API_KEY: Configured" || echo "  ⚠️  ANTHROPIC_API_KEY: Not set"
+          [ -n "$GOOGLE_AI_API_KEY" ] && echo "  ✅ GOOGLE_AI_API_KEY: Configured" || echo "  ⚠️  GOOGLE_AI_API_KEY: Not set"
+          [ -n "$OPENAI_API_KEY" ] && echo "  ✅ OPENAI_API_KEY: Configured" || echo "  ⚠️  OPENAI_API_KEY: Not set"
+          echo "═══════════════════════════════════════════════════════════════"
+
+      # ─────────────────────────────────────────────────────────────────────────
+      # Run Tests
+      # ─────────────────────────────────────────────────────────────────────────
+      - name: 🧪 Run Tests - All
+        if: inputs.test_suite == 'all'
+        id: test-all
+        run: npm test
+        continue-on-error: true
+
+      - name: 🧪 Run Tests - Functional
+        if: inputs.test_suite == 'functional'
+        id: test-functional
+        run: npm run test:chatbot:functional
+        continue-on-error: true
+
+      - name: 🔒 Run Tests - Security (OWASP)
+        if: inputs.test_suite == 'security'
+        id: test-security
+        run: npm run test:security
+        continue-on-error: true
+
+      - name: ⚡ Run Tests - Performance
+        if: inputs.test_suite == 'performance'
+        id: test-performance
+        run: npm run test:chatbot:performance
+        continue-on-error: true
+
+      - name: 🌐 Run Tests - API
+        if: inputs.test_suite == 'api'
+        id: test-api
+        run: npm run test:api
+        continue-on-error: true
+
+      - name: 📊 Determine Test Result
+        id: test-result
+        run: |
+          if [ -f "reports/results.json" ]; then
+            FAILED=$(node -e "const r=JSON.parse(require('fs').readFileSync('reports/results.json'));console.log(r.stats?.unexpected||0)")
+            if [ "$FAILED" -eq "0" ]; then
+              echo "result=success" >> $GITHUB_OUTPUT
+            else
+              echo "result=failure" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "result=unknown" >> $GITHUB_OUTPUT
+          fi
+
+      # ─────────────────────────────────────────────────────────────────────────
+      # Generate Reports
+      # ─────────────────────────────────────────────────────────────────────────
+      - name: 📊 Generate Allure Report
+        if: always()
+        run: npm run report:generate
+        continue-on-error: true
+
+      - name: 📄 Generate PDF Report
+        if: always() && inputs.generate_pdf
+        run: npm run pdf
+        continue-on-error: true
+
+      - name: 📋 Test Summary
+        if: always()
+        run: |
+          echo ""
+          echo "╔═══════════════════════════════════════════════════════════════╗"
+          echo "║         🤖 INGRID AI Testing - Results Summary               ║"
+          echo "╠═══════════════════════════════════════════════════════════════╣"
+          echo "║  🎯 Target: ${{ inputs.chatbot_url }}"
+          echo "║  📦 Suite: ${{ inputs.test_suite }}"
+          if [ -f "reports/results.json" ]; then
+            node -e "
+              const fs = require('fs');
+              const r = JSON.parse(fs.readFileSync('reports/results.json'));
+              const s = r.stats || {};
+              console.log('║  ────────────────────────────────────────────────────────────');
+              console.log('║  📊 Total:', s.expected || 0);
+              console.log('║  ✅ Passed:', (s.expected||0) - (s.unexpected||0) - (s.skipped||0));
+              console.log('║  ❌ Failed:', s.unexpected || 0);
+              console.log('║  ⏭️  Skipped:', s.skipped || 0);
+              console.log('║  ⏱️  Duration:', Math.round((s.duration||0)/1000), 's');
+            "
+          fi
+          echo "╚═══════════════════════════════════════════════════════════════╝"
+
+      # ─────────────────────────────────────────────────────────────────────────
+      # Upload Artifacts
+      # ─────────────────────────────────────────────────────────────────────────
+      - name: 📤 Upload Allure Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ingrid-allure-results
+          path: allure-results/
+          retention-days: 30
+
+      - name: 📤 Upload Allure Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ingrid-allure-report
+          path: reports/allure/
+          retention-days: 30
+
+      - name: 📤 Upload PDF Report
+        if: always() && inputs.generate_pdf
+        uses: actions/upload-artifact@v4
+        with:
+          name: ingrid-pdf-report
+          path: reports/*.pdf
+          retention-days: 30
+
+      - name: 📤 Upload Metrics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ingrid-metrics
+          path: reports/metrics-store.json
+          retention-days: 30
+
+      - name: 📤 Upload Test Evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ingrid-test-evidence
+          path: |
+            test-results/
+            reports/html/
+          retention-days: 14
+
+      - name: 🔗 Report URL
+        id: report-url
+        if: inputs.deploy_pages
+        run: echo "url=https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}" >> $GITHUB_OUTPUT
+
+      # ─────────────────────────────────────────────────────────────────────────
+      # GitHub Summary
+      # ─────────────────────────────────────────────────────────────────────────
+      - name: 📝 Create GitHub Summary
+        if: always()
+        run: |
+          echo "## 🤖 INGRID AI Testing Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Configuration" >> $GITHUB_STEP_SUMMARY
+          echo "| Setting | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|---------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| 🎯 Target URL | \`${{ inputs.chatbot_url }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| 📦 Test Suite | ${{ inputs.test_suite }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🔖 INGRID Version | ${{ inputs.ingrid_ref }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Results" >> $GITHUB_STEP_SUMMARY
+          if [ -f "reports/results.json" ]; then
+            node -e "
+              const fs = require('fs');
+              const r = JSON.parse(fs.readFileSync('reports/results.json'));
+              const s = r.stats || {};
+              const total = s.expected || 0;
+              const failed = s.unexpected || 0;
+              const skipped = s.skipped || 0;
+              const passed = total - failed - skipped;
+              const rate = total > 0 ? ((passed/total)*100).toFixed(1) : 0;
+              console.log('| Metric | Value |');
+              console.log('|--------|-------|');
+              console.log('| 📊 Total Tests |', total, '|');
+              console.log('| ✅ Passed |', passed, '|');
+              console.log('| ❌ Failed |', failed, '|');
+              console.log('| ⏭️ Skipped |', skipped, '|');
+              console.log('| 📈 Pass Rate |', rate + '%', '|');
+              console.log('| ⏱️ Duration |', Math.round((s.duration||0)/1000), 's |');
+            " >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📦 Artifacts" >> $GITHUB_STEP_SUMMARY
+          echo "- 📊 **ingrid-allure-report** - Interactive HTML report" >> $GITHUB_STEP_SUMMARY
+          echo "- 📄 **ingrid-pdf-report** - Executive PDF report" >> $GITHUB_STEP_SUMMARY
+          echo "- 📈 **ingrid-metrics** - Raw metrics data" >> $GITHUB_STEP_SUMMARY
+          echo "- 🎬 **ingrid-test-evidence** - Screenshots & videos" >> $GITHUB_STEP_SUMMARY

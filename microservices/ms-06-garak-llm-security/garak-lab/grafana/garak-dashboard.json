@@ -1,0 +1,525 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "liveNow": true,
+  "panels": [
+    {
+      "gridPos": { "h": 2, "w": 24, "x": 0, "y": 0 },
+      "id": 100,
+      "options": {
+        "code": { "language": "plaintext", "showLineNumbers": false, "showMiniMap": false },
+        "content": "<div style=\"display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; background: linear-gradient(90deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); border-radius: 8px;\">\n  <div style=\"display: flex; align-items: center; gap: 20px;\">\n    <div style=\"font-size: 28px; font-weight: bold; color: #00d4ff;\">GARAK SECURITY LAB</div>\n    <div style=\"font-size: 14px; color: #888;\">NVIDIA LLM Vulnerability Scanner v0.14</div>\n  </div>\n  <div style=\"text-align: right;\">\n    <div style=\"font-size: 16px; font-weight: bold; color: #76b900;\">EPIDATA</div>\n    <div style=\"font-size: 12px; color: #ccc;\">Cliente: ASI | Lider Tecnico: Elyer Maldonado</div>\n  </div>\n</div>",
+        "mode": "html"
+      },
+      "pluginVersion": "10.0.0",
+      "transparent": true,
+      "type": "text"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "ffcw9ni6erz0gb" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [
+            { "options": { "0": { "color": "#73bf69", "index": 0, "text": "COMPLETADO" }, "1": { "color": "#ff9830", "index": 1, "text": "EN PROGRESO" } }, "type": "value" }
+          ],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "#73bf69", "value": null }] },
+          "noValue": "LISTO"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 3, "w": 3, "x": 0, "y": 2 },
+      "id": 1,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "auto"
+      },
+      "pluginVersion": "10.0.0",
+      "targets": [{ "datasource": { "type": "prometheus", "uid": "ffcw9ni6erz0gb" }, "expr": "garak_in_progress{exported_job=\"garak\"}", "instant": true, "refId": "A" }],
+      "title": "Estado",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "ffcw9ni6erz0gb" },
+      "description": "Modelo extraido del nombre del archivo de test",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "#00d4ff", "value": null }] },
+          "noValue": "Esperando test..."
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 3, "w": 5, "x": 3, "y": 2 },
+      "id": 10,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "name"
+      },
+      "pluginVersion": "10.0.0",
+      "targets": [{ "datasource": { "type": "prometheus", "uid": "ffcw9ni6erz0gb" }, "expr": "garak_model_info{exported_job=\"garak\", model!=\"\"}", "legendFormat": "{{model}}", "instant": true, "refId": "A" }],
+      "title": "Modelo Bajo Prueba",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "ffcw9ni6erz0gb" },
+      "description": "Nivel de severidad basado en vulnerabilidades encontradas",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [
+            { "options": { "1": { "color": "#f2495c", "index": 0, "text": "DC-1 CRITICO" }, "2": { "color": "#ff6b6b", "index": 1, "text": "DC-2 ALTO" }, "3": { "color": "#ff9830", "index": 2, "text": "DC-3 MEDIO" }, "4": { "color": "#fade2a", "index": 3, "text": "DC-4 BAJO" }, "5": { "color": "#73bf69", "index": 4, "text": "DC-5 SEGURO" } }, "type": "value" }
+          ],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "#73bf69", "value": null }] },
+          "noValue": "DC-5"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 3, "w": 4, "x": 8, "y": 2 },
+      "id": 11,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "auto"
+      },
+      "pluginVersion": "10.0.0",
+      "targets": [{ "datasource": { "type": "prometheus", "uid": "ffcw9ni6erz0gb" }, "expr": "garak_defcon_level{exported_job=\"garak\"}", "instant": true, "refId": "A" }],
+      "title": "Nivel DEFCON",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "ffcw9ni6erz0gb" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "#6ed0e0", "value": null }] },
+          "noValue": "0"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 3, "w": 3, "x": 12, "y": 2 },
+      "id": 2,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "auto"
+      },
+      "pluginVersion": "10.0.0",
+      "targets": [{ "datasource": { "type": "prometheus", "uid": "ffcw9ni6erz0gb" }, "expr": "garak_probes_total{exported_job=\"garak\"}", "instant": true, "refId": "A" }],
+      "title": "Total Probes",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "ffcw9ni6erz0gb" },
+      "description": "Probes que el modelo resistio",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "#73bf69", "value": null }] },
+          "noValue": "0"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 3, "w": 3, "x": 15, "y": 2 },
+      "id": 3,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "auto"
+      },
+      "pluginVersion": "10.0.0",
+      "targets": [{ "datasource": { "type": "prometheus", "uid": "ffcw9ni6erz0gb" }, "expr": "garak_probes_passed{exported_job=\"garak\"}", "instant": true, "refId": "A" }],
+      "title": "Resistidos",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "ffcw9ni6erz0gb" },
+      "description": "Ataques que lograron vulnerar el modelo",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "#f2495c", "value": null }] },
+          "noValue": "0"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 3, "w": 3, "x": 18, "y": 2 },
+      "id": 4,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "auto"
+      },
+      "pluginVersion": "10.0.0",
+      "targets": [{ "datasource": { "type": "prometheus", "uid": "ffcw9ni6erz0gb" }, "expr": "garak_probes_failed{exported_job=\"garak\"}", "instant": true, "refId": "A" }],
+      "title": "Vulnerados",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "ffcw9ni6erz0gb" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "#b877d9", "value": null }] },
+          "unit": "s",
+          "noValue": "0s"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 3, "w": 3, "x": 21, "y": 2 },
+      "id": 14,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "auto"
+      },
+      "pluginVersion": "10.0.0",
+      "targets": [{ "datasource": { "type": "prometheus", "uid": "ffcw9ni6erz0gb" }, "expr": "garak_elapsed_seconds{exported_job=\"garak\"}", "instant": true, "refId": "A" }],
+      "title": "Duracion",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "ffcw9ni6erz0gb" },
+      "description": "Tasa de resistencia por tipo de ataque (PROBE)",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [],
+          "max": 100,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "#f2495c", "value": null },
+              { "color": "#ff9830", "value": 40 },
+              { "color": "#73bf69", "value": 70 }
+            ]
+          },
+          "unit": "percent",
+          "noValue": "0%"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 5 },
+      "id": 30,
+      "options": {
+        "displayMode": "gradient",
+        "minVizHeight": 10,
+        "minVizWidth": 0,
+        "orientation": "horizontal",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "showUnfilled": true,
+        "valueMode": "color"
+      },
+      "pluginVersion": "10.0.0",
+      "targets": [{
+        "datasource": { "type": "prometheus", "uid": "ffcw9ni6erz0gb" },
+        "expr": "garak_probe_pass_rate{exported_job=\"garak\"}",
+        "legendFormat": "{{probe}}",
+        "instant": true,
+        "refId": "A"
+      }],
+      "title": "Tasa de Resistencia por Probe (%)",
+      "type": "bargauge"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "ffcw9ni6erz0gb" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 20,
+            "gradientMode": "opacity",
+            "hideFrom": { "legend": false, "tooltip": false, "viz": false },
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": { "type": "linear" },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": { "group": "A", "mode": "none" },
+            "thresholdsStyle": { "mode": "off" }
+          },
+          "mappings": [],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }] }
+        },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "Total" }, "properties": [{ "id": "color", "value": { "fixedColor": "#6ed0e0", "mode": "fixed" } }] },
+          { "matcher": { "id": "byName", "options": "Resistidos" }, "properties": [{ "id": "color", "value": { "fixedColor": "#73bf69", "mode": "fixed" } }] },
+          { "matcher": { "id": "byName", "options": "Vulnerados" }, "properties": [{ "id": "color", "value": { "fixedColor": "#f2495c", "mode": "fixed" } }] }
+        ]
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 5 },
+      "id": 8,
+      "options": {
+        "legend": { "calcs": ["lastNotNull"], "displayMode": "table", "placement": "right", "showLegend": true },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "pluginVersion": "10.0.0",
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "ffcw9ni6erz0gb" }, "expr": "garak_probes_total{exported_job=\"garak\"}", "legendFormat": "Total", "refId": "A" },
+        { "datasource": { "type": "prometheus", "uid": "ffcw9ni6erz0gb" }, "expr": "garak_probes_passed{exported_job=\"garak\"}", "legendFormat": "Resistidos", "refId": "B" },
+        { "datasource": { "type": "prometheus", "uid": "ffcw9ni6erz0gb" }, "expr": "garak_probes_failed{exported_job=\"garak\"}", "legendFormat": "Vulnerados", "refId": "C" }
+      ],
+      "title": "Progreso del Test en Tiempo Real",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "ffcw9ni6erz0gb" },
+      "description": "Vulnerabilidades encontradas por tipo de ataque",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "#f2495c", "value": null }] },
+          "noValue": "0"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 5, "w": 6, "x": 0, "y": 13 },
+      "id": 31,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "value_and_name"
+      },
+      "pluginVersion": "10.0.0",
+      "targets": [{
+        "datasource": { "type": "prometheus", "uid": "ffcw9ni6erz0gb" },
+        "expr": "garak_probe_failed{exported_job=\"garak\"} > 0",
+        "legendFormat": "{{probe}}",
+        "instant": true,
+        "refId": "A"
+      }],
+      "title": "Vulnerabilidades por Probe",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "ffcw9ni6erz0gb" },
+      "description": "Probes resistidos por tipo de ataque",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "#73bf69", "value": null }] },
+          "noValue": "0"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 5, "w": 6, "x": 6, "y": 13 },
+      "id": 32,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "value_and_name"
+      },
+      "pluginVersion": "10.0.0",
+      "targets": [{
+        "datasource": { "type": "prometheus", "uid": "ffcw9ni6erz0gb" },
+        "expr": "garak_probe_passed{exported_job=\"garak\"} > 0",
+        "legendFormat": "{{probe}}",
+        "instant": true,
+        "refId": "A"
+      }],
+      "title": "Resistidos por Probe",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "ffcw9ni6erz0gb" },
+      "description": "Porcentaje de ataques que el modelo resistio",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [],
+          "max": 100,
+          "min": 0,
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "#f2495c", "value": null }, { "color": "#ff9830", "value": 50 }, { "color": "#73bf69", "value": 80 }] },
+          "unit": "percent",
+          "noValue": "0%"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 5, "w": 4, "x": 12, "y": 13 },
+      "id": 5,
+      "options": {
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      },
+      "pluginVersion": "10.0.0",
+      "targets": [{ "datasource": { "type": "prometheus", "uid": "ffcw9ni6erz0gb" }, "expr": "garak_pass_rate{exported_job=\"garak\"}", "instant": true, "refId": "A" }],
+      "title": "Tasa Resistencia Global",
+      "type": "gauge"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "ffcw9ni6erz0gb" },
+      "description": "Porcentaje de ataques exitosos contra el modelo",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [],
+          "max": 100,
+          "min": 0,
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "#73bf69", "value": null }, { "color": "#ff9830", "value": 20 }, { "color": "#f2495c", "value": 50 }] },
+          "unit": "percent",
+          "noValue": "0%"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 5, "w": 4, "x": 16, "y": 13 },
+      "id": 6,
+      "options": {
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      },
+      "pluginVersion": "10.0.0",
+      "targets": [{ "datasource": { "type": "prometheus", "uid": "ffcw9ni6erz0gb" }, "expr": "garak_vulnerability_rate{exported_job=\"garak\"}", "instant": true, "refId": "A" }],
+      "title": "Tasa Vulnerabilidad Global",
+      "type": "gauge"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "ffcw9ni6erz0gb" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "hideFrom": { "legend": false, "tooltip": false, "viz": false } },
+          "mappings": []
+        },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "Resistidos" }, "properties": [{ "id": "color", "value": { "fixedColor": "#73bf69", "mode": "fixed" } }] },
+          { "matcher": { "id": "byName", "options": "Vulnerados" }, "properties": [{ "id": "color", "value": { "fixedColor": "#f2495c", "mode": "fixed" } }] }
+        ]
+      },
+      "gridPos": { "h": 5, "w": 4, "x": 20, "y": 13 },
+      "id": 7,
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true },
+        "pieType": "donut",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "tooltip": { "mode": "single", "sort": "none" }
+      },
+      "pluginVersion": "10.0.0",
+      "targets": [
+        { "datasource": { "type": "prometheus", "uid": "ffcw9ni6erz0gb" }, "expr": "garak_probes_passed{exported_job=\"garak\"}", "legendFormat": "Resistidos", "instant": true, "refId": "A" },
+        { "datasource": { "type": "prometheus", "uid": "ffcw9ni6erz0gb" }, "expr": "garak_probes_failed{exported_job=\"garak\"}", "legendFormat": "Vulnerados", "instant": true, "refId": "B" }
+      ],
+      "title": "Distribucion",
+      "type": "piechart"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "ffcw9ni6erz0gb" },
+      "description": "Tasa de resistencia por categoria de ataque",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [],
+          "max": 100,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "#f2495c", "value": null },
+              { "color": "#ff9830", "value": 40 },
+              { "color": "#73bf69", "value": 70 }
+            ]
+          },
+          "unit": "percent",
+          "noValue": "0%"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 5, "w": 12, "x": 0, "y": 18 },
+      "id": 33,
+      "options": {
+        "displayMode": "lcd",
+        "minVizHeight": 10,
+        "minVizWidth": 0,
+        "orientation": "horizontal",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "showUnfilled": true,
+        "valueMode": "color"
+      },
+      "pluginVersion": "10.0.0",
+      "targets": [{
+        "datasource": { "type": "prometheus", "uid": "ffcw9ni6erz0gb" },
+        "expr": "garak_category_pass_rate{exported_job=\"garak\"}",
+        "legendFormat": "{{category}}",
+        "instant": true,
+        "refId": "A"
+      }],
+      "title": "Tasa de Resistencia por Categoria (%)",
+      "type": "bargauge"
+    },
+    {
+      "gridPos": { "h": 5, "w": 12, "x": 12, "y": 18 },
+      "id": 20,
+      "options": {
+        "code": { "language": "plaintext", "showLineNumbers": false, "showMiniMap": false },
+        "content": "<div style=\"padding: 12px; background: #1a1a2e; border-radius: 8px; height: 100%;\">\n  <div style=\"color: #00d4ff; font-size: 14px; font-weight: bold; margin-bottom: 10px; border-bottom: 1px solid #333; padding-bottom: 6px;\">NIVELES DEFCON - SEVERIDAD</div>\n  <div style=\"display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; font-size: 11px; text-align: center;\">\n    <div style=\"padding: 8px 4px; background: #f2495c; border-radius: 4px;\">\n      <div style=\"font-weight: bold; color: white;\">DC-1</div>\n      <div style=\"color: #ffd9d9;\">CRITICO</div>\n      <div style=\"color: #ffb3b3; font-size: 9px;\">Jailbreak, XSS</div>\n    </div>\n    <div style=\"padding: 8px 4px; background: #ff6b6b; border-radius: 4px;\">\n      <div style=\"font-weight: bold; color: white;\">DC-2</div>\n      <div style=\"color: #ffd9d9;\">ALTO</div>\n      <div style=\"color: #ffb3b3; font-size: 9px;\">Prompt Inject</div>\n    </div>\n    <div style=\"padding: 8px 4px; background: #ff9830; border-radius: 4px;\">\n      <div style=\"font-weight: bold; color: white;\">DC-3</div>\n      <div style=\"color: #fff3cd;\">MEDIO</div>\n      <div style=\"color: #ffe5b3; font-size: 9px;\">Encoding</div>\n    </div>\n    <div style=\"padding: 8px 4px; background: #fade2a; border-radius: 4px;\">\n      <div style=\"font-weight: bold; color: #333;\">DC-4</div>\n      <div style=\"color: #555;\">BAJO</div>\n      <div style=\"color: #666; font-size: 9px;\">Hallucination</div>\n    </div>\n    <div style=\"padding: 8px 4px; background: #73bf69; border-radius: 4px;\">\n      <div style=\"font-weight: bold; color: white;\">DC-5</div>\n      <div style=\"color: #d9f2d9;\">SEGURO</div>\n      <div style=\"color: #b3e6b3; font-size: 9px;\">Sin vulns</div>\n    </div>\n  </div>\n</div>",
+        "mode": "html"
+      },
+      "pluginVersion": "10.0.0",
+      "transparent": true,
+      "type": "text",
+      "title": ""
+    }
+  ],
+  "refresh": "2s",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": ["garak", "security", "llm", "nvidia", "epidata", "asi"],
+  "templating": { "list": [] },
+  "time": { "from": "now-5m", "to": "now" },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Garak Security Lab - LLM Vulnerability Scanner",
+  "uid": "laboratorio-garak",
+  "version": 6,
+  "weekStart": ""
+}

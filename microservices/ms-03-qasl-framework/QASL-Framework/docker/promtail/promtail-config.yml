@@ -1,0 +1,67 @@
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /var/log/positions.yaml
+
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+
+scrape_configs:
+  # Recolectar logs de todos los contenedores Docker
+  - job_name: docker
+    docker_sd_configs:
+      - host: unix:///var/run/docker.sock
+        refresh_interval: 5s
+    relabel_configs:
+      # Usar el nombre del contenedor como label
+      - source_labels: ['__meta_docker_container_name']
+        regex: '/(.*)'
+        target_label: 'container'
+
+      # Agregar el nombre de la imagen
+      - source_labels: ['__meta_docker_container_image']
+        target_label: 'image'
+
+      # Agregar el ID del contenedor
+      - source_labels: ['__meta_docker_container_id']
+        target_label: 'container_id'
+
+      # Solo recolectar contenedores en la red qa-network
+      - source_labels: ['__meta_docker_network_name']
+        regex: 'qa-hu-template_qa-network'
+        action: keep
+
+      # Etiqueta para identificar el proyecto
+      - source_labels: []
+        target_label: 'project'
+        replacement: 'qasl-framework'
+
+      # Etiqueta para ambiente
+      - source_labels: []
+        target_label: 'environment'
+        replacement: 'development'
+
+    pipeline_stages:
+      # Detectar nivel de log (ERROR, WARN, INFO, DEBUG)
+      - regex:
+          expression: '(?i)(?P<level>error|warn|warning|info|debug|fatal|critical)'
+
+      - labels:
+          level:
+
+      # Marcar logs de error para fácil búsqueda
+      - match:
+          selector: '{level=~"error|fatal|critical"}'
+          stages:
+            - labels:
+                severity: error
+
+      # Timestamp parsing
+      - timestamp:
+          source: time
+          format: RFC3339Nano
+          fallback_formats:
+            - '2006-01-02T15:04:05.999999999Z07:00'
+            - '2006-01-02 15:04:05'
