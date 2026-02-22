@@ -1,7 +1,3 @@
-// ═══════════════════════════════════════════════════════════════════════════
-// 🚀 QASL-MOBILE Types - Core Type Definitions
-// ═══════════════════════════════════════════════════════════════════════════
-
 // ─────────────────────────────────────────────────────────────────────────────
 // Selector System (11 niveles adaptados a Mobile)
 // ─────────────────────────────────────────────────────────────────────────────
@@ -41,7 +37,7 @@ export const SELECTOR_CONFIDENCE: Record<SelectorType, number> = {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Test Case Structure (compatible con QASL SIGMA)
+// Test Case Structure (compatible con QASL NEXUS LLM)
 // ─────────────────────────────────────────────────────────────────────────────
 
 export interface QASLTestCase {

@@ -8,7 +8,7 @@
 **Fecha:** Enero 2025
 **Autor:** Elyer Gregorio Maldonado
 **Rol:** Líder Técnico QA
-**Organización:** Epidata
+**Organización:** QASL NEXUS LLM
 
 ---
 
@@ -500,4 +500,4 @@ Un sistema será **NO APROBADO** inmediatamente si presenta:
 **Framework de Aseguramiento de Calidad para IA**
 *Metodología de Evaluación para Sistemas con Inteligencia Artificial*
 
-© 2025 - Elyer Gregorio Maldonado | Epidata
+© 2025 - Elyer Gregorio Maldonado | QASL NEXUS LLM

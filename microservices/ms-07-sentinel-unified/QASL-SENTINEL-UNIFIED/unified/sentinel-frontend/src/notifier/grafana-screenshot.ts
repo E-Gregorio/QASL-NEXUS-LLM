@@ -1,7 +1,7 @@
 // ============================================
-// SIGMA-SENTINEL - Grafana Dashboard Screenshot
+// QASL-SENTINEL - Grafana Dashboard Screenshot
 // ============================================
-// AGIP - Buenos Aires Ciudad
+// QASL NEXUS LLM - Elyer Gregorio Maldonado
 
 import { chromium, Browser, Page } from 'playwright';
 import * as fs from 'fs';
@@ -49,7 +49,7 @@ export class GrafanaScreenshot {
       await this.loginToGrafana(page);
 
       // Navigate to Grafana dashboard in kiosk mode
-      const dashboardUrl = `${this.grafanaUrl}/d/sigma-sentinel-main/sigma-sentinel-command-center?orgId=1&kiosk=1`;
+      const dashboardUrl = `${this.grafanaUrl}/d/qasl-sentinel-main/qasl-sentinel-command-center?orgId=1&kiosk=1`;
 
       this.log(`🌐 Navigating to dashboard: ${dashboardUrl}`);
 

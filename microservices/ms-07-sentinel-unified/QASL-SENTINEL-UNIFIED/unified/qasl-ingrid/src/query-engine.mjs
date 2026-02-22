@@ -161,7 +161,7 @@ function detectTopics(question) {
 
 function isGeneralQuestion(question) {
   const n = question.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-  const generalWords = ['estado', 'general', 'resumen', 'sistema', 'salud', 'health', 'panorama', 'overview', 'sigma', 'revisa', 'como esta', 'como va', 'que pasa', 'todo bien', 'reporte', 'informe', 'completo', 'dashboard', 'metricas', 'todo', 'analisis', 'analiza', 'analizar'];
+  const generalWords = ['estado', 'general', 'resumen', 'sistema', 'salud', 'health', 'panorama', 'overview', 'qasl', 'revisa', 'como esta', 'como va', 'que pasa', 'todo bien', 'reporte', 'informe', 'completo', 'dashboard', 'metricas', 'todo', 'analisis', 'analiza', 'analizar'];
   return generalWords.some(w => n.includes(w.normalize('NFD').replace(/[\u0300-\u036f]/g, '')));
 }
 

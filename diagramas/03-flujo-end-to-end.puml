@@ -1,0 +1,131 @@
+@startuml Flujo_End_to_End
+
+!define DARKSLATE #0f172a
+!define PURPLE #6366f1
+!define CYAN #38bdf8
+!define GOLD #fbbf24
+!define GREEN #4ade80
+!define RED #ef4444
+!define SLATE #94a3b8
+!define WHITE #f8fafc
+
+skinparam backgroundColor DARKSLATE
+skinparam defaultFontColor WHITE
+skinparam defaultFontSize 11
+skinparam defaultFontName "Segoe UI"
+skinparam shadowing true
+skinparam ActivityDiamondFontColor WHITE
+
+skinparam activity {
+    BackgroundColor #1e293b
+    BorderColor #6366f1
+    FontColor WHITE
+    DiamondBackgroundColor #713f12
+    DiamondBorderColor #fbbf24
+    BarColor #6366f1
+    ArrowColor #818cf8
+}
+
+skinparam arrow {
+    Color #818cf8
+    Thickness 2
+}
+
+title <size:20><b>QASL NEXUS LLM - Flujo End-to-End</b></size>\n<size:13><color:SLATE>De Historia de Usuario a Produccion</color></size>
+
+|#1a1a2e| **FASE 1 - Analisis** |
+start
+
+:QA Analyst sube **HU .docx**;
+
+:MS-02 **Parser** extrae
+campos de la Historia de Usuario;
+
+:MS-09 **Claude** analiza la HU
+detecta **Gaps** en requisitos
+genera **recomendaciones**;
+
+:MS-02 genera **4 CSVs**
+de trazabilidad:
+**1_User_Stories.csv**
+**2_Test_Suite.csv**
+**3_Preconditions.csv**
+**4_Test_Cases.csv**;
+
+:MS-12 **PostgreSQL** almacena
+toda la trazabilidad;
+
+|#1a1a2e| **FASE 2 - Decision VCR** |
+
+:MS-09 **VCR Calculator**
+Value (1-3) + Cost (1-3)
+Risk = Probabilidad x Impacto
+**VCR Total = V + C + R**;
+
+if (VCR >= 9?) then (<color:GREEN>**AUTOMATIZAR**</color>)
+
+|#1a1a2e| **FASE 3 - Ejecucion** |
+
+  :MS-08 **Pipeline** orquesta
+  ejecucion en **3 sub-fases**;
+
+  fork
+    :MS-03 **QASL Framework**
+    Playwright E2E
+    K6 Performance
+    Newman API
+    ZAP Security;
+  fork again
+    :MS-04 **Mobile**
+    Maestro
+    iOS + Android;
+  fork again
+    :MS-06 **Garak**
+    LLM Security
+    OWASP Top 10;
+  fork again
+    :MS-05 **INGRID AI**
+    AI Test Generation
+    Multi-Model;
+  end fork
+
+  :MS-12 almacena **todos
+  los resultados** de ejecucion;
+
+|#1a1a2e| **FASE 4 - Reportes** |
+
+  fork
+    :MS-10 **MCP** crea
+    Bugs en **Jira**
+    Test Cases en **X-Ray**
+    Links de trazabilidad;
+  fork again
+    :MS-11 **Reportador**
+    genera **PDF** ejecutivo
+    notifica por
+    **Slack / Teams / Email**;
+  fork again
+    :MS-07 **Sentinel**
+    actualiza dashboards
+    **Grafana Real-Time**
+    metricas en Prometheus;
+  end fork
+
+  :Ciclo **completado**
+  QA tiene visibilidad total;
+
+  stop
+
+else (<color:RED>**MANUAL**</color>)
+
+  :QA ejecuta pruebas
+  **manualmente** y registra
+  resultados en MS-12;
+
+  stop
+
+endif
+
+footer \n<size:10>QASL NEXUS LLM v1.0 | Shift-Left Testing | ISTQB v4.0</size>
+
+@enduml

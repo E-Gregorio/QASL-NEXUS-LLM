@@ -83,4 +83,4 @@ Este proyecto está licenciado bajo MIT License. Ver [LICENSE](LICENSE) para má
 
 *QASL Framework - Quality Assurance Shift-Left*
 
-© 2024-2025 Elyer Maldonado. All rights reserved.
+© 2024-2026 Elyer Maldonado. All rights reserved.

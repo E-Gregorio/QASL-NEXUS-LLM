@@ -1,19 +1,7 @@
-/**
- * ═══════════════════════════════════════════════════════════════════════════
- * SIGMA-SENTINEL - ZAP Security Scanner
- * ═══════════════════════════════════════════════════════════════════════════
- * Ejecuta OWASP ZAP via Docker para escaneo de seguridad
- *
- * Soporta DOS modos de escaneo:
- *   1. FRONTEND: Escanea la aplicación web completa (XSS, CSRF, headers, cookies)
- *   2. API: Escanea las APIs capturadas durante tests E2E
- *
- * Funcionalidades:
- *   - Ejecuta ZAP Baseline Scan via Docker
- *   - Parsea resultados JSON
- *   - Genera reportes HTML
- *   - Soporta escaneo de APIs desde capturas
- */
+// ═══════════════════════════════════════════════════════════════════════════
+// QASL-SENTINEL - ZAP Security Scanner
+// ═══════════════════════════════════════════════════════════════════════════
+// QASL NEXUS LLM - Elyer Gregorio Maldonado
 
 import { execSync, exec } from 'child_process';
 import fs from 'fs/promises';
@@ -33,7 +21,7 @@ export class ZapScanner {
   private scanMode: ScanMode;
 
   constructor() {
-    this.targetUrl = process.env.TARGET_URL || 'https://sigma-fe-dev.apps.ocp-test-hc.agip.gob.ar';
+    this.targetUrl = process.env.TARGET_URL || 'http://localhost:4200';
     this.reportsDir = process.env.ZAP_REPORTS_DIR || './reports/zap';
     this.apiCapturesDir = process.env.API_CAPTURES_DIR || './.api-captures';
     this.verbose = process.env.VERBOSE_LOGGING === 'true';
@@ -242,7 +230,7 @@ export class ZapScanner {
 
   /**
    * Ejecuta ZAP Baseline Scan via Docker
-   * Basado en SIGMA-QA-AUTOMATION/scripts/run-zap-frontend.mjs
+   * Basado en QASL-Framework/scripts/run-zap.mjs
    */
   private async runZapBaseline(reportName: string, targetUrl: string): Promise<{ success: boolean; alertsCount: number }> {
     return new Promise((resolve) => {
@@ -252,7 +240,7 @@ export class ZapScanner {
       const htmlReport = `${reportName}-report.html`;
       const jsonReport = `${reportName}-report.json`;
 
-      // Comando ZAP Baseline Scan (igual a SIGMA-QA-AUTOMATION)
+      // Comando ZAP Baseline Scan
       // -t: target URL
       // -r: HTML report
       // -J: JSON report

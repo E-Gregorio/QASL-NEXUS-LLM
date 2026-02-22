@@ -1,7 +1,3 @@
-// ═══════════════════════════════════════════════════════════════════════════
-// QASL-MOBILE Screen Streamer - Real-time device screen streaming
-// ═══════════════════════════════════════════════════════════════════════════
-
 import { WebSocketServer, WebSocket } from 'ws';
 import { execSync } from 'child_process';
 import * as http from 'http';
@@ -35,9 +31,6 @@ export class ScreenStreamer {
     this.config = { ...DEFAULT_CONFIG, ...config };
   }
 
-  /**
-   * Start the streaming server
-   */
   async start(): Promise<void> {
     // Create HTTP server for serving the viewer page
     this.httpServer = http.createServer((req, res) => {
@@ -129,9 +122,6 @@ export class ScreenStreamer {
     });
   }
 
-  /**
-   * Start capturing frames from the device
-   */
   private async startCapture(): Promise<void> {
     if (this.isStreaming) return;
     this.isStreaming = true;
@@ -158,9 +148,6 @@ export class ScreenStreamer {
     }, frameDelay);
   }
 
-  /**
-   * Capture a single frame from the device
-   */
   private captureFrame(): Promise<Buffer | null> {
     return new Promise((resolve) => {
       try {
@@ -182,9 +169,6 @@ export class ScreenStreamer {
     });
   }
 
-  /**
-   * Broadcast frame to all connected clients
-   */
   private broadcastFrame(frame: Buffer): void {
     const base64Frame = frame.toString('base64');
     const message = JSON.stringify({
@@ -200,9 +184,6 @@ export class ScreenStreamer {
     });
   }
 
-  /**
-   * Stop the streaming server
-   */
   async stop(): Promise<void> {
     this.isStreaming = false;
 
@@ -227,9 +208,6 @@ export class ScreenStreamer {
     console.log('📺 Screen streamer stopped');
   }
 
-  /**
-   * Get HTML for the standalone viewer page
-   */
   private getViewerHTML(): string {
     return `<!DOCTYPE html>
 <html lang="en">
@@ -393,9 +371,6 @@ export class ScreenStreamer {
 </html>`;
   }
 
-  /**
-   * Get HTML for embedding in Grafana (iframe-friendly)
-   */
   private getEmbedHTML(): string {
     return `<!DOCTYPE html>
 <html lang="en">

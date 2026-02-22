@@ -79,9 +79,9 @@ npm install
 npx playwright install
 
 # Install Python dependencies
-cd sigma_analyzer
+cd ../ms-02-pruebas-estaticas/sigma_analyzer
 pip install -r requirements.txt
-cd ..
+cd ../../ms-03-qasl-framework/QASL-Framework
 
 # Start services
 npm run docker:up
@@ -94,7 +94,7 @@ npm run e2e
 
 ```
 QASL-Framework/
-├── sigma_analyzer/      # Static analysis (Python)
+├── ../ms-02/            # Static analysis (Python - separate MS)
 ├── e2e/                 # E2E tests (TypeScript)
 ├── scripts/             # Execution scripts (Node.js)
 ├── scripts_metricas/    # Metrics senders (Node.js)

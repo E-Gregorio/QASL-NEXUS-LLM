@@ -1,40 +1,4 @@
 #!/usr/bin/env node
-/**
- * ═══════════════════════════════════════════════════════════════════════════
- * RUN K6 - Ejecuta tests de Performance con K6 + Genera Reporte HTML
- * ═══════════════════════════════════════════════════════════════════════════
- *
- * Lee automáticamente las APIs capturadas durante E2E (.api-captures/)
- * y ejecuta K6 generando reporte HTML.
- *
- * Uso:
- *   node scripts/run-k6.mjs [capture-file] [--vus=10] [--duration=30s] [--type=load]
- *
- * Tipos de prueba (--type):
- *   load     - Carga normal: ramp-up, hold, ramp-down (default)
- *   stairs   - Escalera: sube usuarios gradualmente (visual en Grafana)
- *   stress   - Estres: sube hasta el limite
- *   spike    - Pico: carga repentina
- *   soak     - Resistencia: carga sostenida larga
- *
- * Ejemplos:
- *   npm run k6                                    # Default: 10 VUs, 30s
- *   npm run k6 -- --vus=20 --duration=60s         # 20 VUs por 1 minuto
- *   npm run k6 -- --type=stairs --vus=10          # Escalera de 1 a 10 usuarios
- *   npm run k6 -- --type=stress --vus=50          # Estres hasta 50 usuarios
- *   npm run k6 -- --type=spike --vus=30           # Pico de 30 usuarios
- *
- * Reportes:
- *   - K6 HTML: reports/k6/{timestamp}-report.html
- *   - Grafana: http://localhost:3001 (con Docker)
- *
- * Requisitos:
- *   - K6 instalado: https://k6.io/docs/getting-started/installation/
- *   - Docker (opcional): docker-compose up -d
- *
- * ═══════════════════════════════════════════════════════════════════════════
- */
-
 import { execSync } from 'child_process';
 import path from 'path';
 import fs from 'fs';
@@ -208,7 +172,7 @@ ${requests}
 
 export function handleSummary(data) {
   return {
-    "${REPORTS_DIR}/${testName}-${timestamp}-report.html": htmlReport(data, { title: "EPIDATA - Proyecto SIGMA | TeamQA" }),
+    "${REPORTS_DIR}/${testName}-${timestamp}-report.html": htmlReport(data, { title: "QASL NEXUS LLM | MS-03 Framework v4.0" }),
     stdout: textSummary(data, { indent: " ", enableColors: true }),
   };
 }

@@ -629,10 +629,179 @@ class HUParser:
         return []
 
 
+class HUHTMLParser:
+    """Parser de Historias de Usuario en formato HTML (plantilla ISTQB)"""
+
+    def __init__(self, file_path: str):
+        self.file_path = file_path
+        from bs4 import BeautifulSoup
+        with open(file_path, 'r', encoding='utf-8') as f:
+            self.soup = BeautifulSoup(f.read(), 'html.parser')
+        self.fields = self._extract_all_fields()
+
+    def _extract_all_fields(self) -> Dict:
+        """Extrae todos los campos de la tabla HTML"""
+        fields = {}
+        rows = self.soup.find_all('tr')
+        for row in rows:
+            cells = row.find_all('td')
+            if len(cells) >= 2:
+                label = cells[0].get_text(strip=True).upper()
+                content = cells[1]
+                fields[label] = content
+        return fields
+
+    def _get_text(self, label: str) -> str:
+        """Obtiene texto limpio de un campo"""
+        for key, content in self.fields.items():
+            if label.upper() in key:
+                return content.get_text(separator=' ', strip=True)
+        return ""
+
+    def _get_html(self, label: str) -> str:
+        """Obtiene HTML interno de un campo"""
+        for key, content in self.fields.items():
+            if label.upper() in key:
+                return str(content)
+        return ""
+
+    def parse(self) -> HistoriaUsuario:
+        """Parsea el HTML y retorna objeto HistoriaUsuario"""
+        id_hu = self._get_text("ID")
+        nombre = self._get_text("NOMBRE")
+        epica = self._get_text("ÉPICA") or self._get_text("EPICA")
+        prioridad = self._get_text("PRIORIDAD")
+        descripcion = self._get_text("DESCRIPCIÓN") or self._get_text("DESCRIPCION")
+        usuario_rol = self._get_text("USUARIOS") or self._get_text("USUARIO")
+        estado = self._get_text("ESTADO")
+
+        reglas_negocio = self._extract_reglas_negocio()
+        escenarios = self._extract_escenarios()
+        precondiciones = self._extract_precondiciones()
+        dentro_alcance = self._extract_alcance("DENTRO DEL ALCANCE")
+        fuera_alcance = self._extract_alcance("FUERA DEL ALCANCE")
+
+        return HistoriaUsuario(
+            id=id_hu,
+            nombre=nombre,
+            epica=epica,
+            prioridad=prioridad,
+            descripcion=descripcion,
+            usuario_rol=usuario_rol,
+            reglas_negocio=reglas_negocio,
+            escenarios=escenarios,
+            validaciones=[],
+            mensajes=[],
+            permisos=[],
+            dentro_alcance=dentro_alcance,
+            fuera_alcance=fuera_alcance,
+            precondiciones=precondiciones,
+            estado=estado
+        )
+
+    def _extract_reglas_negocio(self) -> List[ReglaNegocio]:
+        """Extrae reglas de negocio del HTML"""
+        reglas = []
+        text = self._get_text("REGLAS DE NEGOCIO") or self._get_text("REGLAS DE NEGOCIOS")
+        if not text:
+            return reglas
+
+        pattern = r'\*{0,2}BR(\d+)\*{0,2}:\s*(.+?)(?=\s*BR\d+:|$)'
+        matches = re.finditer(pattern, text, re.DOTALL)
+        for match in matches:
+            br_id = f"BR{match.group(1)}"
+            descripcion = ' '.join(match.group(2).strip().split())
+            reglas.append(ReglaNegocio(id=br_id, descripcion=descripcion))
+
+        return reglas
+
+    def _extract_escenarios(self) -> List[Escenario]:
+        """Extrae escenarios de prueba del HTML"""
+        escenarios = []
+        html = self._get_html("ESCENARIOS") or self._get_html("CRITERIOS DE ACEPTACIÓN")
+        if not html:
+            return escenarios
+
+        text = re.sub(r'<[^>]+>', ' ', html)
+        text = ' '.join(text.split())
+
+        pattern = r'E(\d+)\s*[:\-–]\s*\[?([^\]]*?)\]?\s*(?:Dado|DADO)\s+(?:que\s+)?(.*?)(?:Cuando|CUANDO)\s+(.*?)(?:Entonces|ENTONCES)\s+(.*?)(?=E\d+\s*[:\-–]|$)'
+        matches = re.finditer(pattern, text, re.IGNORECASE | re.DOTALL)
+
+        for match in matches:
+            e_id = f"E{match.group(1)}"
+            titulo = match.group(2).strip() or f"Escenario {e_id}"
+            dado = match.group(3).strip().rstrip('.,')
+            cuando = match.group(4).strip().rstrip('.,')
+            entonces = match.group(5).strip().rstrip('.,')
+
+            escenarios.append(Escenario(
+                id=e_id,
+                titulo=titulo,
+                dado=dado,
+                cuando=cuando,
+                entonces=entonces
+            ))
+
+        if not escenarios:
+            escenarios = self._extract_escenarios_div()
+
+        return escenarios
+
+    def _extract_escenarios_div(self) -> List[Escenario]:
+        """Extrae escenarios de divs con clase scenario-title/scenario-content"""
+        escenarios = []
+        for key, content in self.fields.items():
+            if "ESCENARIO" in key or "CRITERIO" in key:
+                titles = content.find_all(class_='scenario-title')
+                contents = content.find_all(class_='scenario-content')
+
+                for i, title_div in enumerate(titles):
+                    title_text = title_div.get_text(strip=True)
+                    e_match = re.match(r'E(\d+)\s*[:\-–]\s*(.*)', title_text)
+                    e_id = f"E{e_match.group(1)}" if e_match else f"E{i+1}"
+                    titulo = e_match.group(2).strip() if e_match else title_text
+
+                    dado, cuando, entonces = "", "", ""
+                    if i < len(contents):
+                        c_text = contents[i].get_text(separator=' ', strip=True)
+                        dado_m = re.search(r'(?:Dado|DADO)\s+(?:que\s+)?(.*?)(?:Cuando|CUANDO)', c_text, re.I)
+                        cuando_m = re.search(r'(?:Cuando|CUANDO)\s+(.*?)(?:Entonces|ENTONCES)', c_text, re.I)
+                        entonces_m = re.search(r'(?:Entonces|ENTONCES)\s+(.*?)$', c_text, re.I)
+                        if dado_m: dado = dado_m.group(1).strip()
+                        if cuando_m: cuando = cuando_m.group(1).strip()
+                        if entonces_m: entonces = entonces_m.group(1).strip()
+
+                    escenarios.append(Escenario(
+                        id=e_id, titulo=titulo,
+                        dado=dado, cuando=cuando, entonces=entonces
+                    ))
+        return escenarios
+
+    def _extract_precondiciones(self) -> List[str]:
+        """Extrae precondiciones"""
+        text = self._get_text("PRECONDICIONES")
+        if not text:
+            return []
+        items = [item.strip() for item in re.split(r'[•\n]', text) if item.strip()]
+        return items
+
+    def _extract_alcance(self, tipo: str) -> List[str]:
+        """Extrae items de alcance"""
+        text = self._get_text(tipo)
+        if not text:
+            return []
+        items = [item.strip() for item in re.split(r'[•\n]', text) if item.strip()]
+        return items
+
+
 # Función de utilidad para testing
 def parse_hu(file_path: str) -> HistoriaUsuario:
-    """Función auxiliar para parsear una HU"""
-    parser = HUParser(file_path)
+    """Función auxiliar para parsear una HU - detecta formato automáticamente"""
+    if file_path.endswith('.html') or file_path.endswith('.htm'):
+        parser = HUHTMLParser(file_path)
+    else:
+        parser = HUParser(file_path)
     return parser.parse()
 
 
@@ -643,7 +812,10 @@ if __name__ == "__main__":
         hu = parse_hu(sys.argv[1])
         print(f"ID: {hu.id}")
         print(f"Nombre: {hu.nombre}")
+        print(f"Epica: {hu.epica}")
         print(f"Reglas de Negocio: {len(hu.reglas_negocio)}")
+        for br in hu.reglas_negocio:
+            print(f"  - {br.id}: {br.descripcion[:60]}")
         print(f"Escenarios: {len(hu.escenarios)}")
         for escenario in hu.escenarios:
             print(f"  - {escenario.id}: {escenario.titulo}")

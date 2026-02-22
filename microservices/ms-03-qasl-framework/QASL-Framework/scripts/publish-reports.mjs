@@ -1,9 +1,4 @@
 #!/usr/bin/env node
-/**
- * Script para publicar reportes a GitLab Pages
- * Copia los reportes generados a public/ y hace push
- */
-
 import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
@@ -16,7 +11,7 @@ const ZAP_REPORT = './reports/zap';
 
 console.log('');
 console.log('═══════════════════════════════════════════════════════════════');
-console.log('  PUBLICAR REPORTES A GITLAB PAGES');
+console.log('  PUBLICAR REPORTES A GITHUB PAGES');
 console.log('═══════════════════════════════════════════════════════════════');
 console.log('');
 
@@ -64,7 +59,7 @@ if (fs.existsSync(ZAP_REPORT)) {
 
 console.log('');
 console.log('───────────────────────────────────────────────────────────────');
-console.log('  Subiendo a GitLab...');
+console.log('  Subiendo a GitHub...');
 console.log('───────────────────────────────────────────────────────────────');
 
 try {
@@ -77,7 +72,7 @@ try {
     console.log('  ✅ REPORTES PUBLICADOS');
     console.log('═══════════════════════════════════════════════════════════════');
     console.log('');
-    console.log('  📎 URL: https://elyerm.gitlab.io/sigma-qa-framework/');
+    console.log('  📎 URL: https://e-gregorio.github.io/QASL-NEXUS-LLM/');
     console.log('');
     console.log('  Envía este link por correo a tu equipo.');
     console.log('');

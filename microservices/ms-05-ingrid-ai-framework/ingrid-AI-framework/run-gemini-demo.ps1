@@ -59,7 +59,7 @@ npm run test:gemini
 # ───────────────────────────────────────────────────────────────
 Write-Host ""
 Write-Host "[5/5] Abriendo Grafana para ver metricas..." -ForegroundColor Yellow
-Start-Process "http://localhost:3002/d/ingrid-dashboard/ingrid-ai-testing-framework-epidata"
+Start-Process "http://localhost:3002/d/ingrid-dashboard/ingrid-ai-testing-framework"
 
 # ───────────────────────────────────────────────────────────────
 # FINALIZADO

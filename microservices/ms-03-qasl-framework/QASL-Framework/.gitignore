@@ -59,6 +59,3 @@ docker/influxdb/data/
 *.zip
 *.tar.gz
 
-# Sigma analyzer cache
-sigma_analyzer/__pycache__/
-sigma_analyzer/*.pyc

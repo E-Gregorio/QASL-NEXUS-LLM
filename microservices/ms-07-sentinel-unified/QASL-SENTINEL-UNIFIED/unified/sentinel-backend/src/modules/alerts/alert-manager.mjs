@@ -2,7 +2,7 @@
 // ║                    QASL-API-SENTINEL - Alert Manager                        ║
 // ║                    Alertas Automáticas por Email                            ║
 // ╠═══════════════════════════════════════════════════════════════════════════════╣
-// ║  Proyecto: SIGMA | Cliente: AGIP | Empresa: Epidata                          ║
+// ║  QASL NEXUS LLM - Elyer Gregorio Maldonado                                   ║
 // ║  Líder Técnico QA: Elyer Gregorio Maldonado                                  ║
 // ╚═══════════════════════════════════════════════════════════════════════════════╝
 

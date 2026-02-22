@@ -12,7 +12,7 @@
       }
     ]
   },
-  "description": "INGRID v2.0 - Framework Profesional de Testing de IA/LLM con OWASP LLM Top 10 2025 Completo | Desarrollado por Elyer Gregorio Maldonado - Lider Tecnico QA | EPIDATA",
+  "description": "INGRID v2.0 - Framework Profesional de Testing de IA/LLM con OWASP LLM Top 10 2025 Completo | Desarrollado por Elyer Gregorio Maldonado - Lider Tecnico QA | QASL NEXUS LLM",
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
@@ -25,7 +25,7 @@
       "id": 100,
       "options": {
         "code": { "language": "plaintext", "showLineNumbers": false },
-        "content": "<div style=\"text-align: center; padding: 15px; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); border-radius: 10px; border: 1px solid #00BCD4;\">\n<h1 style=\"margin: 0; color: #00BCD4; font-size: 32px; text-shadow: 0 0 20px #00BCD4;\">INGRID v2.0</h1>\n<p style=\"margin: 5px 0; color: #00E5FF; font-size: 16px; letter-spacing: 2px;\">Intelligent Network for Generative Response Inspection & Defense</p>\n<p style=\"margin: 8px 0 0 0; color: #888; font-size: 13px;\">OWASP LLM Top 10 2025 Complete | Red Teaming | LLM-as-Judge | Multi-Model Security Testing</p>\n<p style=\"margin: 5px 0 0 0;\"><span style=\"background: #00C853; color: #000; padding: 2px 10px; border-radius: 12px; font-size: 11px; font-weight: bold;\">EPIDATA</span> <span style=\"color: #FFD700; margin-left: 10px;\">Elyer Gregorio Maldonado - Lider Tecnico QA</span></p>\n</div>",
+        "content": "<div style=\"text-align: center; padding: 15px; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); border-radius: 10px; border: 1px solid #00BCD4;\">\n<h1 style=\"margin: 0; color: #00BCD4; font-size: 32px; text-shadow: 0 0 20px #00BCD4;\">INGRID v2.0</h1>\n<p style=\"margin: 5px 0; color: #00E5FF; font-size: 16px; letter-spacing: 2px;\">Intelligent Network for Generative Response Inspection & Defense</p>\n<p style=\"margin: 8px 0 0 0; color: #888; font-size: 13px;\">OWASP LLM Top 10 2025 Complete | Red Teaming | LLM-as-Judge | Multi-Model Security Testing</p>\n<p style=\"margin: 5px 0 0 0;\"><span style=\"background: #00C853; color: #000; padding: 2px 10px; border-radius: 12px; font-size: 11px; font-weight: bold;\">QASL NEXUS LLM</span> <span style=\"color: #FFD700; margin-left: 10px;\">Elyer Gregorio Maldonado - Lider Tecnico QA</span></p>\n</div>",
         "mode": "html"
       },
       "pluginVersion": "10.0.0",
@@ -1106,7 +1106,7 @@
   "refresh": "5s",
   "schemaVersion": 38,
   "style": "dark",
-  "tags": ["ai-testing", "ingrid", "owasp-llm-top10", "red-teaming", "llm-as-judge", "security", "epidata", "qa-automation"],
+  "tags": ["ai-testing", "ingrid", "owasp-llm-top10", "red-teaming", "llm-as-judge", "security", "qasl-nexus-llm", "qa-automation"],
   "templating": { "list": [] },
   "time": { "from": "now-15m", "to": "now" },
   "timepicker": {
@@ -1114,7 +1114,7 @@
     "time_options": ["5m", "15m", "1h", "6h", "12h", "24h"]
   },
   "timezone": "browser",
-  "title": "INGRID v2.0 - AI Testing Framework | EPIDATA",
+  "title": "INGRID v2.0 - AI Testing Framework | QASL NEXUS LLM",
   "uid": "ingrid-dashboard",
   "version": 4,
   "weekStart": ""

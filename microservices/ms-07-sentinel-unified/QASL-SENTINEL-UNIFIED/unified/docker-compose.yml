@@ -32,9 +32,9 @@ services:
       - DOCKER_INFLUXDB_INIT_MODE=setup
       - DOCKER_INFLUXDB_INIT_USERNAME=admin
       - DOCKER_INFLUXDB_INIT_PASSWORD=sentinel2024
-      - DOCKER_INFLUXDB_INIT_ORG=sigma
+      - DOCKER_INFLUXDB_INIT_ORG=qasl
       - DOCKER_INFLUXDB_INIT_BUCKET=sentinel_metrics
-      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=sigma-sentinel-token-2024
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=qasl-sentinel-token-2024
       - DOCKER_INFLUXDB_INIT_RETENTION=30d
     volumes:
       - influxdb-data:/var/lib/influxdb2

@@ -1,29 +1,4 @@
 #!/usr/bin/env node
-/**
- * ═══════════════════════════════════════════════════════════════════════════
- * RUN ZAP - Ejecuta Security Scan con OWASP ZAP + Genera Reporte HTML
- * ═══════════════════════════════════════════════════════════════════════════
- *
- * Lee automáticamente las APIs capturadas durante E2E (.api-captures/)
- * y ejecuta OWASP ZAP generando reporte HTML nativo.
- *
- * Uso:
- *   node scripts/run-zap.mjs [capture-file]
- *
- * Ejemplos:
- *   node scripts/run-zap.mjs                           # Usa última captura
- *   node scripts/run-zap.mjs ts-001-apis.json          # Captura específica
- *
- * Reportes:
- *   - ZAP HTML: reports/zap/{timestamp}-report.html
- *   - ZAP JSON: reports/zap/{timestamp}-report.json
- *
- * Requisitos:
- *   - Docker instalado y corriendo
- *
- * ═══════════════════════════════════════════════════════════════════════════
- */
-
 import { execSync } from 'child_process';
 import path from 'path';
 import fs from 'fs';

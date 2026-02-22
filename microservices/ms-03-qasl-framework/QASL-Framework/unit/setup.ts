@@ -1,8 +1,3 @@
-/**
- * Vitest Setup File
- * Se ejecuta antes de cada archivo de test
- */
-
 import { beforeAll, afterAll, beforeEach, afterEach } from 'vitest'
 
 // Variables de entorno para tests

@@ -3,9 +3,9 @@
  * ║                    PROMETHEUS METRICS EXPORTER                               ║
  * ║                    QASL-API-SENTINEL Mission Control                         ║
  * ╠══════════════════════════════════════════════════════════════════════════════╣
- * ║  Proyecto: SIGMA                                                             ║
- * ║  Cliente: AGIP                                                               ║
- * ║  Empresa: Epidata                                                            ║
+ * ║  QASL NEXUS LLM                                                              ║
+ * ║  Elyer Gregorio Maldonado                                                    ║
+ * ║  Plataforma QA Multi-LLM                                                     ║
  * ║  Líder Técnico QA: Elyer Gregorio Maldonado                                  ║
  * ╚══════════════════════════════════════════════════════════════════════════════╝
  *
@@ -431,7 +431,7 @@ export class PrometheusExporter {
     // HEADER
     // ═══════════════════════════════════════════════════════════════════════════════
     lines.push('# QASL-API-SENTINEL Prometheus Metrics');
-    lines.push('# Proyecto: SIGMA | Cliente: AGIP | Empresa: Epidata');
+    lines.push('# QASL NEXUS LLM - Elyer Gregorio Maldonado');
     lines.push('# Líder Técnico QA: Elyer Gregorio Maldonado');
     lines.push('');
 
@@ -919,7 +919,7 @@ export class PrometheusExporter {
     // ═══════════════════════════════════════════════════════════════════════════════
     lines.push('# HELP qasl_info Información del sistema QASL-API-SENTINEL');
     lines.push('# TYPE qasl_info gauge');
-    lines.push(`qasl_info{project="SIGMA",client="AGIP",company="Epidata",qa_lead="Elyer Gregorio Maldonado",version="2.0.0"} 1`);
+    lines.push(`qasl_info{project="QASL_NEXUS_LLM",client="Elyer Gregorio Maldonado",company="QASL NEXUS LLM",qa_lead="Elyer Gregorio Maldonado",version="2.0.0"} 1`);
     lines.push('');
 
     return lines.join('\n');
@@ -976,9 +976,9 @@ export class PrometheusExporter {
     }
 
     return {
-      project: 'SIGMA',
-      client: 'AGIP',
-      company: 'Epidata',
+      project: 'QASL NEXUS LLM',
+      client: 'Elyer Gregorio Maldonado',
+      company: 'QASL NEXUS LLM',
       qaLead: 'Elyer Gregorio Maldonado',
       uptime: Math.floor((Date.now() - this.metrics.startTime) / 1000),
       global: {

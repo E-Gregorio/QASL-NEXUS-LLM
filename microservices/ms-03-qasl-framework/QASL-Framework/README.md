@@ -1,19 +1,19 @@
-# QASL Framework - Quality Assurance Shift-Left Platform
+# QASL NEXUS LLM - MS-03 Quality Assurance Framework
 
 <div align="center">
 
-[![Author](https://img.shields.io/badge/Author-Elyer%20Maldonado-blue)](https://github.com/E-Gregorio)
+[![Author](https://img.shields.io/badge/Author-Elyer%20Gregorio%20Maldonado-blue)](https://github.com/E-Gregorio)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/Version-1.2.0-orange)](https://github.com/E-Gregorio/QASL-Framework)
+[![Version](https://img.shields.io/badge/Version-4.0.0-orange)](https://github.com/E-Gregorio/QASL-NEXUS-LLM)
 ![Node](https://img.shields.io/badge/node-%3E%3D18-brightgreen.svg)
 ![Playwright](https://img.shields.io/badge/playwright-latest-orange.svg)
 ![K6](https://img.shields.io/badge/k6-latest-purple.svg)
 
-> **Q**uality **A**ssurance **S**hift-**L**eft
+> **Q**uality **A**ssurance **S**hift-**L**eft — **MS-03** Testing Execution Engine
 
-**The first unified Shift-Left Testing Platform that integrates Static Analysis, Unit Testing, E2E, API, Performance, and Security testing in a single workflow.**
+**Unified Shift-Left Testing Platform: Unit Testing, E2E, API, Performance, and Security testing in a single workflow with real-time metrics in Grafana.**
 
-**Created by [Elyer Maldonado](https://github.com/E-Gregorio)** - 2024-2025
+**Created by [Elyer Gregorio Maldonado](https://github.com/E-Gregorio)** - 2024-2026
 
 [Features](#-features) • [Quick Start](#-quick-start) • [Architecture](#-architecture) • [Documentation](#-documentation) • [Contributing](#-contributing)
 
@@ -21,13 +21,13 @@
 
 ---
 
-## What Makes QASL Unique?
+## What Makes QASL NEXUS LLM Unique?
 
-| Feature | Traditional Tools | QASL Framework |
-|---------|-------------------|----------------|
+| Feature | Traditional Tools | QASL NEXUS LLM |
+|---------|-------------------|-----------------|
 | **Unit Testing** | Only app code | **Test your automation code** (validators, generators) |
 | **Infrastructure Logs** | No visibility | **Centralized logs of ALL testing containers** |
-| **Static HU Analysis** | Manual review | AI-powered gap detection |
+| **MS-12 Integration** | Manual test plans | Test plans from central PostgreSQL database |
 | **API Capture** | Manual Postman setup | Auto-capture from E2E |
 | **Test Recording** | Playwright Codegen (5 levels) | Universal Recorder Pro (11 levels + confidence score) |
 | **Unified Dashboard** | Multiple tools | Single Grafana Centro de Control |
@@ -39,17 +39,17 @@
 
 > **Problem**: If your `generateValidCUIT()` function generates an invalid CUIT, 100 E2E tests fail and you waste hours debugging.
 
-Traditional QA teams only run unit tests on application code (written by developers). **QASL tests your automation framework itself** - validators, data generators, formatters - ensuring your test infrastructure is 100% reliable BEFORE running E2E.
+Traditional QA teams only run unit tests on application code (written by developers). **QASL NEXUS LLM tests your automation framework itself** - validators, data generators, formatters - ensuring your test infrastructure is 100% reliable BEFORE running E2E.
 
 ```bash
-npm run unit  # Runs 128+ tests on YOUR automation helpers
+npm run unit  # Runs 102+ tests on YOUR automation helpers
 ```
 
 #### 2. Infrastructure Observability for Testing
 
 > **Problem**: Your tests fail but you don't know if it's the app, the database, Grafana, or any other container.
 
-QASL collects logs from **ALL Docker containers** (Grafana, InfluxDB, PostgreSQL, ZAP, etc.) into a single dashboard. When tests fail, you instantly see if any infrastructure component had errors.
+QASL NEXUS LLM collects logs from **ALL Docker containers** (Grafana, InfluxDB, PostgreSQL, ZAP, etc.) into a single dashboard. When tests fail, you instantly see if any infrastructure component had errors.
 
 ```bash
 npm run infra:check  # CLI health check via Loki
@@ -66,7 +66,7 @@ npm run infra:logs   # Opens Infrastructure Logs dashboard
 
 > **Revolutionary**: Test YOUR automation code, not the application.
 
-While developers test application code, **QA teams never test their own automation helpers**. QASL changes this paradigm.
+While developers test application code, **QA teams never test their own automation helpers**. QASL NEXUS LLM changes this paradigm.
 
 | What Gets Tested | Why It Matters |
 |------------------|----------------|
@@ -75,16 +75,18 @@ While developers test application code, **QA teams never test their own automati
 | `formatCurrency()` | Wrong format = assertion failures = wasted debug time |
 | `validateDateFormat()` | Invalid dates = API rejections = cascading failures |
 
-- **128+ Tests**: Comprehensive coverage of automation helpers
+- **102+ Tests**: Comprehensive coverage of automation helpers
 - **Fast Execution**: Sub-second test runs (catches bugs before E2E)
 - **80% Coverage**: Minimum threshold enforced
 - **Visual UI**: `npm run unit:ui` for interactive debugging
 
-### Phase 1: Static Testing (sigma_analyzer)
+### Phase 1: Static Testing (MS-02)
+
+> Static analysis of User Stories is handled by **MS-02** in the QASL NEXUS LLM ecosystem.
 
 - **AI-Powered Analysis**: Detect coverage gaps in User Stories before coding
 - **ISTQB/IEEE Compliance**: Following IEEE 829, IEEE 830, ISO/IEC 27001
-- **Traceability CSVs**: Export to Jira, Xray, Azure DevOps, TestRail
+- **MS-12 Integration**: Test plans stored in central PostgreSQL database
 - **100% Coverage Generation**: Transform incomplete HUs into fully covered ones
 
 ### Phase 2: Universal Recorder Pro
@@ -100,6 +102,7 @@ While developers test application code, **QA teams never test their own automati
 - **Allure Integration**: Full traceability with ISTQB decorators
 - **Multi-browser**: Chromium, Firefox, WebKit
 - **Parallel Execution**: Optimized for speed
+- **DBReader Integration**: Read test plans from MS-12 PostgreSQL
 
 ### Phase 4: API Testing (Newman)
 
@@ -125,15 +128,15 @@ While developers test application code, **QA teams never test their own automati
 
 When tests fail, is it the app? The database? Grafana? InfluxDB? **Without observability, you're debugging blind.**
 
-QASL collects logs from ALL containers in real-time:
+QASL NEXUS LLM collects logs from ALL containers in real-time:
 
 | Container | What You See |
 |-----------|--------------|
-| `epidata-grafana` | Dashboard errors, datasource issues |
-| `epidata-influxdb` | Query failures, storage problems |
-| `sigma-postgres` | Connection errors, query timeouts |
-| `epidata-zap` | Security scan issues |
-| `epidata-loki` | Log ingestion problems |
+| `qasl-grafana` | Dashboard errors, datasource issues |
+| `qasl-influxdb` | Query failures, storage problems |
+| `qasl-postgres-sut` | Connection errors, query timeouts |
+| `qasl-zap` | Security scan issues |
+| `qasl-loki` | Log ingestion problems |
 
 **Why This Matters:**
 ```
@@ -162,7 +165,6 @@ QASL collects logs from ALL containers in real-time:
 ### Prerequisites
 
 - **Node.js** >= 18
-- **Python** >= 3.10 (for sigma_analyzer)
 - **Docker Desktop**
 - **K6**: [Installation Guide](https://k6.io/docs/getting-started/installation/)
 
@@ -170,17 +172,12 @@ QASL collects logs from ALL containers in real-time:
 
 ```bash
 # Clone the repository
-git clone https://github.com/E-Gregorio/QASL-Framework.git
-cd QASL-Framework
+git clone https://github.com/E-Gregorio/QASL-NEXUS-LLM.git
+cd QASL-NEXUS-LLM/microservices/ms-03-qasl-framework/QASL-Framework
 
 # Install dependencies
 npm install
 npx playwright install
-
-# Install Python dependencies (for static analysis)
-cd sigma_analyzer
-pip install -r requirements.txt
-cd ..
 ```
 
 ---
@@ -213,7 +210,7 @@ Este comando:
 5. Ejecuta API Tests + envía métricas a Grafana
 6. Ejecuta K6 Performance Tests
 7. Ejecuta ZAP Security Tests + envía métricas
-8. Abre automáticamente los 2 dashboards de Grafana
+8. Abre automáticamente los dashboards de Grafana
 
 **Opciones disponibles:**
 
@@ -228,7 +225,6 @@ Este comando:
 
 ```bash
 npm run dashboard        # Abre Centro de Control
-npm run dashboard:all    # Abre ambos dashboards
 npm run infra:logs       # Abre Infrastructure Logs
 ```
 
@@ -298,12 +294,12 @@ node scripts_metricas/send-zap-metrics.mjs
 ### STEP 7: Open Dashboards
 
 ```bash
-npm run dashboard:all
+npm run dashboard
 ```
 
 Or manually:
 
-- Centro de Control: http://localhost:3001/d/sigma-qa-control
+- Centro de Control: http://localhost:3001/d/qasl-nexus-control
 - Infrastructure Logs: http://localhost:3001/d/infrastructure-logs
 
 **Credentials:** admin / admin
@@ -342,7 +338,7 @@ npm run e2e:capture && node scripts_metricas/send-e2e-metrics.mjs
 npm run api && node scripts_metricas/send-api-metrics.mjs
 npm run k6 -- --type=stairs --vus=5 --duration=60s
 npm run zap && node scripts_metricas/send-zap-metrics.mjs
-npm run dashboard:all
+npm run dashboard
 
 # Fin del día
 npm run docker:down
@@ -426,22 +422,23 @@ npm run pipeline -- --skip-k6     # Skip performance
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
-│                      QASL FRAMEWORK ARCHITECTURE                        │
+│                  QASL NEXUS LLM - MS-03 ARCHITECTURE                    │
 ├─────────────────────────────────────────────────────────────────────────┤
 │                                                                         │
 │  ┌─────────────────┐                                                    │
-│  │   HU Original   │ User Story from Business/PO                        │
+│  │   MS-12          │ Central PostgreSQL Database                        │
+│  │  (Test Plans DB) │ Single Source of Truth                             │
 │  └────────┬────────┘                                                    │
 │           │                                                             │
 │           ▼                                                             │
-│  ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐     │
-│  │ SIGMA ANALYZER  │───▶│   HU IDEAL      │───▶│  CSVs Export    │     │
-│  │ (Static Tests)  │    │ (100% Coverage) │    │ (Jira/Xray)     │     │
-│  └─────────────────┘    └─────────────────┘    └─────────────────┘     │
+│  ┌─────────────────┐                                                    │
+│  │   DBReader.ts   │ MS-03 reads test plans from MS-12                  │
+│  │  (MS-03→MS-12)  │                                                    │
+│  └────────┬────────┘                                                    │
 │           │                                                             │
 │           ▼                                                             │
 │  ┌─────────────────┐                                                    │
-│  │  UNIT TESTS     │ Validate automation helpers (Vitest 128+ tests)   │
+│  │  UNIT TESTS     │ Validate automation helpers (Vitest 102+ tests)    │
 │  │  (Vitest)       │                                                    │
 │  └────────┬────────┘                                                    │
 │           │                                                             │
@@ -503,52 +500,38 @@ npm run pipeline -- --skip-k6     # Skip performance
 ```
 QASL-Framework/
 │
-├── sigma_analyzer/              # [PHASE 1] Static Analysis
-│   ├── run_analysis.py          # Main analysis script
-│   ├── parser.py                # HU Markdown parser
-│   ├── rtm_analyzer_ai.py       # AI-powered RTM analyzer
-│   ├── report_generator.py      # Report generator
-│   ├── hu_ideal_html_generator.py
-│   ├── templates/               # ISTQB templates
-│   ├── docs/                    # Shift-Left documentation
-│   ├── reportes/                # Generated reports
-│   └── hu_actualizadas/         # 100% coverage HUs
+├── e2e/                         # [E2E] End-to-End Tests
+│   ├── locators/                # Centralized selectors (golden rule)
+│   ├── pages/                   # Page Object Model (no hardcoded selectors)
+│   ├── specs/                   # Test specifications
+│   ├── test-base/               # Test base & fixtures (Playwright)
+│   └── utils/                   # Utilities, Allure decorators, DBReader
 │
-├── unit/                        # [PHASE 0] Unit Tests
+├── unit/                        # [UNIT] Unit Tests
 │   ├── utils/                   # Validators, formatters (tested)
 │   ├── helpers/                 # Data generators (tested)
-│   ├── __tests__/               # Vitest unit tests
+│   ├── __tests__/               # Vitest unit tests (102+)
 │   ├── setup.ts                 # Global configuration
 │   └── index.ts                 # Centralized exports
 │
-├── universal_recorder_pro.js    # [PHASE 2] Advanced Test Recorder
+├── universal_recorder_pro.js    # Advanced Test Recorder (11-Level)
 │
-├── e2e/                         # [PHASE 3] E2E Tests
-│   ├── locators/                # Centralized selectors (MODIFY)
-│   ├── pages/                   # Page Object Model (MODIFY)
-│   ├── specs/                   # Test specifications (MODIFY)
-│   ├── test-base/               # Test base & fixtures (MODIFY)
-│   └── utils/                   # Utilities & Allure decorators
-│
-├── scripts/                     # Execution scripts (DO NOT TOUCH)
+├── scripts/                     # Execution scripts
 │   ├── run-e2e.mjs              # E2E + Allure + Metrics
 │   ├── run-api.mjs              # Newman + Metrics
 │   ├── run-k6.mjs               # K6 + Metrics
 │   ├── run-zap.mjs              # OWASP ZAP + Metrics
-│   └── run-pipeline.mjs         # Full pipeline
+│   ├── run-pipeline.mjs         # Full pipeline
+│   ├── run-demo.mjs             # Demo mode
+│   ├── run-infra-check.mjs      # Infrastructure health check
+│   └── publish-reports.mjs      # Publish to GitHub Pages
 │
-├── scripts_metricas/            # Metrics senders (DO NOT TOUCH)
+├── scripts_metricas/            # Metrics senders
 │   ├── influx-client.mjs        # Shared InfluxDB client
 │   ├── send-e2e-metrics.mjs
 │   ├── send-api-metrics.mjs
+│   ├── send-k6-metrics.mjs
 │   └── send-zap-metrics.mjs
-│
-├── sigma-sql/                   # [DB] Test Database
-│   ├── SIGMA_DDL.sql            # Complete DDL (30+ tables)
-│   ├── importar_csv_docker.sql  # Script for Docker
-│   ├── importar_csv_windows.sql # Script for Windows/SSMS
-│   ├── datos_prueba.csv         # ~911 masked records
-│   └── README.md                # Usage documentation
 │
 ├── docker/                      # Docker configuration
 │   ├── grafana/dashboards/      # Centro de Control + Infrastructure Logs
@@ -557,11 +540,11 @@ QASL-Framework/
 │   └── postgres/init.sql        # Test data schema
 │
 ├── reports/                     # Generated reports (gitignored)
-├── plantillas-istqb/            # ISTQB documentation templates
-├── docker-compose.yml           # Service definitions
+├── docker-compose.yml           # 13 Docker services
 ├── playwright.config.ts         # Playwright configuration
 ├── vitest.config.ts             # Unit tests configuration
-└── package.json                 # NPM scripts
+├── tsconfig.json                # TypeScript configuration
+└── package.json                 # NPM scripts (qasl-nexus-framework v4.0.0)
 ```
 
 ---
@@ -597,12 +580,12 @@ Access at `http://localhost:3001/d/infrastructure-logs`
 ### Kiosk Mode (Full Screen)
 
 ```
-http://localhost:3001/d/sigma-qa-control/sigma-qa-centro-de-control?kiosk=true
+http://localhost:3001/d/qasl-nexus-control/qasl-nexus-control-center?kiosk=true
 ```
 
 ---
 
-## SQL Server Database - Masked Data (sigma-sql/)
+## SQL Server Database - Test Data
 
 Database with masked data for E2E testing with forms.
 
@@ -613,21 +596,7 @@ Host: localhost
 Port: 1433
 User: sa
 Password: MyStr0ngP4ssw0rd
-Database: SIGMA
-```
-
-### Load Test Data
-
-```powershell
-# 1. Copy files to container
-docker cp sigma-sql/datos_prueba.csv sqlserver:/tmp/data.csv
-docker cp sigma-sql/importar_csv_docker.sql sqlserver:/tmp/importar.sql
-
-# 2. Execute import
-docker exec sqlserver /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "MyStr0ngP4ssw0rd" -C -i /tmp/importar.sql
-
-# 3. Verify
-docker exec sqlserver /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "MyStr0ngP4ssw0rd" -C -d SIGMA -Q "SELECT COUNT(*) AS Total FROM contribuyente"
+Database: qasl_sut_db
 ```
 
 ### Available Data
@@ -638,15 +607,13 @@ docker exec sqlserver /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "MyStr
 | `inconsistencia` | ~911    | Masked tax data                  |
 | `actividad`      | ~173    | Economic activities              |
 
-> See complete documentation in `sigma-sql/README.md`
-
 ---
 
 ## Available Scripts
 
 | Command                     | Description                                |
 | --------------------------- | ------------------------------------------ |
-| <br />`npm run clean`     | Clean all reports + reset Grafana metrics  |
+| `npm run clean`           | Clean all reports + reset Grafana metrics  |
 | `npm run docker:up`       | Start Docker services                      |
 | `npm run docker:down`     | Stop Docker services                       |
 | `npm run unit`            | Run unit tests                             |
@@ -662,12 +629,12 @@ docker exec sqlserver /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "MyStr
 | `npm run demo`            | **Run complete demo (recommended)**  |
 | `npm run demo -- --quick` | Quick demo (E2E + API only, ~2 min)        |
 | `npm run dashboard`       | Open Centro de Control dashboard           |
-| `npm run dashboard:all`   | Open both Grafana dashboards               |
 | `npm run infra:check`     | Check infrastructure health via Loki       |
 | `npm run infra:logs`      | Open Infrastructure Logs dashboard         |
 | `npm run pipeline`        | Run full pipeline (no dashboard auto-open) |
-| `npm run publish`         | Publish reports to GitLab Pages            |
+| `npm run publish`         | Publish reports to GitHub Pages            |
 | `npm run allure:open`     | Open Allure report                         |
+| `npm run allure:generate` | Generate Allure report from results        |
 
 ---
 
@@ -697,11 +664,11 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Author
 
-**Elyer Maldonado** - QA Tech Lead | Test Automation Architect
+**Elyer Gregorio Maldonado** - QA Tech Lead | Test Automation Architect
 
 - GitHub: [@E-Gregorio](https://github.com/E-Gregorio)
 - LinkedIn: [linkedin.com/in/elyerm](https://linkedin.com/in/elyerm)
-- Framework: [QASL Framework](https://github.com/E-Gregorio/QASL-Framework)
+- Project: [QASL NEXUS LLM](https://github.com/E-Gregorio/QASL-NEXUS-LLM)
 
 ### Also by the Author
 
@@ -726,6 +693,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**QASL Framework** © 2024-2025 Elyer Maldonado. All rights reserved.
+**QASL NEXUS LLM** © 2024-2026 Elyer Gregorio Maldonado. All rights reserved.
 
 </div>

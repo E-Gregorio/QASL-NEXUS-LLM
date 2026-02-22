@@ -1,9 +1,9 @@
 # ============================================
 # QASL-SENTINEL-UNIFIED - Ejecucion Unificada
 # ============================================
-# Proyecto: SIGMA
-# Cliente: AGIP (Administracion Gubernamental de Ingresos Publicos)
-# Empresa: Epidata Consulting
+# Proyecto: QASL NEXUS LLM
+# Autor: Elyer Gregorio Maldonado
+# Organizacion: QASL NEXUS LLM
 # Lider Tecnico QA: Elyer Gregorio Maldonado
 # Version: 3.0.0
 # ============================================
@@ -31,8 +31,8 @@ function Show-Banner {
     Write-Host "    |   QASL-SENTINEL-UNIFIED - Command Center                              |" -ForegroundColor Cyan
     Write-Host "    |   Monitoreo Unificado: Backend APIs + Frontend DOM + Seguridad         |" -ForegroundColor Cyan
     Write-Host "    |                                                                       |" -ForegroundColor Cyan
-    Write-Host "    |   AGIP - Buenos Aires Ciudad                                          |" -ForegroundColor Cyan
-    Write-Host "    |   Epidata Consulting                                                  |" -ForegroundColor Cyan
+    Write-Host "    |   QASL NEXUS LLM - Elyer Gregorio Maldonado                            |" -ForegroundColor Cyan
+    Write-Host "    |   Lider Tecnico QA                                                    |" -ForegroundColor Cyan
     Write-Host "    |                                                                       |" -ForegroundColor Cyan
     Write-Host "    =========================================================================" -ForegroundColor Cyan
     Write-Host ""
@@ -331,6 +331,6 @@ if ($stopAll -eq "S" -or $stopAll -eq "s") {
 }
 
 Write-Host ""
-Write-Host "QASL-SENTINEL-UNIFIED - Epidata Consulting" -ForegroundColor Cyan
-Write-Host "AGIP - Buenos Aires Ciudad" -ForegroundColor Gray
+Write-Host "QASL-SENTINEL-UNIFIED - QASL NEXUS LLM" -ForegroundColor Cyan
+Write-Host "Elyer Gregorio Maldonado - Lider Tecnico QA" -ForegroundColor Gray
 Write-Host ""

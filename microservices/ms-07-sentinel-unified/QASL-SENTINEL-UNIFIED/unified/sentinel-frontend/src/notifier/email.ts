@@ -1,7 +1,7 @@
 // ============================================
-// SIGMA-SENTINEL - Email Notifier
+// QASL-SENTINEL - Email Notifier
 // ============================================
-// AGIP - Buenos Aires Ciudad
+// QASL NEXUS LLM - Elyer Gregorio Maldonado
 
 import nodemailer from 'nodemailer';
 import { GuardianReport, GuardianReportWithSecurity, EmailNotification } from '../types.js';
@@ -10,7 +10,7 @@ import { GrafanaScreenshot } from './grafana-screenshot.js';
 import chalk from 'chalk';
 
 export class EmailNotifier {
-  private transporter: nodemailer.Transporter;
+  private transporter: ReturnType<typeof nodemailer.createTransport>;
   private config = getNotificationConfig();
   private verbose: boolean;
   private grafanaScreenshot: GrafanaScreenshot;
@@ -83,7 +83,7 @@ export class EmailNotifier {
     const securityTag = extReport.securityStatus === 'critical' ? ' - ALERTA SEGURIDAD' :
                         extReport.securityStatus === 'degraded' ? ' - Seguridad Degradada' : '';
 
-    return `SIGMA-SENTINEL | Reporte ${statusText[report.status]}${securityTag} | ${new Date(report.timestamp).toLocaleDateString('es-AR')}`;
+    return `QASL-SENTINEL | Reporte ${statusText[report.status]}${securityTag} | ${new Date(report.timestamp).toLocaleDateString('es-AR')}`;
   }
 
   private buildHtmlBody(report: GuardianReport | GuardianReportWithSecurity, hasScreenshot: boolean = false): string {
@@ -118,7 +118,7 @@ export class EmailNotifier {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SIGMA-SENTINEL - Reporte Tecnico</title>
+  <title>QASL-SENTINEL - Reporte Tecnico</title>
 </head>
 <body style="margin: 0; padding: 20px; font-family: Arial, Helvetica, sans-serif; background-color: #ffffff; color: #333333; font-size: 14px; line-height: 1.5;">
 
@@ -127,8 +127,8 @@ export class EmailNotifier {
     <!-- HEADER -->
     <tr>
       <td style="background-color: #2c3e50; padding: 20px; border-bottom: 3px solid #1a252f;">
-        <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: bold;">SIGMA-SENTINEL</h1>
-        <p style="color: #bdc3c7; margin: 5px 0 0; font-size: 12px;">Sistema Autonomo de Monitoreo de Ambientes de Testing</p>
+        <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: bold;">QASL-SENTINEL</h1>
+        <p style="color: #bdc3c7; margin: 5px 0 0; font-size: 12px;">QASL NEXUS LLM - Monitoreo Autonomo de Ambientes</p>
       </td>
     </tr>
 
@@ -144,7 +144,7 @@ export class EmailNotifier {
             </td>
             <td width="50%" style="text-align: right;">
               <p style="margin: 0; color: #6c757d; font-size: 12px;">Ambiente</p>
-              <p style="margin: 2px 0 0; font-weight: bold;">SIGMA-DEV (Testing)</p>
+              <p style="margin: 2px 0 0; font-weight: bold;">QASL-DEV (Testing)</p>
               <p style="margin: 0; color: #6c757d; font-size: 11px;">${report.environment}</p>
             </td>
           </tr>
@@ -378,12 +378,12 @@ export class EmailNotifier {
         <table width="100%">
           <tr>
             <td>
-              <p style="margin: 0; color: #bdc3c7; font-size: 11px;">SIGMA-SENTINEL v1.1.0</p>
-              <p style="margin: 3px 0 0; color: #7f8c8d; font-size: 10px;">AGIP - Administracion Gubernamental de Ingresos Publicos | Buenos Aires Ciudad</p>
-              <p style="margin: 5px 0 0; color: #95a5a6; font-size: 10px;">ELYER GREGORIO MALDONADO - Lider Tecnico QA - Epidata Consulting</p>
+              <p style="margin: 0; color: #bdc3c7; font-size: 11px;">QASL-SENTINEL v1.1.0</p>
+              <p style="margin: 3px 0 0; color: #7f8c8d; font-size: 10px;">QASL NEXUS LLM - Plataforma QA Multi-LLM</p>
+              <p style="margin: 5px 0 0; color: #95a5a6; font-size: 10px;">ELYER GREGORIO MALDONADO - Lider Tecnico QA</p>
             </td>
             <td style="text-align: right;">
-              <a href="${grafanaUrl}/d/sigma-sentinel-main" style="color: #3498db; font-size: 11px; text-decoration: none;">Ver Dashboard Completo</a>
+              <a href="${grafanaUrl}/d/qasl-sentinel-main" style="color: #3498db; font-size: 11px; text-decoration: none;">Ver Dashboard Completo</a>
             </td>
           </tr>
         </table>
@@ -404,11 +404,11 @@ export class EmailNotifier {
     const statusText = report.status === 'stable' ? 'ESTABLE' : report.status === 'changes-detected' ? 'CAMBIOS DETECTADOS' : report.status === 'critical' ? 'CRITICO' : 'ERROR';
 
     return `
-SIGMA-SENTINEL - REPORTE TECNICO
+QASL-SENTINEL - REPORTE TECNICO
 ================================
 
 Fecha: ${new Date(report.timestamp).toLocaleString('es-AR')}
-Ambiente: SIGMA-DEV (Testing)
+Ambiente: QASL-DEV (Testing)
 URL: ${report.environment}
 Tiempo de Ejecucion: ${(report.executionTime / 1000).toFixed(2)}s
 
@@ -449,8 +449,8 @@ ${extReport.securityReport.topAlerts.slice(0, 8).map(alert =>
 ` : 'Escaneo deshabilitado.'}
 
 ---
-Dashboard: ${grafanaUrl}/d/sigma-sentinel-main
-SIGMA-SENTINEL v1.1.0 | AGIP Buenos Aires Ciudad
+Dashboard: ${grafanaUrl}/d/qasl-sentinel-main
+QASL-SENTINEL v1.1.0 | QASL NEXUS LLM
     `.trim();
   }
 

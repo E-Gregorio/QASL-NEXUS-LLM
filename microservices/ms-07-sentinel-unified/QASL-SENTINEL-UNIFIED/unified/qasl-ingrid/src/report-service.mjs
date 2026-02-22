@@ -224,7 +224,7 @@ function generatePDF(metrics, reportType = 'full') {
     };
 
     // =========================================================================
-    // RESUMEN EJECUTIVO - Cards (SIGMA)
+    // RESUMEN EJECUTIVO - Cards
     // =========================================================================
 
     if (include.summary) {
@@ -608,13 +608,13 @@ function generatePDF(metrics, reportType = 'full') {
     doc.y += 15;
 
     doc.fontSize(10).fill(C.dark)
-      .text('PUBLIC SECTOR | EPIDATA CONSULTING', margin, doc.y, { width: contentW, align: 'center', lineBreak: false });
+      .text('QASL NEXUS LLM', margin, doc.y, { width: contentW, align: 'center', lineBreak: false });
     doc.y += 14;
     doc.fontSize(10).fill(C.dark)
-      .text('Cliente: AGIP | Proyecto: SIGMA', margin, doc.y, { width: contentW, align: 'center', lineBreak: false });
+      .text('Plataforma QA Multi-LLM', margin, doc.y, { width: contentW, align: 'center', lineBreak: false });
     doc.y += 14;
     doc.fontSize(10).fill(C.dark)
-      .text('Elyer Gregorio Maldonado - Lider Tecnico QA Epidata', margin, doc.y, { width: contentW, align: 'center', lineBreak: false });
+      .text('Elyer Gregorio Maldonado - Lider Tecnico QA', margin, doc.y, { width: contentW, align: 'center', lineBreak: false });
     doc.y += 18;
     doc.fontSize(8).fill(C.gray)
       .text(`Reporte generado automaticamente por QASL-INGRID | ${dateStr} ${timeStr}`, margin, doc.y, { width: contentW, align: 'center', lineBreak: false });
@@ -631,7 +631,7 @@ function generatePDF(metrics, reportType = 'full') {
       doc.page.margins.bottom = 0;
       doc.fontSize(7).fill(C.gray)
         .text(
-          `QASL-SENTINEL-UNIFIED | SIGMA-AGIP | Elyer Maldonado | ${i + 1}/${range.count}`,
+          `QASL-SENTINEL-UNIFIED | QASL NEXUS LLM | Elyer Maldonado | ${i + 1}/${range.count}`,
           margin,
           doc.page.height - 30,
           { width: contentW, align: 'center', lineBreak: false }
@@ -776,7 +776,7 @@ async function sendReportEmail(pdfBuffer, targetEmail, reportType = 'full') {
 
   const contentMap = {
     full: {
-      desc: 'Se adjunta el informe completo de monitoreo del sistema SIGMA para AGIP.',
+      desc: 'Se adjunta el informe completo de monitoreo del sistema QASL NEXUS LLM.',
       items: [
         'Resumen ejecutivo con metricas clave',
         'Estado detallado de cada API',
@@ -797,7 +797,7 @@ async function sendReportEmail(pdfBuffer, targetEmail, reportType = 'full') {
       ],
     },
     apis: {
-      desc: 'Se adjunta el informe de estado de las APIs del sistema SIGMA.',
+      desc: 'Se adjunta el informe de estado de las APIs del sistema QASL NEXUS LLM.',
       items: [
         'Resumen ejecutivo de disponibilidad',
         'Metricas de rendimiento',
@@ -806,7 +806,7 @@ async function sendReportEmail(pdfBuffer, targetEmail, reportType = 'full') {
       ],
     },
     zap: {
-      desc: 'Se adjunta el informe de seguridad OWASP ZAP del sistema SIGMA.',
+      desc: 'Se adjunta el informe de seguridad OWASP ZAP del sistema QASL NEXUS LLM.',
       items: [
         'Vulnerabilidades por severidad',
         'Top vulnerabilidades detectadas',
@@ -814,7 +814,7 @@ async function sendReportEmail(pdfBuffer, targetEmail, reportType = 'full') {
       ],
     },
     compliance: {
-      desc: 'Se adjunta el informe de compliance del sistema SIGMA.',
+      desc: 'Se adjunta el informe de compliance del sistema QASL NEXUS LLM.',
       items: [
         'Scores por framework (SOC2, ISO27001, PCI-DSS, HIPAA)',
         'Estado de cumplimiento',
@@ -863,8 +863,8 @@ async function sendReportEmail(pdfBuffer, targetEmail, reportType = 'full') {
         </div>
         <div style="text-align: center; padding-top: 20px; border-top: 1px solid #dadce0;">
           <p style="color: #5f6368; font-size: 12px; margin: 0;">
-            Public Sector | Epidata Consulting | Cliente: AGIP | Proyecto: SIGMA<br>
-            Elyer Gregorio Maldonado - Lider Tecnico QA Epidata
+            QASL NEXUS LLM | Plataforma QA Multi-LLM<br>
+            Elyer Gregorio Maldonado - Lider Tecnico QA
           </p>
         </div>
       </div>

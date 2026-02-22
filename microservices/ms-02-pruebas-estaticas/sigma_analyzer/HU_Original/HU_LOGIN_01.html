@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Historia de Usuario — HU_LOGIN_01</title>
+<style>
+  body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; }
+  .us-container { max-width: 900px; margin: 0 auto; }
+  .us-header { background: #5C85D6; color: white; padding: 15px; text-align: center; font-weight: bold; font-size: 20px; margin-bottom: 0; }
+  .us-table { width: 100%; border-collapse: collapse; margin: 0; }
+  .us-table td { border: 1px solid #000; padding: 12px; vertical-align: top; }
+  .label { background: #5C85D6; color: white; font-weight: bold; width: 200px; }
+  .content { background: white; }
+  .link-ref { color: #2196F3; text-decoration: underline; font-style: italic; }
+  .description-format { margin: 5px 0; }
+  .scenario-title { font-weight: bold; margin-top: 10px; }
+  .scenario-content { margin-bottom: 10px; font-family: 'Courier New', monospace; background: #f5f5f5; padding: 10px; border-left: 3px solid #5C85D6; }
+  .bullet-point { margin-left: 0; margin-bottom: 5px; }
+  .out-scope-item { margin-bottom: 10px; }
+</style>
+</head>
+<body>
+<div class="us-container">
+  <div class="us-header">HISTORIA DE USUARIO</div>
+  <table class="us-table">
+    <tr>
+      <td class="label">ID</td>
+      <td class="content">HU_LOGIN_01</td>
+    </tr>
+    <tr>
+      <td class="label">Nombre</td>
+      <td class="content">Inicio de Sesion de Usuario</td>
+    </tr>
+    <tr>
+      <td class="label">Épica</td>
+      <td class="content">
+        EP-001: Autenticacion y Control de Acceso<br>
+        <span class="link-ref">Enlace a documentacion de la Epica</span>
+      </td>
+    </tr>
+    <tr>
+      <td class="label">Prioridad</td>
+      <td class="content">Alta</td>
+    </tr>
+    <tr>
+      <td class="label">Estado</td>
+      <td class="content">Refinada</td>
+    </tr>
+    <tr>
+      <td class="label">Descripción</td>
+      <td class="content">
+        <div class="description-format"><strong>Como</strong> usuario registrado del sistema</div>
+        <div class="description-format"><strong>Quiero</strong> iniciar sesion con mis credenciales (correo electronico y contrasena)</div>
+        <div class="description-format"><strong>Para</strong> acceder a las funcionalidades del sistema segun mi rol asignado</div>
+      </td>
+    </tr>
+    <tr>
+      <td class="label">Usuarios / Roles</td>
+      <td class="content">Usuario registrado, Administrador, Operador</td>
+    </tr>
+    <tr>
+      <td class="label">Reglas de Negocio</td>
+      <td class="content">
+        BR1: El correo electronico debe tener formato valido (usuario@dominio.com)<br>
+        BR2: La contrasena debe tener minimo 8 caracteres, incluyendo mayuscula, minuscula y numero<br>
+        BR3: Despues de 3 intentos fallidos consecutivos, la cuenta se bloquea por 15 minutos<br>
+        BR4: La sesion expira automaticamente despues de 30 minutos de inactividad<br>
+        BR5: El sistema debe registrar cada intento de login (exitoso o fallido) en el log de auditoria<br>
+        <span class="link-ref">CU-001 | Caso de uso: Autenticacion de usuario</span>
+      </td>
+    </tr>
+    <tr>
+      <td class="label">Precondiciones</td>
+      <td class="content">
+        &bull; El usuario debe estar registrado previamente en el sistema<br>
+        &bull; El servicio de autenticacion (Keycloak/OAuth) debe estar operativo<br>
+        &bull; La base de datos de usuarios debe estar disponible
+      </td>
+    </tr>
+    <tr>
+      <td class="label">Dependencias</td>
+      <td class="content">
+        &bull; Integracion con Keycloak (Access Manager)<br>
+        &bull; API de autenticacion del backend operativa<br>
+        &bull; Servicio de correo para recuperacion de contrasena
+      </td>
+    </tr>
+    <tr>
+      <td class="label">Estimaciones</td>
+      <td class="content">
+        Story Points (SP): 5<br>
+        Valor (V 1-3): 3<br>
+        Costo (C 1-3): 2<br>
+        Probabilidad (P 1-3): 2<br>
+        Impacto (I 1-3): 3<br>
+        <strong>Riesgo (R) = P x I = 2 x 3 = 6</strong><br>
+        <strong>Total VCR = V + C + R = 3 + 2 + 6 = 11</strong><br>
+        <em>Politica:</em> si <strong>VCR &ge; 9</strong> &rarr; Deuda tecnica (automatizar y pasa a regresion); si es menor &rarr; Pruebas manuales.
+      </td>
+    </tr>
+    <tr>
+      <td class="label">Escenarios de Prueba (Criterios de Aceptación)</td>
+      <td class="content">
+        <div class="scenario-title">E1: Login exitoso con credenciales validas</div>
+        <div class="scenario-content">
+          <strong>DADO</strong> que el usuario tiene una cuenta activa registrada en el sistema<br>
+          <strong>CUANDO</strong> ingresa su correo electronico y contrasena correctos y presiona el boton Iniciar Sesion<br>
+          <strong>ENTONCES</strong> el sistema autentica al usuario y lo redirige al dashboard principal segun su rol
+        </div>
+        <div class="scenario-title">E2: Login fallido por contrasena incorrecta</div>
+        <div class="scenario-content">
+          <strong>DADO</strong> que el usuario tiene una cuenta activa en el sistema<br>
+          <strong>CUANDO</strong> ingresa su correo electronico correcto pero una contrasena incorrecta<br>
+          <strong>ENTONCES</strong> el sistema muestra el mensaje de error "Credenciales invalidas" y no permite el acceso
+        </div>
+        <div class="scenario-title">E3: Bloqueo de cuenta por intentos fallidos</div>
+        <div class="scenario-content">
+          <strong>DADO</strong> que el usuario ha fallado 2 intentos de login consecutivos<br>
+          <strong>CUANDO</strong> falla el tercer intento de login<br>
+          <strong>ENTONCES</strong> el sistema bloquea la cuenta por 15 minutos y muestra el mensaje "Cuenta bloqueada temporalmente"
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td class="label">Dentro del Alcance</td>
+      <td class="content">
+        <div class="bullet-point">&bull; Validacion de formato de correo electronico</div>
+        <div class="bullet-point">&bull; Validacion de contrasena segun politica de seguridad</div>
+        <div class="bullet-point">&bull; Bloqueo temporal de cuenta por intentos fallidos</div>
+        <div class="bullet-point">&bull; Redireccion al dashboard segun rol del usuario</div>
+      </td>
+    </tr>
+    <tr>
+      <td class="label">Fuera del Alcance</td>
+      <td class="content">
+        <div class="out-scope-item">&bull; Registro de nuevos usuarios<br>
+        * Cubiertas por: <span class="link-ref">HU_REG_01</span></div>
+        <div class="out-scope-item">&bull; Recuperacion de contrasena<br>
+        * Cubiertas por: <span class="link-ref">HU_PASS_01</span></div>
+        <div class="out-scope-item">&bull; Autenticacion con proveedores externos (Google, Facebook)<br>
+        * Cubiertas por: <span class="link-ref">HU_OAUTH_01</span></div>
+      </td>
+    </tr>
+    <tr>
+      <td class="label">Referencias</td>
+      <td class="content">
+        <span class="link-ref">Documento de Requerimientos - Modulo de Autenticacion</span><br>
+        <span class="link-ref">CU-001 Caso de Uso: Login de Usuario</span><br>
+        <span class="link-ref">IEEE 829 - Test Documentation</span><br>
+        <span class="link-ref">ISTQB Foundation Level Syllabus v4.0</span>
+      </td>
+    </tr>
+    <tr>
+      <td class="label">Notas / Comentarios</td>
+      <td class="content">
+        Esta HU cubre el flujo principal de autenticacion. Los escenarios de login con doble factor (2FA) se cubriran en una HU posterior.
+        Se debe considerar la integracion con el servicio de auditoria para registrar todos los intentos de acceso.
+      </td>
+    </tr>
+  </table>
+</div>
+</body>
+</html>

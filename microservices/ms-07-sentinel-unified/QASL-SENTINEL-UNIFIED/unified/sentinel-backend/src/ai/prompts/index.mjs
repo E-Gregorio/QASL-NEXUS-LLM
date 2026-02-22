@@ -214,9 +214,8 @@ Tu rol es analizar métricas de Prometheus/Grafana y generar informes ejecutivos
 
 CONTEXTO:
 - Sistema: QASL-API-SENTINEL (Vigilancia de APIs 24/7)
-- Proyecto: SIGMA
-- Cliente: AGIP (Administración Gubernamental de Ingresos Públicos)
-- Empresa: Epidata
+- Proyecto: QASL NEXUS LLM
+- QA Lead: Elyer Gregorio Maldonado
 - Líder Técnico QA: Elyer Gregorio Maldonado
 
 REGLAS:

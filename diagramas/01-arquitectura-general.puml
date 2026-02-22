@@ -1,0 +1,126 @@
+@startuml QASL_NEXUS_LLM_Arquitectura
+
+!define DARKBLUE #1a1a2e
+!define MIDBLUE #16213e
+!define PURPLE #6366f1
+!define CYAN #38bdf8
+!define GOLD #fbbf24
+!define GREEN #4ade80
+!define RED #ef4444
+!define SLATE #94a3b8
+!define WHITE #f8fafc
+!define DARKSLATE #0f172a
+
+skinparam backgroundColor DARKSLATE
+skinparam defaultFontColor WHITE
+skinparam defaultFontSize 11
+skinparam defaultFontName "Segoe UI"
+skinparam shadowing true
+
+skinparam rectangle {
+    RoundCorner 15
+    FontColor WHITE
+    BorderThickness 2
+}
+
+skinparam database {
+    FontColor WHITE
+    BorderThickness 2
+}
+
+skinparam arrow {
+    Color SLATE
+    FontColor SLATE
+    Thickness 2
+}
+
+skinparam package {
+    BackgroundColor DARKBLUE
+    BorderColor PURPLE
+    FontColor WHITE
+    FontStyle bold
+    BorderThickness 2
+}
+
+title <size:22><b>QASL NEXUS LLM</b></size>\n<size:14><color:SLATE>Plataforma QA con 12 Microservicios + Multi-LLM</color></size>\n<size:11><color:SLATE>ISTQB v4.0 | IEEE 829 | ISO 29119</color></size>
+
+actor "QA Analyst" as USER #6366f1
+
+package "FASE 1 - ANALISIS ESTATICO" as P1 #1a1a2e {
+    rectangle "**MS-01**\nMetodologias\n<size:9>Templates ISTQB/IEEE\n:3000</size>" as MS01 #16213e;line:6366f1
+    rectangle "**MS-02**\nPruebas Estaticas\n<size:9>Parser + Gaps + 4 CSVs\n:4000</size>" as MS02 #16213e;line:6366f1
+    rectangle "**MS-09**\nOrquestador LLM\n<size:9>Claude + GPT + Gemini\n:8000</size>" as MS09 #312e81;line:a78bfa
+}
+
+package "FASE 2 - DECISION" as P2 #1a1a2e {
+    rectangle "**VCR Calculator**\n<size:9>Value + Cost + Risk\n>=9 AUTOMATIZAR\n<9 MANUAL</size>" as VCR #713f12;line:fbbf24
+}
+
+package "FASE 3 - EJECUCION EN PARALELO" as P3 #1a1a2e {
+    rectangle "**MS-08**\nCI/CD Pipeline\n<size:9>Orquesta 3 fases\n:8888</size>" as MS08 #1e1b4b;line:818cf8
+
+    rectangle "**MS-03**\nQASL Framework\n<size:9>Playwright + K6\nNewman + ZAP\n:6001</size>" as MS03 #16213e;line:6366f1
+
+    rectangle "**MS-04**\nQASL Mobile\n<size:9>Maestro\niOS + Android\n:7500</size>" as MS04 #16213e;line:6366f1
+
+    rectangle "**MS-06**\nGarak Security\n<size:9>LLM Vulnerability\nOWASP Top 10\n:7600</size>" as MS06 #16213e;line:6366f1
+
+    rectangle "**MS-05**\nINGRID AI\n<size:9>AI Test Generation\nMulti-Model\n:7000</size>" as MS05 #16213e;line:6366f1
+}
+
+package "FASE 4 - REPORTES E INTEGRACIONES" as P4 #1a1a2e {
+    rectangle "**MS-10**\nMCP Interfaz\n<size:9>Jira + X-Ray + TestRail\nAzure DevOps\n:5000</size>" as MS10 #16213e;line:6366f1
+
+    rectangle "**MS-11**\nReportador\n<size:9>PDF Executive Report\nSlack + Teams + Email\n:9000</size>" as MS11 #16213e;line:6366f1
+
+    rectangle "**MS-07**\nSentinel\n<size:9>Grafana + Prometheus\nInfluxDB\n:3003</size>" as MS07 #16213e;line:6366f1
+}
+
+database "**MS-12**\nPostgreSQL 16\n<size:9>Single Source of Truth\n:5432</size>" as DB #0c4a6e;line:38bdf8
+
+cloud "Jira + Links" as JIRA #14532d;line:4ade80
+cloud "Slack / Teams / Email" as CHANNELS #14532d;line:4ade80
+cloud "Dashboards Real-Time" as GRAFANA #14532d;line:4ade80
+
+' === FLUJO ===
+
+USER -[#6366f1,bold]-> MS02 : <color:CYAN>.docx HU</color>
+
+MS01 .[#475569].> MS02 : <color:SLATE>Templates</color>
+MS02 <-[#818cf8]-> MS09 : <color:SLATE>Gaps + Context</color>
+MS02 -[#38bdf8,bold]-> DB : <color:CYAN>4 CSVs + Gaps</color>
+
+DB -[#fbbf24]-> VCR : <color:GOLD>HU Data</color>
+VCR -[#4ade80,bold]-> MS08 : <color:GREEN>AUTOMATIZAR</color>
+VCR .[#ef4444].> USER : <color:RED>MANUAL</color>
+
+MS08 -[#818cf8]-> MS03
+MS08 -[#818cf8]-> MS04
+MS08 -[#818cf8]-> MS06
+MS08 -[#818cf8]-> MS05
+
+MS03 -[#38bdf8]-> DB : <color:SLATE>Results</color>
+MS04 -[#38bdf8]-> DB
+MS06 -[#38bdf8]-> DB
+MS05 -[#38bdf8]-> DB
+
+DB -[#6366f1]-> MS10 : <color:SLATE>Defects</color>
+DB -[#6366f1]-> MS11 : <color:SLATE>Metrics</color>
+DB -[#6366f1]-> MS07 : <color:SLATE>Metrics</color>
+
+MS10 -[#4ade80]-> JIRA
+MS11 -[#4ade80]-> CHANNELS
+MS07 -[#4ade80]-> GRAFANA
+
+legend right
+  |= Color |= Significado |
+  | <back:#6366f1>    </back> | Flujo Principal |
+  | <back:#38bdf8>    </back> | Datos / DB |
+  | <back:#fbbf24>    </back> | Decision VCR |
+  | <back:#4ade80>    </back> | Output Externo |
+  | <back:#ef4444>    </back> | Path Manual |
+endlegend
+
+footer \n<size:10>QASL NEXUS LLM v1.0 | Elyer Gregorio Maldonado | 2025</size>
+
+@enduml

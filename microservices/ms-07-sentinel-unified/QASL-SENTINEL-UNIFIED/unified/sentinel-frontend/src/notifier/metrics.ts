@@ -1,7 +1,7 @@
 // ============================================
-// SIGMA-SENTINEL - Metrics Reporter (InfluxDB/Grafana)
+// QASL-SENTINEL - Metrics Reporter (InfluxDB/Grafana)
 // ============================================
-// AGIP - Buenos Aires Ciudad
+// QASL NEXUS LLM - Elyer Gregorio Maldonado
 
 import { GuardianReport, GuardianReportWithSecurity } from '../types.js';
 import chalk from 'chalk';
@@ -16,8 +16,8 @@ export class MetricsReporter {
   constructor(verbose: boolean = true) {
     this.verbose = verbose;
     this.influxUrl = process.env.INFLUXDB_URL || 'http://localhost:8088';
-    this.influxToken = process.env.INFLUXDB_TOKEN || 'sigma-sentinel-token-2024';
-    this.influxOrg = process.env.INFLUXDB_ORG || 'sigma';
+    this.influxToken = process.env.INFLUXDB_TOKEN || 'qasl-sentinel-token-2024';
+    this.influxOrg = process.env.INFLUXDB_ORG || 'qasl';
     this.influxBucket = process.env.INFLUXDB_BUCKET || 'sentinel_metrics';
   }
 

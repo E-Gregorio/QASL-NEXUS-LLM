@@ -86,8 +86,8 @@ QASL-MOBILE es un framework profesional de automatizacion de pruebas para aplica
 
 ```bash
 # 1. Clonar el repositorio
-git clone https://github.com/tu-usuario/qasl-mobile.git
-cd qasl-mobile
+git clone https://github.com/E-Gregorio/QASL-NEXUS-LLM.git
+cd QASL-NEXUS-LLM/microservices/ms-04-qasl-mobile/qasl-mobile
 
 # 2. Instalar dependencias
 npm install

@@ -3,9 +3,9 @@
  * ║                         GARAK REPORT IMPORTER                               ║
  * ║              Puente: NVIDIA Garak → Prometheus Pushgateway                  ║
  * ╠══════════════════════════════════════════════════════════════════════════════╣
- * ║  Proyecto: SIGMA                                                            ║
- * ║  Cliente: AGIP (Administracion Gubernamental de Ingresos Publicos)          ║
- * ║  Empresa: Epidata Consulting                                                ║
+ * ║  QASL NEXUS LLM                                                              ║
+ * ║  Elyer Gregorio Maldonado                                                    ║
+ * ║  Plataforma QA Multi-LLM                                                     ║
  * ║  Lider Tecnico QA: Elyer Gregorio Maldonado                                 ║
  * ║  Version: 1.0.0                                                             ║
  * ╠══════════════════════════════════════════════════════════════════════════════╣
@@ -303,7 +303,7 @@ export class GarakImporter {
 
     // Header
     lines.push('# QASL-SENTINEL-UNIFIED - NVIDIA Garak LLM Security Metrics');
-    lines.push('# Proyecto: SIGMA | Cliente: AGIP | Empresa: Epidata');
+    lines.push('# QASL NEXUS LLM - Elyer Gregorio Maldonado');
     lines.push('# Lider Tecnico QA: Elyer Gregorio Maldonado');
     lines.push('');
 

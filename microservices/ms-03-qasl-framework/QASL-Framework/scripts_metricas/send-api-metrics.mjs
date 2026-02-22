@@ -1,18 +1,4 @@
 #!/usr/bin/env node
-/**
- * ═══════════════════════════════════════════════════════════════════════════
- * SEND API METRICS - Envía métricas de Newman a InfluxDB
- * ═══════════════════════════════════════════════════════════════════════════
- *
- * Lee los resultados de Newman (JSON) y envía métricas a InfluxDB
- * para visualización en Grafana.
- *
- * Uso:
- *   node scripts_metricas/send-api-metrics.mjs [results-file]
- *
- * ═══════════════════════════════════════════════════════════════════════════
- */
-
 import fs from 'fs';
 import path from 'path';
 import { sendAPIMetrics, checkInfluxConnection } from './influx-client.mjs';

@@ -1,10 +1,3 @@
-// ═══════════════════════════════════════════════════════════════════════════
-// 📊 QASL-MOBILE Allure Reporter
-// ═══════════════════════════════════════════════════════════════════════════
-// Genera reportes Allure desde resultados de Maestro
-// Compatible con CI/CD (Jenkins, GitLab, GitHub Actions)
-// ═══════════════════════════════════════════════════════════════════════════
-
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { TestExecution, INGRIDAnalysis } from '../types/index.js';

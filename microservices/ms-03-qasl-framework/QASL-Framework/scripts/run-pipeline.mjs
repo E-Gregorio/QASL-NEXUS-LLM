@@ -1,41 +1,4 @@
 #!/usr/bin/env node
-/**
- * ═══════════════════════════════════════════════════════════════════════════
- * RUN PIPELINE - Ejecuta Pipeline Completo de Testing
- * ═══════════════════════════════════════════════════════════════════════════
- *
- * Ejecuta secuencialmente:
- *   1. E2E Tests (Playwright) → Reporte Allure HTML
- *   2. API Tests (Newman) → Reporte HTMLExtra
- *   3. Performance Tests (K6) → Reporte HTML + Grafana
- *   4. Security Tests (ZAP) → Reporte HTML Nativo
- *
- * Uso:
- *   node scripts/run-pipeline.mjs [spec] [opciones]
- *
- * Opciones:
- *   --skip-e2e      Saltar E2E (usar captura existente)
- *   --skip-api      Saltar tests API
- *   --skip-k6       Saltar tests Performance
- *   --skip-zap      Saltar tests Security
- *   --vus=N         VUs para K6 (default: 10)
- *   --duration=Ns   Duración K6 (default: 30s)
- *
- * Ejemplos:
- *   node scripts/run-pipeline.mjs TS-001               # Pipeline completo
- *   node scripts/run-pipeline.mjs --skip-e2e           # Usa captura existente
- *   node scripts/run-pipeline.mjs --skip-zap           # Sin security scan
- *
- * Reportes:
- *   reports/
- *   ├── e2e/allure-report/    # Allure HTML
- *   ├── api/                   # Newman HTMLExtra
- *   ├── k6/                    # K6 HTML + JSON
- *   └── zap/                   # ZAP HTML + JSON
- *
- * ═══════════════════════════════════════════════════════════════════════════
- */
-
 import { execSync } from 'child_process';
 import path from 'path';
 import fs from 'fs';
@@ -55,14 +18,15 @@ const startTime = Date.now();
 console.log(`
 ╔═══════════════════════════════════════════════════════════════════════════╗
 ║                                                                           ║
-║   ███████╗██████╗ ██╗██████╗  █████╗ ████████╗ █████╗                     ║
-║   ██╔════╝██╔══██╗██║██╔══██╗██╔══██╗╚══██╔══╝██╔══██╗                    ║
-║   █████╗  ██████╔╝██║██║  ██║███████║   ██║   ███████║                    ║
-║   ██╔══╝  ██╔═══╝ ██║██║  ██║██╔══██║   ██║   ██╔══██║                    ║
-║   ███████╗██║     ██║██████╔╝██║  ██║   ██║   ██║  ██║                    ║
-║   ╚══════╝╚═╝     ╚═╝╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝                    ║
+║    ██████╗  █████╗ ███████╗██╗         ███╗   ██╗███████╗██╗  ██╗         ║
+║   ██╔═══██╗██╔══██╗██╔════╝██║         ████╗  ██║██╔════╝╚██╗██╔╝         ║
+║   ██║   ██║███████║███████╗██║         ██╔██╗ ██║█████╗   ╚███╔╝          ║
+║   ██║▄▄ ██║██╔══██║╚════██║██║         ██║╚██╗██║██╔══╝   ██╔██╗          ║
+║   ╚██████╔╝██║  ██║███████║███████╗    ██║ ╚████║███████╗██╔╝ ██╗         ║
+║    ╚══▀▀═╝ ╚═╝  ╚═╝╚══════╝╚══════╝    ╚═╝  ╚═══╝╚══════╝╚═╝  ╚═╝         ║
 ║                                                                           ║
-║               QA AUTOMATION FRAMEWORK - FULL PIPELINE                     ║
+║            QASL NEXUS LLM - MS-03 FRAMEWORK | FULL PIPELINE              ║
+║                      Elyer Maldonado | QA Tech Lead                       ║
 ║                                                                           ║
 ╚═══════════════════════════════════════════════════════════════════════════╝
 `);

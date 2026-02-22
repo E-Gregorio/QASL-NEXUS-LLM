@@ -1,7 +1,7 @@
 # QASL-SENTINEL-UNIFIED v3.0.0 - Arquitectura del Sistema
 
-**Proyecto SIGMA** | AGIP (Administracion Gubernamental de Ingresos Publicos) | Buenos Aires Ciudad
-**Empresa:** Epidata Consulting | **Lider Tecnico QA:** Elyer Gregorio Maldonado
+**Proyecto QASL NEXUS LLM** | Plataforma QA con 12 Microservicios + Multi-LLM
+**Lider Tecnico QA:** Elyer Gregorio Maldonado
 
 ---
 
@@ -17,7 +17,7 @@
 │ ═══════════════════════════════════════════════════════════════════════════════  │
 │                                                                                 │
 │  ┌───────────────────────────────────────────┐  ┌────────────────────────────┐  │
-│  │         SISTEMA SIGMA (AGIP)              │  │       OPENAI               │  │
+│  │         SISTEMA QASL NEXUS LLM            │  │       OPENAI               │  │
 │  │                                           │  │                            │  │
 │  │  ┌─────────┐ ┌───────────┐ ┌───────────┐ │  │  ┌──────────────────────┐  │  │
 │  │  │  APIs   │ │ Frontend  │ │ Seguridad │ │  │  │  Modelos IA/LLM      │  │  │
@@ -27,7 +27,7 @@
 │  │       │            │             │        │  │             │              │  │
 │  │  ┌────┴────────────┴─────────────┴─────┐  │  │  ┌──────────┴───────────┐  │  │
 │  │  │        Machine Learning             │  │  │  │    NVIDIA Garak      │  │  │
-│  │  │   (Analisis predictivo SIGMA)       │  │  │  │  34 detectores       │  │  │
+│  │  │   (Analisis predictivo QASL)        │  │  │  │  34 detectores       │  │  │
 │  │  └─────────────────────────────────────┘  │  │  │  Seguridad IA/LLM    │  │  │
 │  └───────────────────────────────────────────┘  │  └──────────────────────┘  │  │
 │                                                  └────────────────────────────┘  │
@@ -58,7 +58,7 @@
 │  │  backend     │ │  frontend    │ │  Scanner     │ │  Learning    │           │
 │  │  (Node.js)   │ │ (Playwright) │ │  (Docker)    │ │  Engine      │           │
 │  │  :9097       │ │              │ │              │ │              │           │
-│  │  [SIGMA]     │ │  [SIGMA]     │ │  [SIGMA]     │ │  [SIGMA]     │           │
+│  │  [QASL]      │ │  [QASL]      │ │  [QASL]      │ │  [QASL]      │           │
 │  └──────┬───────┘ └──────┬───────┘ └──────┬───────┘ └──────┬───────┘           │
 │         │                │               │                │                    │
 │  ┌──────┴────────────────┴───────────────┴────────────────┘                    │
@@ -79,9 +79,9 @@
 │  ┌─────────────────────────────────────────┐  ┌──────────────────────────────┐  │
 │  │          Prometheus  :9095              │  │       InfluxDB  :8088        │  │
 │  │                                         │  │                              │  │
-│  │  ← API metrics         [SIGMA]          │  │  ← DOM metrics    [SIGMA]    │  │
-│  │  ← ZAP metrics         [SIGMA]          │  │    load time, errores,       │  │
-│  │  ← ML metrics           [SIGMA]          │  │    screenshots, a11y         │  │
+│  │  ← API metrics         [QASL]           │  │  ← DOM metrics    [QASL]     │  │
+│  │  ← ZAP metrics         [QASL]           │  │    load time, errores,       │  │
+│  │  ← ML metrics           [QASL]           │  │    screenshots, a11y         │  │
 │  │  ← Garak metrics x12   [OPENAI]         │  │                              │  │
 │  │    (via Pushgateway :9096)               │  │                              │  │
 │  └─────────────────┬───────────────────────┘  └──────────────┬───────────────┘  │
@@ -105,7 +105,7 @@
 │  │                                                                          │   │
 │  │  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────────┐  │   │
 │  │  │1.Overview│ │ 2. APIs  │ │3.Frontend│ │ 4. ZAP   │ │  5. Garak    │  │   │
-│  │  │SIGMA+OAI │ │  SIGMA   │ │  SIGMA   │ │  SIGMA   │ │   OPENAI     │  │   │
+│  │  │QASL+OAI  │ │  QASL    │ │  QASL    │ │  QASL    │ │   OPENAI     │  │   │
 │  │  └──────────┘ └──────────┘ └──────────┘ └──────────┘ └──────────────┘  │   │
 │  │  ┌──────────┐ ┌──────────┐ ┌────────────────────────────────────────┐  │   │
 │  │  │6.Compli- │ │7. Trends │ │         8. INGRID Chat Widget          │  │   │
@@ -171,12 +171,12 @@
 
 ## Flujo de Datos
 
-### Flujos SIGMA (AGIP)
+### Flujos QASL NEXUS LLM
 ```
-SIGMA APIs (7 endpoints)  →  sentinel-backend   →  Prometheus :9095  →  Grafana :3003
-SIGMA Frontend (4 paginas) →  sentinel-frontend  →  InfluxDB :8088   →  Grafana :3003
-SIGMA Web Security         →  OWASP ZAP          →  Prometheus :9095  →  Grafana :3003
-SIGMA Machine Learning     →  ML Engine           →  Prometheus :9095  →  Grafana :3003
+QASL APIs (7 endpoints)    →  sentinel-backend   →  Prometheus :9095  →  Grafana :3003
+QASL Frontend (4 paginas)  →  sentinel-frontend  →  InfluxDB :8088   →  Grafana :3003
+QASL Web Security          →  OWASP ZAP          →  Prometheus :9095  →  Grafana :3003
+QASL Machine Learning      →  ML Engine           →  Prometheus :9095  →  Grafana :3003
 ```
 
 ### Flujo OpenAI (Garak)
@@ -234,8 +234,8 @@ INGRID :3100  ← RAG →  Prometheus + InfluxDB  →  PDF Report  →  Email au
 
 ## Targets por Ecosistema
 
-### SIGMA (AGIP)
-- **APIs Backend**: Token, selections, expedient, inconsistencies, inspection, caratulacion, SIGMA Frontend
+### QASL NEXUS LLM
+- **APIs Backend**: Token, selections, expedient, inconsistencies, inspection, caratulacion, Frontend App
 - **Frontend DOM**: Dashboard, Alta Inconsistencias, Seleccion Candidatos, Fiscalizacion
 - **Seguridad Web**: OWASP ZAP Scanner (vulnerabilidades, headers, XSS, CSRF)
 - **Machine Learning**: Analisis predictivo, deteccion de anomalias, tendencias
@@ -256,12 +256,12 @@ INGRID :3100  ← RAG →  Prometheus + InfluxDB  →  PDF Report  →  Email au
 
 | #  | Dashboard       | Target   | Descripcion                        |
 |----|-----------------|----------|------------------------------------|
-| 1  | Overview        | SIGMA+OAI| Vision general del sistema         |
-| 2  | APIs Backend    | SIGMA    | Estado de 7 endpoints              |
-| 3  | Frontend DOM    | SIGMA    | Metricas de 4 paginas              |
-| 4  | OWASP ZAP       | SIGMA    | Vulnerabilidades web               |
+| 1  | Overview        | QASL+OAI | Vision general del sistema         |
+| 2  | APIs Backend    | QASL     | Estado de 7 endpoints              |
+| 3  | Frontend DOM    | QASL     | Metricas de 4 paginas              |
+| 4  | OWASP ZAP       | QASL     | Vulnerabilidades web               |
 | 5  | NVIDIA Garak    | OPENAI   | Seguridad IA/LLM                   |
-| 6  | Compliance      | SIGMA    | SOC2, ISO27001, PCI-DSS            |
+| 6  | Compliance      | QASL     | SOC2, ISO27001, PCI-DSS            |
 | 7  | Trends          | AMBOS    | Tendencias historicas              |
 | 8  | INGRID Chat     | AMBOS    | Widget chatbot integrado           |
 | 9  | QASL-MOBILE     | MOBILE   | Testing mobile con IA              |
@@ -274,10 +274,10 @@ INGRID :3100  ← RAG →  Prometheus + InfluxDB  →  PDF Report  →  Email au
 |------------|-----------------------------------------------------|
 | full       | Reporte completo (todas las secciones)              |
 | garak      | Seguridad IA/LLM OpenAI (detectores, probes, cards) |
-| apis       | Estado de APIs SIGMA (resumen, performance, detalle) |
-| zap        | Vulnerabilidades web SIGMA (OWASP ZAP)              |
+| apis       | Estado de APIs QASL (resumen, performance, detalle)  |
+| zap        | Vulnerabilidades web QASL (OWASP ZAP)               |
 | compliance | Cumplimiento normativo (SOC2, ISO, PCI, HIPAA)      |
 
 ---
 
-**Epidata Consulting** | AGIP - Buenos Aires Ciudad | Febrero 2026
+**QASL NEXUS LLM** | Elyer Gregorio Maldonado | Febrero 2026

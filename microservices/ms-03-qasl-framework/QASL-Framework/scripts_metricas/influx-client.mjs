@@ -1,20 +1,6 @@
-/**
- * ═══════════════════════════════════════════════════════════════════════════
- * INFLUX CLIENT - Cliente para enviar métricas a InfluxDB
- * ═══════════════════════════════════════════════════════════════════════════
- *
- * Utilidad compartida para enviar métricas de E2E, API y ZAP a InfluxDB
- * para visualización en el Centro de Control de Grafana.
- *
- * ═══════════════════════════════════════════════════════════════════════════
- */
-
 const INFLUX_URL = process.env.INFLUX_URL || 'http://localhost:8086';
 const INFLUX_DB = process.env.INFLUX_DB || 'qa_metrics';
 
-/**
- * Asegura que la base de datos qa_metrics exista
- */
 async function ensureDatabase() {
     try {
         await fetch(`${INFLUX_URL}/query`, {
@@ -27,12 +13,6 @@ async function ensureDatabase() {
     }
 }
 
-/**
- * Envía una métrica a InfluxDB
- * @param {string} measurement - Nombre de la medición (e2e_tests, api_tests, zap_security)
- * @param {object} tags - Tags para filtrar (test_suite, status, etc.)
- * @param {object} fields - Valores numéricos (passed, failed, duration, etc.)
- */
 export async function sendMetric(measurement, tags, fields) {
     // Asegurar que la base de datos existe antes de enviar
     await ensureDatabase();
@@ -64,9 +44,6 @@ export async function sendMetric(measurement, tags, fields) {
     }
 }
 
-/**
- * Verifica conexión a InfluxDB
- */
 export async function checkInfluxConnection() {
     try {
         const response = await fetch(`${INFLUX_URL}/ping`);
@@ -76,9 +53,6 @@ export async function checkInfluxConnection() {
     }
 }
 
-/**
- * Envía métricas de E2E Tests
- */
 export async function sendE2EMetrics({ suite, passed, failed, skipped, duration }) {
     const total = passed + failed + skipped;
     const passRate = total > 0 ? (passed / total) * 100 : 0;
@@ -96,9 +70,6 @@ export async function sendE2EMetrics({ suite, passed, failed, skipped, duration 
     );
 }
 
-/**
- * Envía métricas de API Tests
- */
 export async function sendAPIMetrics({ collection, passed, failed, total_requests, duration }) {
     // Pass rate basado en assertions (passed vs passed+failed)
     const totalAssertions = passed + failed;
@@ -116,9 +87,6 @@ export async function sendAPIMetrics({ collection, passed, failed, total_request
     );
 }
 
-/**
- * Envía métricas de ZAP Security
- */
 export async function sendZAPMetrics({ target, high, medium, low, informational }) {
     const total = high + medium + low + informational;
 

@@ -1,0 +1,129 @@
+@startuml Flujo_de_Datos
+
+!define DARKSLATE #0f172a
+
+skinparam backgroundColor DARKSLATE
+skinparam defaultFontColor #f8fafc
+skinparam defaultFontSize 11
+skinparam defaultFontName "Segoe UI"
+skinparam shadowing true
+
+skinparam sequence {
+    ArrowColor #818cf8
+    ArrowThickness 2
+    LifeLineBorderColor #475569
+    LifeLineBackgroundColor #1e293b
+    ParticipantBackgroundColor #1e293b
+    ParticipantBorderColor #6366f1
+    ParticipantFontColor #f8fafc
+    ParticipantBorderThickness 2
+    BoxBackgroundColor #1a1a2e
+    BoxBorderColor #334155
+    DividerBackgroundColor #1a1a2e
+    DividerBorderColor #475569
+    DividerFontColor #94a3b8
+    GroupBackgroundColor #111827
+    GroupBorderColor #6366f1
+}
+
+title <size:20><b>QASL NEXUS LLM - Secuencia de Datos</b></size>\n<size:13><color:#94a3b8>Interaccion entre Microservicios</color></size>
+
+actor "QA Analyst" as QA #6366f1
+participant "MS-02\nEstaticas" as MS02 #16213e
+participant "MS-09\nOrquestador" as MS09 #312e81
+database "MS-12\nPostgreSQL" as DB #0c4a6e
+participant "MS-08\nPipeline" as MS08 #1e1b4b
+participant "MS-03\nFramework" as MS03 #16213e
+participant "MS-04\nMobile" as MS04 #16213e
+participant "MS-06\nGarak" as MS06 #16213e
+participant "MS-10\nMCP" as MS10 #16213e
+participant "MS-11\nReportador" as MS11 #16213e
+participant "MS-07\nSentinel" as MS07 #16213e
+
+== FASE 1: Analisis Estatico ==
+
+QA -> MS02 : Sube HU .docx
+activate MS02 #16213e
+
+MS02 -> MS09 : POST /analyze\n{hu_text, fields}
+activate MS09 #312e81
+
+MS09 -> MS09 : Claude analiza\ndetecta Gaps
+MS09 --> MS02 : {gaps[], recommendations[]}
+deactivate MS09
+
+MS02 -> MS02 : Genera 4 CSVs\nTrazabilidad completa
+MS02 -> DB : INSERT user_stories\nINSERT test_suites\nINSERT test_cases
+activate DB #0c4a6e
+DB --> MS02 : OK
+deactivate DB
+deactivate MS02
+
+== FASE 2: Decision VCR ==
+
+DB -> MS09 : Query HU data
+activate MS09 #312e81
+MS09 -> MS09 : VCR = V + C + R\nClaude evalua contexto
+MS09 -> DB : INSERT vcr_scores
+activate DB #0c4a6e
+DB --> MS09 : OK
+deactivate DB
+
+alt #0d3320 VCR >= 9: AUTOMATIZAR
+    MS09 -> MS08 : POST /pipeline/execute\n{type: "full", suiteId}
+    deactivate MS09
+
+    == FASE 3: Ejecucion Paralela ==
+
+    activate MS08 #1e1b4b
+
+    par Ejecucion en paralelo
+        MS08 -> MS03 : POST /execute\n{e2e, api, k6, zap}
+        activate MS03 #16213e
+        MS03 -> DB : INSERT test_execution\nresults + metrics
+        MS03 --> MS08 : {allure_report, results}
+        deactivate MS03
+    else
+        MS08 -> MS04 : POST /execute\n{ios, android}
+        activate MS04 #16213e
+        MS04 -> DB : INSERT mobile_results
+        MS04 --> MS08 : {maestro_report}
+        deactivate MS04
+    else
+        MS08 -> MS06 : POST /scan\n{probes, model}
+        activate MS06 #16213e
+        MS06 -> DB : INSERT security_results
+        MS06 --> MS08 : {garak_report}
+        deactivate MS06
+    end
+
+    MS08 -> DB : UPDATE pipeline_run\nstatus = completed
+    deactivate MS08
+
+    == FASE 4: Reportes e Integraciones ==
+
+    DB -> MS10 : Query defects
+    activate MS10 #16213e
+    MS10 -> MS10 : Bug Creation Flow\n7 pasos automaticos
+    MS10 --> QA : Jira Issue Created\n+ X-Ray Links
+    deactivate MS10
+
+    DB -> MS11 : Query metrics + views
+    activate MS11 #16213e
+    MS11 -> MS11 : Genera PDF 5 paginas
+    MS11 --> QA : PDF + Slack + Email
+    deactivate MS11
+
+    DB -> MS07 : Query metrics
+    activate MS07 #16213e
+    MS07 -> MS07 : Actualiza Grafana\nPrometheus + InfluxDB
+    MS07 --> QA : Dashboard Real-Time
+    deactivate MS07
+
+else #3d0d0d VCR < 9: MANUAL
+    MS09 --> QA : Recomendacion:\nPruebas manuales
+end
+
+footer \n<size:10>QASL NEXUS LLM v1.0 | Cada flecha es una API REST | PostgreSQL como Single Source of Truth</size>
+
+@enduml

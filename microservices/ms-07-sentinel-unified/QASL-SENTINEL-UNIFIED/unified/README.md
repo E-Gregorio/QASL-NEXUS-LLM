@@ -7,9 +7,8 @@
 |                    QASL-SENTINEL-UNIFIED - COMMAND CENTER                             |
 |                    Monitoreo Unificado de Sistemas                                   |
 +======================================================================================+
-|  Proyecto: SIGMA                                                                     |
-|  Cliente: AGIP (Administracion Gubernamental de Ingresos Publicos)                   |
-|  Empresa: Epidata Consulting                                                         |
+|  Proyecto: QASL NEXUS LLM                                                            |
+|  Plataforma QA con 12 Microservicios + Multi-LLM                                    |
 |  Lider Tecnico QA: Elyer Gregorio Maldonado                                          |
 +======================================================================================+
 ```
@@ -36,7 +35,7 @@ Sistema de monitoreo unificado E2E que combina multiples herramientas en un solo
 | Componente | Origen | Funcion |
 |------------|--------|---------|
 | **Backend Monitor** | QASL-API-SENTINEL | Monitoreo 24/7 de APIs con Prometheus |
-| **Frontend Monitor** | SIGMA-SENTINEL | Deteccion de cambios DOM con Playwright + InfluxDB |
+| **Frontend Monitor** | QASL-SENTINEL | Deteccion de cambios DOM con Playwright + InfluxDB |
 | **Mobile Testing** | QASL-MOBILE (satelite) | Testing mobile con IA en dispositivos Android |
 | **Dashboard Unificado** | Grafana | Command Center con todas las fuentes de datos |
 | **INGRID Chatbot** | QASL-INGRID | Asistente IA integrado en Grafana con Claude AI |
@@ -134,7 +133,7 @@ El PDF generado por INGRID incluye:
 | **Seguridad IA/LLM (Garak)** | Estado DEFCON, probes ejecutados, resistidos, vulnerados, pass rate, modelo |
 | **Compliance** | Scores de SOC2, ISO 27001, PCI-DSS, HIPAA |
 | **Recomendaciones** | Acciones priorizadas basadas en las metricas actuales |
-| **Firma** | Public Sector - Epidata Consulting - AGIP - SIGMA |
+| **Firma** | QASL NEXUS LLM - Plataforma QA Multi-LLM |
 
 El diseno del PDF sigue el estilo profesional de QASL-API-SENTINEL: tema azul Google (#1a73e8), header oscuro, tablas con filas alternadas, cards con barras de color, circulos numerados para recomendaciones.
 
@@ -242,7 +241,7 @@ QASL-MOBILE (proyecto independiente)
 
 - Node.js 18+
 - Docker Desktop
-- Conexion VPN a la red de AGIP
+- Conexion VPN (si se requiere acceso a APIs remotas)
 - API Key de Anthropic (Claude AI) para INGRID
 - Python 3.x + NVIDIA Garak (opcional, para escaneos de seguridad IA/LLM)
 
@@ -303,7 +302,7 @@ cd ..
 
 ```powershell
 # Abrir PowerShell como Administrador y ejecutar:
-Add-Content -Path 'C:\Windows\System32\drivers\etc\hosts' -Value '10.33.150.6 sigma-fe-dev.apps.ocp-test-hc.agip.gob.ar'
+Add-Content -Path 'C:\Windows\System32\drivers\etc\hosts' -Value '127.0.0.1 localhost'
 ```
 
 ### Ejecucion Manual (Paso a Paso)
@@ -311,7 +310,7 @@ Add-Content -Path 'C:\Windows\System32\drivers\etc\hosts' -Value '10.33.150.6 si
 Si se prefiere ejecutar cada componente por separado:
 
 ```powershell
-# 1. Conectar VPN de AGIP (OBLIGATORIO)
+# 1. Conectar VPN (si aplica)
 
 # 2. Navegar al proyecto
 cd C:\Users\Epidater\Desktop\Proyectos\QASL-SENTINEL-UNIFIED\unified
@@ -536,11 +535,11 @@ Acceder a `http://localhost:3003/d/qasl-command-center-unified` (admin/sentinel2
 
 ## APIs Monitoreadas (7 APIs)
 
-### SIGMA Backend (QA)
+### APIs Backend (QA)
 
 | # | API | Metodo | Endpoint | Prioridad |
 |---|-----|--------|----------|-----------|
-| 0 | SIGMA Frontend | GET | sigma-fe-qa.apps.ocp-test-hc.agip.gob.ar | Critica |
+| 0 | Frontend App | GET | http://localhost:4200 | Critica |
 | 1 | selections/query | POST | /selections/query | Normal |
 | 2 | expedient/query | POST | /expedient/query | Normal |
 | 3 | inconsistencies/query | POST | /incons/query | Normal |
@@ -624,7 +623,7 @@ QASL-SENTINEL-UNIFIED/
     |   +-- data/                       # APIs, historial, baselines
     |   +-- .env                        # Configuracion Backend
     |
-    +-- sentinel-frontend/              # Monitor de Frontend (de SIGMA-SENTINEL)
+    +-- sentinel-frontend/              # Monitor de Frontend (de QASL-SENTINEL)
         +-- src/
         |   +-- guardian.ts             # Orquestador principal
         |   +-- watchers/
@@ -679,7 +678,7 @@ QASL-SENTINEL-UNIFIED/
 |    |       +-- Reporte diario automatico: 8:00 AM                    |
 |    |                                                                 |
 |    +-- [6] Frontend Monitor (sentinel-frontend/)                     |
-|    |       +-- Playwright navega a modulos SIGMA                     |
+|    |       +-- Playwright navega a modulos del sistema               |
 |    |       +-- Captura snapshots DOM                                 |
 |    |       +-- Detecta cambios vs snapshot anterior                  |
 |    |       +-- Claude AI analiza tests afectados                     |
@@ -822,7 +821,7 @@ El Command Center funciona como un **televisor**: solo lee datos de los proyecto
 
 ### InfluxDB (Frontend DOM + Seguridad)
 
-**Bucket:** `sentinel_metrics` | **Org:** `sigma`
+**Bucket:** `sentinel_metrics` | **Org:** `qasl`
 
 | Measurement | Campos | Descripcion |
 |-------------|--------|-------------|
@@ -884,7 +883,7 @@ PROMETHEUS_URL=http://localhost:9095
 # InfluxDB
 INFLUXDB_URL=http://localhost:8088
 INFLUXDB_TOKEN=...
-INFLUXDB_ORG=sigma
+INFLUXDB_ORG=qasl
 INFLUXDB_BUCKET=sentinel_metrics
 
 # Email (Gmail SMTP)
@@ -1004,7 +1003,7 @@ netstat -ano | findstr :9097
 ```
 Error: VPN connection required
 ```
-**Solucion:** Conectar la VPN de AGIP antes de ejecutar los monitores.
+**Solucion:** Conectar la VPN antes de ejecutar los monitores.
 
 ### Frontend Monitor falla con Playwright
 
@@ -1061,7 +1060,7 @@ QASL-SENTINEL-UNIFIED nace de la unificacion de multiples proyectos independient
 
 | Proyecto Original | Puerto Grafana | Funcion | Estado |
 |-------------------|----------------|---------|--------|
-| SIGMA-SENTINEL | :3002 | Monitoreo Frontend DOM | Integrado |
+| QASL-SENTINEL | :3002 | Monitoreo Frontend DOM | Integrado |
 | QASL-API-SENTINEL | :3001 | Monitoreo Backend APIs | Integrado |
 | NVIDIA Garak | - | Seguridad IA/LLM | Integrado |
 | QASL-MOBILE | :3004 | Testing Mobile con IA | Canal Satelite |
@@ -1076,19 +1075,19 @@ QASL-MOBILE opera como canal satelite independiente, publicando metricas a Influ
 ## Autor
 
 **ELYER GREGORIO MALDONADO**
-Lider Tecnico QA | Epidata Consulting
+Lider Tecnico QA | QASL NEXUS LLM
 
 ---
 
 ## Licencia
 
-Proyecto privado - AGIP Buenos Aires Ciudad
-Desarrollado por Epidata Consulting
+Proyecto de Elyer Gregorio Maldonado
+Plataforma QA con 12 Microservicios + Multi-LLM
 
 ---
 
 **QASL-SENTINEL-UNIFIED v3.0.0**
 Command Center Unificado de Monitoreo E2E
-AGIP - Administracion Gubernamental de Ingresos Publicos | Buenos Aires Ciudad
+QASL NEXUS LLM - Plataforma QA con 12 Microservicios + Multi-LLM
 
 Backend APIs + Frontend DOM + Seguridad OWASP + Seguridad IA/LLM (Garak) + Testing Mobile (QASL-MOBILE) + Chatbot INGRID + Informes PDF | Machine Learning | Powered by Claude AI

@@ -1,10 +1,7 @@
 # MS-01: Metodologías QA
 
-## GitLab Pages
-https://qa-shiftleft-methodology-suite-3591fb.gitlab.io/
-
 ## Descripción
-Shift Left Testing Methodology Suite - Templates y documentación QA basada en estándares internacionales.
+QASL NEXUS LLM - Shift-Left Testing Methodology Suite. Templates y documentación QA basada en estándares internacionales.
 
 ## Contenido
 - Master Test Plan

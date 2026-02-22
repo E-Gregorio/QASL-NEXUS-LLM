@@ -3,7 +3,7 @@
  * Genera reportes de cumplimiento para SOC2, ISO27001, PCI-DSS, HIPAA
  *
  * @author Elyer Gregorio Maldonado
- * @project SIGMA - AGIP
+ * @project QASL NEXUS LLM
  */
 
 import fs from 'fs';

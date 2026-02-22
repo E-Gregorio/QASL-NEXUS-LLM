@@ -2,7 +2,7 @@
 // ║                    QASL-API-SENTINEL - Email Notifier                        ║
 // ║                    Notificaciones por correo electrónico                     ║
 // ╠══════════════════════════════════════════════════════════════════════════════╣
-// ║  Proyecto: SIGMA | Cliente: AGIP | Empresa: Epidata                          ║
+// ║  QASL NEXUS LLM - Elyer Gregorio Maldonado                                   ║
 // ║  Líder Técnico QA: Elyer Gregorio Maldonado                                  ║
 // ╚══════════════════════════════════════════════════════════════════════════════╝
 
@@ -283,7 +283,7 @@ export class EmailNotifier {
           🛡️ QASL-API-SENTINEL v2.0.0
         </p>
         <p style="margin: 8px 0 0; color: #7f8c8d; font-size: 11px;">
-          Proyecto SIGMA | AGIP Buenos Aires | Epidata
+          QASL NEXUS LLM | Elyer Gregorio Maldonado
         </p>
         <p style="margin: 5px 0 0; color: #bdc3c7; font-size: 10px;">
           Alerta automática - No responder a este email
@@ -371,7 +371,7 @@ export class EmailNotifier {
     </tr>
     <tr>
       <td style="background: #f8f9fa; padding: 10px; text-align: center; font-size: 12px; color: #666;">
-        QASL-API-SENTINEL v2.0.0 | Proyecto SIGMA | AGIP | Epidata
+        QASL-API-SENTINEL v2.0.0 | QASL NEXUS LLM
       </td>
     </tr>
   </table>
@@ -451,7 +451,7 @@ export class EmailNotifier {
             </td>
             <td width="50%" style="text-align: right;">
               <p style="margin: 0; color: #6c757d; font-size: 12px;">Proyecto</p>
-              <p style="margin: 2px 0 0; font-weight: bold;">SIGMA (AGIP)</p>
+              <p style="margin: 2px 0 0; font-weight: bold;">QASL NEXUS LLM</p>
             </td>
           </tr>
         </table>
@@ -645,8 +645,8 @@ export class EmailNotifier {
           <tr>
             <td>
               <p style="margin: 0; color: #bdc3c7; font-size: 11px;">QASL-API-SENTINEL v2.0.0 Enterprise</p>
-              <p style="margin: 3px 0 0; color: #7f8c8d; font-size: 10px;">AGIP - Administración Gubernamental de Ingresos Públicos | Buenos Aires</p>
-              <p style="margin: 5px 0 0; color: #00d4ff; font-size: 10px;">Elyer Gregorio Maldonado - Líder Técnico QA - Epidata</p>
+              <p style="margin: 3px 0 0; color: #7f8c8d; font-size: 10px;">QASL NEXUS LLM - Plataforma QA Multi-LLM</p>
+              <p style="margin: 5px 0 0; color: #00d4ff; font-size: 10px;">Elyer Gregorio Maldonado - Líder Técnico QA</p>
             </td>
           </tr>
         </table>
@@ -668,7 +668,7 @@ QASL-API-SENTINEL - REPORTE DE MONITOREO
 ========================================
 
 Fecha: ${date}
-Proyecto: SIGMA (AGIP)
+Proyecto: QASL NEXUS LLM
 
 ESTADO GENERAL: ${report.status?.toUpperCase() || 'N/A'}
 
@@ -699,7 +699,7 @@ Predicción Fallos 24h: ${report.ml.predictedFailures || 0}
 
 ---
 Dashboard: http://localhost:3001
-QASL-API-SENTINEL v2.0.0 | AGIP Buenos Aires | Epidata
+QASL-API-SENTINEL v2.0.0 | QASL NEXUS LLM
     `.trim();
   }
 

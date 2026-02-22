@@ -1,0 +1,101 @@
+@startuml MS09_Orquestador_LLM
+
+!define DARKSLATE #0f172a
+!define DARKBLUE #1a1a2e
+!define PURPLE #6366f1
+!define WHITE #f8fafc
+!define SLATE #94a3b8
+
+skinparam backgroundColor DARKSLATE
+skinparam defaultFontColor WHITE
+skinparam defaultFontSize 11
+skinparam defaultFontName "Segoe UI"
+skinparam shadowing true
+
+skinparam rectangle {
+    RoundCorner 15
+    FontColor WHITE
+    BorderThickness 2
+}
+
+skinparam arrow {
+    Color SLATE
+    Thickness 2
+}
+
+skinparam package {
+    BackgroundColor DARKBLUE
+    BorderColor PURPLE
+    FontColor WHITE
+    FontStyle bold
+    BorderThickness 2
+}
+
+title <size:20><b>MS-09 ORQUESTADOR LLM</b></size>\n<size:13><color:SLATE>Cerebro del Sistema - Decision Engine + Multi-LLM</color></size>
+
+' === CLIENTES ===
+rectangle "**MS-02**\nPruebas Estaticas" as C1 #16213e;line:475569
+rectangle "**MS-05**\nINGRID AI" as C2 #16213e;line:475569
+rectangle "**MS-08**\nCI/CD Pipeline" as C3 #16213e;line:475569
+rectangle "**MS-10**\nMCP Interfaz" as C4 #16213e;line:475569
+
+package "MS-09 ORQUESTADOR LLM :8000" as CORE #0d1117 {
+
+    rectangle "**API Gateway**\n<size:9>REST/JSON\nAuth + Rate Limit</size>" as API #1e293b;line:6366f1
+
+    rectangle "**Decision Engine**\n<size:9>Reglas por tipo de tarea\nSelecciona LLM optimo</size>" as DE #1e1b4b;line:818cf8
+
+    rectangle "**Prompt Builder**\n<size:9>Context Window\nSystem Prompts\nTemplates por tarea</size>" as PB #1e1b4b;line:818cf8
+
+    package "LLM Providers" as LLMS #111827 {
+        rectangle "**Claude**\n<size:9>Anthropic\n<color:#a78bfa>Razonamiento\nGap Analysis\nVCR Calculation</color></size>" as CL #312e81;line:7c3aed
+        rectangle "**GPT**\n<size:9>OpenAI\n<color:#34d399>Creatividad\nTest Generation\nTest Data</color></size>" as GP #064e3b;line:059669
+        rectangle "**Gemini**\n<size:9>Google\n<color:#38bdf8>Vision Multimodal\nScreenshot Analysis\nUI/UX Review</color></size>" as GE #0c4a6e;line:0284c7
+    }
+
+    rectangle "**Response Validator**\n<size:9>Schema Validation\nQuality Check\nJSON Parse</size>" as VAL #1e293b;line:6366f1
+
+    rectangle "**VCR Calculator**\n<size:9>Value (1-3) + Cost (1-3)\nRisk = Prob x Impact\nTotal >= 9: AUTO</size>" as VCR #713f12;line:fbbf24
+
+    rectangle "**Template Filler**\n<size:9>Bug Report Generator\nISTQB Format\nJSON Output</size>" as TF #1e293b;line:6366f1
+
+    rectangle "**Audit Log**\n<size:9>Model + Prompt + Response\nConfidence Score\nExplainability</size>" as AUDIT #1e293b;line:475569
+}
+
+database "**MS-12**\nPostgreSQL" as DB #0c4a6e;line:38bdf8
+
+' === CONEXIONES ===
+
+C1 -[#6366f1]-> API
+C2 -[#6366f1]-> API
+C3 -[#6366f1]-> API
+C4 -[#6366f1]-> API
+
+API -[#818cf8,bold]-> DE
+
+DE -[#7c3aed]-> CL : <color:#a78bfa>gap_analysis\nvcr_calculation</color>
+DE -[#059669]-> GP : <color:#34d399>test_generation\nfield_mapping</color>
+DE -[#0284c7]-> GE : <color:#38bdf8>screenshot_analysis</color>
+
+DE -[#818cf8]-> PB
+PB -[#818cf8]-> LLMS
+
+CL -[#818cf8]-> VAL
+GP -[#818cf8]-> VAL
+GE -[#818cf8]-> VAL
+
+VAL -[#38bdf8,bold]-> DB
+VCR -[#fbbf24,bold]-> DB
+TF -[#6366f1]-> C4 : <color:SLATE>JSON Bug Report</color>
+AUDIT -[#475569]-> DB
+
+legend right
+  |= Componente |= Funcion |
+  | Decision Engine | Elige LLM segun tarea |
+  | Prompt Builder | Contexto + Templates |
+  | VCR Calculator | Automatizar o Manual |
+  | Template Filler | Genera Bug ISTQB |
+  | Audit Log | Trazabilidad IA |
+endlegend
+
+@enduml

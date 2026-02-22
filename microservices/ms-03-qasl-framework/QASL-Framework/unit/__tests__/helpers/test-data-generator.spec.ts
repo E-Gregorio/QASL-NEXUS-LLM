@@ -1,8 +1,3 @@
-/**
- * Unit Tests - Test Data Generators
- * Tests para funciones de generación de datos de prueba
- */
-
 import { describe, it, expect } from 'vitest'
 import {
   generateTestEmail,

@@ -14,7 +14,7 @@
       "id": 100,
       "options": {
         "code": { "language": "plaintext", "showLineNumbers": false, "showMiniMap": false },
-        "content": "# QASL FRAMEWORK - INFRASTRUCTURE OBSERVABILITY\n### Elyer Maldonado | QA Tech Lead | EPIDATA",
+        "content": "# QASL NEXUS LLM - INFRASTRUCTURE OBSERVABILITY\n### Elyer Maldonado | QA Tech Lead | QASL NEXUS",
         "mode": "markdown"
       },
       "pluginVersion": "10.0.0",
@@ -257,7 +257,7 @@
   "refresh": "5s",
   "schemaVersion": 38,
   "style": "dark",
-  "tags": ["loki", "logs", "infrastructure", "qasl", "epidata"],
+  "tags": ["loki", "logs", "infrastructure", "qasl-nexus"],
   "templating": {
     "list": [
       {

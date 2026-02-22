@@ -669,7 +669,7 @@ program
       }
 
       console.log(chalk.cyan('═'.repeat(60)));
-      console.log(chalk.gray(`  Proyecto: SIGMA | Cliente: AGIP | Empresa: Epidata`));
+      console.log(chalk.gray(`  QASL NEXUS LLM - Elyer Gregorio Maldonado`));
       console.log(chalk.gray(`  Líder Técnico QA: Elyer Gregorio Maldonado`));
       console.log(chalk.cyan('═'.repeat(60)));
 
@@ -1122,9 +1122,9 @@ program
 
       const generator = new PDFReportGenerator({
         outputDir: options.output,
-        company: 'Epidata',
-        project: 'SIGMA',
-        client: 'AGIP'
+        company: 'QASL NEXUS LLM',
+        project: 'QASL NEXUS LLM',
+        client: 'Elyer Gregorio Maldonado'
       });
 
       spinner.text = 'Obteniendo métricas...';
@@ -1181,9 +1181,9 @@ program
 
       const generator = new PDFReportGenerator({
         outputDir: options.output,
-        company: 'Epidata',
-        project: 'SIGMA',
-        client: 'AGIP'
+        company: 'QASL NEXUS LLM',
+        project: 'QASL NEXUS LLM',
+        client: 'Elyer Gregorio Maldonado'
       });
 
       // Datos de demostración - estructura correcta para el generador

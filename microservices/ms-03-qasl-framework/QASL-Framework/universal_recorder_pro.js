@@ -1,17 +1,3 @@
-// ═══════════════════════════════════════════════════════════════════════════
-// 🚀 UNIVERSAL RECORDER PRO v5.0 - PRODUCTION GRADE
-// ═══════════════════════════════════════════════════════════════════════════
-// Superior a Playwright Codegen:
-// ✅ Selectores inteligentes con 10 niveles de prioridad
-// ✅ Detección automática de tipos de elementos (checkbox, radio, select, etc.)
-// ✅ Eliminación de duplicados y debouncing avanzado
-// ✅ Captura de valores reales (no genéricos)
-// ✅ Agrupación automática en test.step()
-// ✅ Manejo de navegación y esperas
-// ✅ Soporte para Shadow DOM e iframes
-// ✅ Auto-respawn UI persistente
-// ═══════════════════════════════════════════════════════════════════════════
-
 (function () {
     'use strict';
 

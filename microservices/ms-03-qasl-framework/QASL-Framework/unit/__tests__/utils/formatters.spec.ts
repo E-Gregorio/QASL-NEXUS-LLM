@@ -1,8 +1,3 @@
-/**
- * Unit Tests - Formatters
- * Tests para funciones de formateo
- */
-
 import { describe, it, expect } from 'vitest'
 import {
   formatCurrency,

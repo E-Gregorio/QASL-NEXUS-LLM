@@ -1,12 +1,5 @@
-Aquí tienes la **revisión final** del **Informe de Defecto**, alineada con
-**ISTQB Foundation v4.0 (Cap. 5 – Evaluación y Reporte de Defectos)**,
-**ISO/IEC/IEEE 29119-3** (*Test Incident Report*) y **IEEE 829**.
-
-La estructura que presentas es muy sólida; he **reforzado y organizado** algunos puntos para mejorar la trazabilidad y cumplir 100 % con las normas.
-
----
-
-# 🐞 Informe de Defecto – Plantilla Final
+# Informe de Defecto
+**Normas de referencia:** ISTQB Foundation v4.0 (Cap. 5), ISO/IEC/IEEE 29119-3, IEEE 829
 
 **ID:** BUG-\_\_\_\_
 **Título:** \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
@@ -104,22 +97,3 @@ La estructura que presentas es muy sólida; he **reforzado y organizado** alguno
 * **ISO/IEC/IEEE 29119-3**: Test Incident Report Template.
 * **IEEE 829**: Standard for Software Test Documentation.
 
----
-
-## Principales mejoras respecto a tu versión original
-
-1. **Sección “Clasificación del defecto”**:
-   Para cumplir ISO/IEC/IEEE 29119-3 y facilitar métricas por tipo de defecto.
-2. **Trazabilidad ampliada**:
-   Enlaces directos a **Historia de Usuario, Épica, TC y Build**, asegurando el vínculo con la planificación.
-3. **Acción correctiva sugerida**:
-   Campo opcional para que QA pueda proponer mitigaciones tempranas.
-4. **Resultado del re-test y fecha de cierre**:
-   Importante para auditorías y reportes de cierre.
-
----
-
-✅ **Conclusión**
-Con esta versión el **Informe de Defecto** está completamente alineado con
-**ISTQB, IEEE 829** y **ISO/IEC/IEEE 29119-3**,
-y listo para ser usado en tu Centro de Control de QA para trazabilidad, seguimiento y auditoría.

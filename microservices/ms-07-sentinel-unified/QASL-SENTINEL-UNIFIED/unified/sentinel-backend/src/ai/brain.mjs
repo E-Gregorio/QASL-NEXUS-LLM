@@ -321,7 +321,7 @@ export class AIBrain {
 ╔══════════════════════════════════════════════════════════════════════════════╗
 ║                    INFORME DE MÉTRICAS QASL-API-SENTINEL                     ║
 ╠══════════════════════════════════════════════════════════════════════════════╣
-║  Proyecto: SIGMA | Cliente: AGIP | Empresa: Epidata                          ║
+║  QASL NEXUS LLM - Elyer Gregorio Maldonado                                   ║
 ║  Generado: ${timestamp.padEnd(55)}║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 

@@ -68,7 +68,7 @@ Write-Host "   Credenciales: admin / admin" -ForegroundColor Magenta
 Write-Host "   TODOS LOS PANELES DEBEN DECIR 'No data'" -ForegroundColor Magenta
 Write-Host "═══════════════════════════════════════════════════════════════" -ForegroundColor Magenta
 Write-Host ""
-Start-Process "http://localhost:3002/d/ingrid-dashboard/ingrid-v2-0-ai-testing-framework-epidata?orgId=1&from=now-15m&to=now&timezone=browser&refresh=5s"
+Start-Process "http://localhost:3002/d/ingrid-dashboard/ingrid-v2-0-ai-testing-framework?orgId=1&from=now-15m&to=now&timezone=browser&refresh=5s"
 Write-Host "      Presiona ENTER cuando el cliente este listo..." -ForegroundColor Cyan
 Read-Host
 

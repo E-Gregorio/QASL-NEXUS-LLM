@@ -1,17 +1,4 @@
 #!/usr/bin/env node
-
-/**
- * QASL Framework - Infrastructure Check (Fase 7: Observability)
- *
- * Este script consulta Loki para detectar errores críticos en los logs
- * de la infraestructura durante la ejecución de tests.
- *
- * Uso:
- *   npm run infra:check              # Últimos 15 minutos
- *   npm run infra:check -- --time=1h # Última hora
- *   npm run infra:check -- --time=30m --container=postgres
- */
-
 import http from 'http';
 
 // Configuración

@@ -3,7 +3,7 @@
  * ║                       JWT ADVANCED STRATEGY                                  ║
  * ║          JWT con verificación de firma (RS256, HS256, ES256)                ║
  * ╠══════════════════════════════════════════════════════════════════════════════╣
- * ║  Proyecto: SIGMA | Cliente: AGIP | Empresa: Epidata                          ║
+ * ║  QASL NEXUS LLM - Elyer Gregorio Maldonado                                   ║
  * ║  Líder Técnico QA: Elyer Gregorio Maldonado                                  ║
  * ╚══════════════════════════════════════════════════════════════════════════════╝
  */

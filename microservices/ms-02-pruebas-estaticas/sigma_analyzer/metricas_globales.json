@@ -1,0 +1,22 @@
+{
+  "ultima_actualizacion": "2026-02-18 06:22:34",
+  "total_hus_analizadas": 1,
+  "total_gaps_encontrados": 7,
+  "total_gaps_criticos": 5,
+  "cobertura_promedio": 30.0,
+  "hus": {
+    "HU_LOGIN_01": {
+      "nombre": "Inicio de Sesion de Usuario",
+      "epica": "EP-001: Autenticacion y Control de Acceso Enlace a documentacion de la Epica",
+      "cobertura": 30.0,
+      "gaps": 7,
+      "gaps_criticos": 5,
+      "brs": 5,
+      "escenarios_originales": 3,
+      "fecha_analisis": "2026-02-18 06:22",
+      "reporte": "HU_LOGIN_01_REPORT.md",
+      "hu_actualizada": "HU_LOGIN_01_ACTUALIZADA.html",
+      "db_guardado": true
+    }
+  }
+}

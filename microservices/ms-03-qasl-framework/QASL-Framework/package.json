@@ -1,7 +1,7 @@
 {
-    "name": "qa-hu-template",
-    "version": "1.0.0",
-    "description": "Template Universal QA - Shift-Left Testing (E2E, API, Performance, Security)",
+    "name": "qasl-nexus-framework",
+    "version": "4.0.0",
+    "description": "QASL NEXUS LLM - MS-03 Framework de Pruebas (E2E, API, Performance, Security, Unit)",
     "type": "module",
     "scripts": {
         "unit": "vitest run",
@@ -16,8 +16,7 @@
         "zap": "node scripts/run-zap.mjs",
         "infra:check": "node scripts/run-infra-check.mjs",
         "infra:logs": "start http://localhost:3001/d/infrastructure-logs",
-        "dashboard": "start http://localhost:3001/d/sigma-qa-control/sigma-qa-centro-de-control",
-        "dashboard:all": "start http://localhost:3001/d/sigma-qa-control/sigma-qa-centro-de-control && start http://localhost:3001/d/infrastructure-logs",
+        "dashboard": "start http://localhost:3001/d/qasl-nexus-control",
         "demo": "node scripts/run-demo.mjs",
         "pipeline": "node scripts/run-pipeline.mjs",
         "docker:up": "docker-compose up -d",
@@ -33,13 +32,15 @@
         "testing",
         "playwright",
         "e2e",
-        "automation"
+        "automation",
+        "qasl-nexus"
     ],
-    "author": "QA Team",
-    "license": "ISC",
+    "author": "Elyer Gregorio Maldonado",
+    "license": "MIT",
     "devDependencies": {
         "@playwright/test": "^1.40.0",
         "@types/node": "^24.10.1",
+        "@types/pg": "^8.11.0",
         "@vitest/coverage-v8": "^2.0.0",
         "@vitest/ui": "^2.0.0",
         "allure-commandline": "^2.25.0",
@@ -48,6 +49,7 @@
         "vitest": "^2.0.0"
     },
     "dependencies": {
-        "dotenv": "^16.3.1"
+        "dotenv": "^16.3.1",
+        "pg": "^8.13.0"
     }
 }

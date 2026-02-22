@@ -3,7 +3,7 @@
  *                         INCIDENT TRACKER
  *                   Historico de Incidentes de APIs
  * ============================================================================
- * Proyecto: SIGMA | Cliente: AGIP | Empresa: Epidata
+ * QASL NEXUS LLM - Elyer Gregorio Maldonado
  * Lider Tecnico QA: Elyer Gregorio Maldonado
  * ============================================================================
  *

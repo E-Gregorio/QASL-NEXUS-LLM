@@ -1,7 +1,7 @@
 // ============================================
-// SIGMA-SENTINEL - DOM Watcher
+// QASL-SENTINEL - DOM Watcher
 // ============================================
-// AGIP - Buenos Aires Ciudad
+// QASL NEXUS LLM - Elyer Gregorio Maldonado
 // Sin login requerido - Usuario ya autenticado via VPN
 
 import { chromium, Browser, Page } from '@playwright/test';
@@ -38,14 +38,14 @@ export class DOMWatcher {
 
     const context = await this.browser.newContext({
       viewport: { width: 1920, height: 1080 },
-      userAgent: 'SIGMA-SENTINEL/1.0 (QA Monitoring - AGIP)',
+      userAgent: 'QASL-SENTINEL/1.0 (QA Monitoring)',
       ignoreHTTPSErrors: true,
     });
 
     const page = await context.newPage();
 
     try {
-      // SIGMA: Sin login requerido - Usuario ya autenticado via VPN
+      // QASL-SENTINEL: Sin login requerido - Usuario ya autenticado via VPN
       // El frontend tiene datos mockeados y no requiere autenticación
 
       // Navigate to target page
@@ -91,7 +91,7 @@ export class DOMWatcher {
     }
   }
 
-  // NOTA: Login deshabilitado para SIGMA
+  // NOTA: Login deshabilitado para QASL-SENTINEL
   // El ambiente de test no requiere autenticación (datos mockeados)
   // Usuario accede directamente via VPN
 

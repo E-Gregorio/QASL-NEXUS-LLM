@@ -1,9 +1,9 @@
 # ============================================
 # QASL-SENTINEL-UNIFIED - Limpieza de Metricas
 # ============================================
-# Proyecto: SIGMA
-# Cliente: AGIP (Administracion Gubernamental de Ingresos Publicos)
-# Empresa: Epidata Consulting
+# Proyecto: QASL NEXUS LLM
+# Autor: Elyer Gregorio Maldonado
+# Organizacion: QASL NEXUS LLM
 # Lider Tecnico QA: Elyer Gregorio Maldonado
 # Version: 1.0.0
 # ============================================
@@ -24,7 +24,7 @@ function Show-Banner {
     Write-Host "    =========================================================================" -ForegroundColor Red
     Write-Host "    |                                                                       |" -ForegroundColor Red
     Write-Host "    |   QASL-SENTINEL-UNIFIED - Limpieza de Metricas                        |" -ForegroundColor Red
-    Write-Host "    |   AGIP - Buenos Aires Ciudad                                          |" -ForegroundColor Red
+    Write-Host "    |   QASL NEXUS LLM - Elyer Gregorio Maldonado                            |" -ForegroundColor Red
     Write-Host "    |                                                                       |" -ForegroundColor Red
     Write-Host "    =========================================================================" -ForegroundColor Red
     Write-Host ""

@@ -3,9 +3,9 @@
  * ║                    QASL-API-SENTINEL - PDF Report Generator                   ║
  * ║                    Generador de Reportes Profesionales en PDF                 ║
  * ╠══════════════════════════════════════════════════════════════════════════════╣
- * ║  Proyecto: SIGMA                                                              ║
- * ║  Cliente: AGIP                                                                ║
- * ║  Empresa: Epidata                                                             ║
+ * ║  QASL NEXUS LLM                                                               ║
+ * ║  Elyer Gregorio Maldonado                                                     ║
+ * ║  Plataforma QA Multi-LLM                                                      ║
  * ║  Líder Técnico QA: Elyer Gregorio Maldonado                                   ║
  * ╚══════════════════════════════════════════════════════════════════════════════╝
  */
@@ -19,9 +19,9 @@ export class PDFReportGenerator {
     this.options = {
       outputDir: options.outputDir || './reports',
       logo: options.logo || null,
-      company: options.company || 'Epidata',
-      project: options.project || 'SIGMA',
-      client: options.client || 'AGIP',
+      company: options.company || 'QASL NEXUS LLM',
+      project: options.project || 'QASL NEXUS LLM',
+      client: options.client || 'Elyer Gregorio Maldonado',
       ...options
     };
 
@@ -451,7 +451,7 @@ export class PDFReportGenerator {
     doc.fontSize(7)
        .fill(this.colors.gray)
        .text(
-         `QASL-API-SENTINEL | SIGMA-AGIP | Elyer Maldonado | ${pageNumber}/${totalPages}`,
+         `QASL-API-SENTINEL | QASL NEXUS LLM | Elyer Maldonado | ${pageNumber}/${totalPages}`,
          margin,
          footerY,
          { width: pageWidth, align: 'center', lineBreak: false }

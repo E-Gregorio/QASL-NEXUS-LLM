@@ -1,7 +1,7 @@
 {
   "_comment": "Configuracion de umbrales para alertas - QASL-API-SENTINEL",
-  "_project": "SIGMA",
-  "_client": "AGIP",
+  "_project": "QASL NEXUS LLM",
+  "_client": "QASL-SENTINEL",
 
   "latency": {
     "_description": "Umbrales de latencia en milisegundos",

@@ -1,5 +1,5 @@
 // ============================================
-// SIGMA-SENTINEL - Type Definitions
+// QASL-SENTINEL - Type Definitions
 // ============================================
 
 export interface GuardianConfig {

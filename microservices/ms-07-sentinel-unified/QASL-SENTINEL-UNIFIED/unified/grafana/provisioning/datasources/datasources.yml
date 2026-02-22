@@ -28,11 +28,11 @@ datasources:
     editable: false
     jsonData:
       version: Flux
-      organization: sigma
+      organization: qasl
       defaultBucket: sentinel_metrics
       tlsSkipVerify: true
     secureJsonData:
-      token: sigma-sentinel-token-2024
+      token: qasl-sentinel-token-2024
 
   # ============================================
   # INFLUXDB - QASL-MOBILE (Testing Mobile)

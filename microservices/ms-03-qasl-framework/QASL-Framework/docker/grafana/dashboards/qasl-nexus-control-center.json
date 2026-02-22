@@ -12,7 +12,7 @@
       "id": 1,
       "options": {
         "code": { "language": "plaintext", "showLineNumbers": false, "showMiniMap": false },
-        "content": "<div style=\"text-align: center; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); padding: 20px; border-radius: 10px;\">\n  <h1 style=\"color: #00d4ff; margin: 0; font-size: 28px; font-weight: bold;\">🚀 SIGMA QA - CENTRO DE CONTROL</h1>\n  <p style=\"color: #888; margin: 5px 0 0 0; font-size: 14px;\">EPIDATA Consulting | Proyecto SIGMA | Líder Técnico: Elyer Maldonado</p>\n</div>",
+        "content": "<div style=\"text-align: center; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); padding: 20px; border-radius: 10px;\">\n  <h1 style=\"color: #00d4ff; margin: 0; font-size: 28px; font-weight: bold;\">QASL NEXUS LLM - CENTRO DE CONTROL</h1>\n  <p style=\"color: #888; margin: 5px 0 0 0; font-size: 14px;\">QASL NEXUS LLM | QA Platform + Multi-LLM | Tech Lead: Elyer Maldonado</p>\n</div>",
         "mode": "html"
       },
       "type": "text"
@@ -585,7 +585,7 @@
       "id": 12,
       "options": {
         "code": { "language": "plaintext", "showLineNumbers": false, "showMiniMap": false },
-        "content": "<div style=\"text-align: center; padding: 10px; background: #0d1117; border-radius: 5px;\">\n  <span style=\"color: #666;\">EPIDATA Consulting © 2024 | Proyecto SIGMA | QASL-Framework v1.0 | Desarrollado por Elyer Maldonado</span>\n</div>",
+        "content": "<div style=\"text-align: center; padding: 10px; background: #0d1117; border-radius: 5px;\">\n  <span style=\"color: #666;\">QASL NEXUS LLM © 2026 | MS-03 QASL Framework v4.0 | Desarrollado por Elyer Maldonado</span>\n</div>",
         "mode": "html"
       },
       "type": "text"
@@ -594,12 +594,12 @@
   "refresh": "5s",
   "schemaVersion": 38,
   "style": "dark",
-  "tags": ["qa", "sigma", "epidata", "e2e", "api", "k6", "zap", "security"],
+  "tags": ["qa", "qasl-nexus", "e2e", "api", "k6", "zap", "security"],
   "templating": { "list": [] },
   "time": { "from": "now-1h", "to": "now" },
   "timepicker": {},
   "timezone": "browser",
-  "title": "SIGMA QA - Centro de Control",
-  "uid": "sigma-qa-control",
+  "title": "QASL NEXUS LLM - Centro de Control",
+  "uid": "qasl-nexus-control",
   "version": 3
 }

@@ -1,8 +1,7 @@
 // ============================================
-// SIGMA-SENTINEL - Configuration Loader
+// QASL-SENTINEL - Configuration Loader
 // ============================================
-// AGIP - Administración Gubernamental de Ingresos Públicos
-// Buenos Aires Ciudad
+// QASL NEXUS LLM - Elyer Gregorio Maldonado
 
 import dotenv from 'dotenv';
 import { GuardianConfig } from './types.js';
@@ -19,13 +18,13 @@ export function loadConfig(): GuardianConfig {
     }
   }
 
-  // SIGMA modules: Dashboard + 3 módulos activos
+  // QASL-SENTINEL modules: Dashboard + 3 módulos activos
   const watchUrls = process.env.WATCH_URLS?.split(',').map(u => u.trim()) || ['/'];
 
   return {
     targetUrl: process.env.TARGET_URL!,
-    loginUser: process.env.LOGIN_USER,  // No requerido para SIGMA
-    loginPass: process.env.LOGIN_PASS,  // No requerido para SIGMA
+    loginUser: process.env.LOGIN_USER,  // No requerido para QASL-SENTINEL
+    loginPass: process.env.LOGIN_PASS,  // No requerido para QASL-SENTINEL
     watchUrls,
     snapshotDir: process.env.SNAPSHOT_DIR || './snapshots',
     anthropicApiKey: process.env.ANTHROPIC_API_KEY!,
@@ -53,7 +52,7 @@ export function getSmtpConfig() {
 export function getNotificationConfig() {
   return {
     alertEmail: process.env.ALERT_EMAIL || '',
-    fromEmail: process.env.FROM_EMAIL || 'sigma-sentinel@agip.gob.ar',
+    fromEmail: process.env.FROM_EMAIL || 'qasl-sentinel@qasl-nexus.com',
     slackWebhook: process.env.SLACK_WEBHOOK_URL,
     teamsWebhook: process.env.TEAMS_WEBHOOK_URL,
   };

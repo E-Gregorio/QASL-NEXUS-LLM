@@ -3,7 +3,7 @@
  *                         WEBHOOK MANAGER
  *                   Notificaciones en Tiempo Real
  * ============================================================================
- * Proyecto: SIGMA | Cliente: AGIP | Empresa: Epidata
+ * QASL NEXUS LLM - Elyer Gregorio Maldonado
  * Lider Tecnico QA: Elyer Gregorio Maldonado
  * ============================================================================
  */
@@ -119,8 +119,8 @@ export class WebhookManager {
       event,
       timestamp: new Date().toISOString(),
       source: 'QASL-API-SENTINEL',
-      project: 'SIGMA',
-      client: 'AGIP',
+      project: 'QASL NEXUS LLM',
+      client: 'Elyer Gregorio Maldonado',
       data
     };
   }

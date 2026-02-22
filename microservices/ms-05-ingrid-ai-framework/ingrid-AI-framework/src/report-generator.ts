@@ -8,7 +8,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { StoredEvaluation } from './metrics-store';
 
-// Colores del tema INGRID (similar a SIGMA)
+// Colores del tema INGRID
 const COLORS = {
   primary: '#1a2332',      // Azul oscuro (header)
   secondary: '#2ecc71',    // Verde (acentos)

@@ -1,24 +1,4 @@
 #!/usr/bin/env node
-/**
- * ═══════════════════════════════════════════════════════════════════════════
- * RUN E2E - Ejecuta tests E2E con Playwright + Genera Reporte Allure
- * ═══════════════════════════════════════════════════════════════════════════
- *
- * Uso:
- *   node scripts/run-e2e.mjs [spec-file] [--capture-api]
- *
- * Ejemplos:
- *   node scripts/run-e2e.mjs                           # Ejecuta todos los specs
- *   node scripts/run-e2e.mjs TS-001                    # Ejecuta spec específico
- *   node scripts/run-e2e.mjs TS-001 --capture-api      # Ejecuta + captura APIs
- *
- * Reportes:
- *   - Allure HTML: reports/e2e/allure-report/
- *   - Screenshots: reports/e2e/screenshots/
- *
- * ═══════════════════════════════════════════════════════════════════════════
- */
-
 import { execSync, spawn } from 'child_process';
 import path from 'path';
 import fs from 'fs';

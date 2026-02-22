@@ -1,121 +1,62 @@
-# SIGMA Static Analyzer v3.0
+# MS-02 Pruebas Estaticas - QASL NEXUS LLM
 
-Herramienta de analisis estatico de Historias de Usuario para deteccion de brechas de cobertura y generacion de escenarios de prueba siguiendo la metodologia Shift-Left Testing y estandares ISTQB/IEEE.
+Microservicio de analisis estatico de Historias de Usuario (HU) para deteccion de brechas de cobertura, generacion de escenarios de prueba y trazabilidad completa en base de datos, siguiendo la metodologia Shift-Left Testing y estandares ISTQB/IEEE.
 
-**Cliente:** AGIP
+**Plataforma:** QASL NEXUS LLM - QA con 12 Microservicios + Multi-LLM
 **Metodologia:** Shift-Left Testing (ISTQB CTFL v4.0 Cap. 3)
-**Estandares:** IEEE 829, IEEE 830, ISO/IEC 27001, ISO 9001
+**Estandares:** IEEE 829, IEEE 830, ISO/IEC 29119
+**LLM:** Claude AI (Anthropic) - Analisis semantico de HUs
 
 ---
 
-## EQUIPO QA
-
-| Rol | Nombre |
-|-----|--------|
-| Tech Lead QA | Elyer Maldonado |
-| QA Analyst | Kelly Ybarra |
-
----
-
-## ESTADO ACTUAL - FASE 2 COMPLETADA
-
-| HU | Nombre | Cobertura Inicial | Cobertura Final | Test Cases |
-|----|--------|-------------------|-----------------|------------|
-| HU_SGINC_02 | Alta de Inconsistencias | 37.5% | **100%** | 8 |
-| HU_SGINC_03 | Grilla de Inconsistencias | 50.0% | **100%** | 11 |
-| HU_SGINC_04 | Importar Lote | 41.7% | **100%** | 10 |
-| HU_SGINC_05 | Carga Individual | 50.0% | **100%** | 8 |
-| HU_SGINC_06 | Generar Expediente Lote | 37.5% | **100%** | 7 |
-| HU_SGPP_01 | Gestion de Perfiles y Permisos | 14.3% | **100%** | 27 |
-| HU_SGPP_02 | Nuevo Perfil | 28.6% | **100%** | 12 |
-
-**Total Test Cases:** 83 | **Cobertura Final:** 100% | **Gaps Resueltos:** 85
-
----
-
-## ARTEFACTOS GENERADOS
-
-### Reportes y Documentacion
-
-| Archivo | Descripcion |
-|---------|-------------|
-| [dashboard.html](dashboard.html) | Dashboard interactivo de metricas |
-| [METRICAS_RESUMEN.md](METRICAS_RESUMEN.md) | Informe ejecutivo completo |
-| [presentacion_01_pruebas_estaticas.html](presentacion_01_pruebas_estaticas.html) | Presentacion: Pruebas Estaticas (10 slides) |
-| [presentacion_02_shift_left_stack.html](presentacion_02_shift_left_stack.html) | Presentacion: Shift-Left y Stack (12 slides) |
-| [PROMPT_FASE2_CSV_TRAZABILIDAD.md](PROMPT_FASE2_CSV_TRAZABILIDAD.md) | Prompt para generacion de CSVs |
-
-### HUs Actualizadas (HTML)
-
-| Archivo | HU | Escenarios | BRs |
-|---------|-----|------------|-----|
-| [HU_SGINC_02_ACTUALIZADA.html](hu_actualizadas/HU_SGINC_02_ACTUALIZADA.html) | Alta de Inconsistencias | 7 | 4 |
-| [HU_SGINC_03_ACTUALIZADA.html](hu_actualizadas/HU_SGINC_03_ACTUALIZADA.html) | Grilla de Inconsistencias | 11 | 5 |
-| [HU_SGINC_04_ACTUALIZADA.html](hu_actualizadas/HU_SGINC_04_ACTUALIZADA.html) | Importar Lote | 10 | 6 |
-| [HU_SGINC_05_ACTUALIZADA.html](hu_actualizadas/HU_SGINC_05_ACTUALIZADA.html) | Carga Individual | 8 | 4 |
-| [HU_SGINC_06_ACTUALIZADA.html](hu_actualizadas/HU_SGINC_06_ACTUALIZADA.html) | Generar Expediente Lote | 7 | 4 |
-| [HU_SGPP_01_ACTUALIZADA.html](hu_actualizadas/HU_SGPP_01_ACTUALIZADA.html) | Gestion de Perfiles | 27 | 14 |
-| [HU_SGPP_02_ACTUALIZADA.html](hu_actualizadas/HU_SGPP_02_ACTUALIZADA.html) | Nuevo Perfil | 12 | 7 |
-
-### Reportes de Analisis
-
-| Archivo | HU |
-|---------|-----|
-| [HU_SGINC_02_REPORT.md](reportes/HU_SGINC_02_REPORT.md) | Alta de Inconsistencias |
-| [HU_SGINC_03_REPORT.md](reportes/HU_SGINC_03_REPORT.md) | Grilla de Inconsistencias |
-| [HU_SGINC_04_REPORT.md](reportes/HU_SGINC_04_REPORT.md) | Importar Lote |
-| [HU_SGINC_05_REPORT.md](reportes/HU_SGINC_05_REPORT.md) | Carga Individual |
-| [HU_SGINC_06_REPORT.md](reportes/HU_SGINC_06_REPORT.md) | Generar Expediente Lote |
-| [HU_SGPP_01_REPORT.md](reportes/HU_SGPP_01_REPORT.md) | Gestion de Perfiles |
-| [HU_SGPP_02_REPORT.md](reportes/HU_SGPP_02_REPORT.md) | Nuevo Perfil |
-
----
-
-## TRAZABILIDAD
+## ARQUITECTURA
 
 ```
-EPIC → HU → TS → PRC → TC
+MS-02 Pruebas Estaticas (Camino A - Standalone)
+
+  HU_Original/           Anthropic API            MS-12 PostgreSQL
+  (.html ISTQB)    -->   Claude AI          -->   (Single Source of Truth)
+       |                     |                          |
+   [1] Parser         [2] RTMAnalyzerAI          [5] DBWriter
+       |                     |                          |
+   parse_hu()          analizar()               guardar_analisis()
+       |                     |                          |
+       v                     v                          v
+   HU object          resultado dict            9 tablas pobladas
+                             |
+                    [3] ReportGenerator
+                    [4] HUIdealHTMLGenerator
+                             |
+                             v
+                    reportes/ + hu_actualizadas/
 ```
 
-### EP_SIGMA_01 - Modulo Alta de Inconsistencias
+### Conexion MS-02 --> MS-12
 
-| HU | Test Suites | Test Cases | Preconditions |
-|----|-------------|------------|---------------|
-| HU_SGINC_02 | TS-001 a TS-003 | TC-001 a TC-008 | PRC-001 a PRC-003 |
-| HU_SGINC_03 | TS-004 a TS-006 | TC-009 a TC-019 | PRC-004 a PRC-006 |
-| HU_SGINC_04 | TS-007 a TS-009 | TC-020 a TC-029 | PRC-007 a PRC-009 |
-| HU_SGINC_05 | TS-010 a TS-012 | TC-030 a TC-037 | PRC-010 a PRC-012 |
-| HU_SGINC_06 | TS-013 a TS-015 | TC-038 a TC-044 | PRC-013 a PRC-015 |
+MS-02 escribe directamente en MS-12 PostgreSQL via `db_writer.py`:
 
-### EP_SGPP - Perfiles y Permisos
-
-| HU | Test Suites | Test Cases | Preconditions |
-|----|-------------|------------|---------------|
-| HU_SGPP_01 | TS-016 a TS-024 | TC-045 a TC-071 | PRC-016 a PRC-024 |
-| HU_SGPP_02 | TS-025 a TS-028 | TC-072 a TC-083 | PRC-025 a PRC-028 |
+| Tabla | Contenido |
+|-------|-----------|
+| `epic` | Epica de la HU |
+| `user_story` | HU con VCR, BRs, escenarios |
+| `static_analysis_gap` | Gaps detectados por Claude AI |
+| `test_suite` | 3 suites: Positivos, Negativos, Seguridad-OWASP |
+| `precondition` | 3 PRCs: Autenticacion, Datos, Navegacion |
+| `test_case` | 1 TC por escenario (original + sugerido) |
+| `test_case_step` | Pasos Gherkin: DADO/CUANDO/ENTONCES |
+| `precondition_test_case` | Relacion M2M entre PRCs y TCs |
+| `vcr_score` | VCR auto-calculado por trigger PostgreSQL |
 
 ---
 
-## ESTRUCTURA DEL PROYECTO
+## FLUJO DE EJECUCION (5 pasos)
 
 ```
-sigma_analyzer/
-├── run_analysis.py                  <- Script principal de analisis
-├── parser.py                        <- Parser de HUs Markdown
-├── rtm_analyzer_ai.py               <- Analizador de cobertura
-├── report_generator.py              <- Generador de reportes MD
-├── hu_ideal_html_generator.py       <- Generador de HU HTML
-├── generate_dashboard.py            <- Generador de dashboard
-├── templates/                       <- Plantillas HTML
-├── docs/                            <- Documentacion tecnica
-├── reportes/                        <- Reportes de analisis (7)
-├── hu_actualizadas/                 <- HUs HTML actualizadas (7)
-├── dashboard.html                   <- Dashboard de metricas
-├── presentacion_01_pruebas_estaticas.html
-├── presentacion_02_shift_left_stack.html
-├── METRICAS_RESUMEN.md              <- Informe ejecutivo
-├── PROMPT_FASE2_CSV_TRAZABILIDAD.md <- Prompt para CSVs
-└── metricas_globales.json           <- Metricas JSON
+[1/5] Parsear HU          --> parser.py (HTML/Markdown)
+[2/5] Analisis Claude AI   --> rtm_analyzer_ai.py (gaps, coberturas, escenarios)
+[3/5] Generar Reporte      --> report_generator.py (Markdown con semaforo)
+[4/5] Generar HU Actualizada --> hu_ideal_html_generator.py (HTML ISTQB)
+[5/5] Guardar en BD        --> db_writer.py (9 tablas MS-12 PostgreSQL)
 ```
 
 ---
@@ -123,70 +64,138 @@ sigma_analyzer/
 ## USO
 
 ### Requisitos Previos
+
 ```bash
 # Python 3.8+
 python --version
 
 # Instalar dependencias
 pip install -r requirements.txt
+
+# Docker (MS-12 PostgreSQL)
+cd ../../ms-12-database
+docker-compose up -d
+```
+
+### Configuracion (.env)
+
+```env
+ANTHROPIC_API_KEY=sk-ant-...
+ANTHROPIC_MODEL=claude-sonnet-4-5-20250929
+DATABASE_URL=postgresql://qasl_admin:qasl_nexus_2026@localhost:5432/qasl_nexus
 ```
 
 ### Comandos de Ejecucion
 
-#### 1. Ejecutar Analisis Completo
 ```bash
-cd sigma_analyzer
-python run_analysis.py
+# Analizar una HU especifica (con BD)
+python run_analysis.py HU_LOGIN_01
+
+# Analizar multiples HUs
+python run_analysis.py HU_LOGIN_01 HU_CART_01 HU_PAY_01
+
+# Analizar todas las HUs en HU_Original/
+python run_analysis.py --all
+
+# Sin conexion a BD (solo archivos locales)
+python run_analysis.py HU_LOGIN_01 --no-db
 ```
 
-#### 2. Analizar HU Individual
-```bash
-python run_analysis.py --hu HU_SGINC_02
+### Output esperado
+
+```
+============================================================
+QASL NEXUS LLM - MS-02 Pruebas Estaticas
+Powered by Claude AI for semantic precision
+============================================================
+
+HUs a analizar: 1
+BD (MS-12): Conectada
+
+============================================================
+Analizando: HU_LOGIN_01
+============================================================
+[1/5] Parseando HU...
+[2/5] Ejecutando analisis RTM con Claude AI...
+[3/5] Generando reporte...
+[4/5] Generando HU Actualizada (formato ISTQB)...
+[5/5] Guardando trazabilidad en MS-12 PostgreSQL...
+   Suites: 3 | TCs: 10 | PRCs: 3 | Gaps: 7
+
+[RESULTADOS]
+   Cobertura inicial: 30.0%
+   Gaps identificados: 7
+   Gaps criticos: 4
+   Reporte: HU_LOGIN_01_REPORT.md
+   HU Actualizada: HU_LOGIN_01_ACTUALIZADA.html
+   BD: Trazabilidad guardada en MS-12
+
+============================================================
+[OK] ANALISIS COMPLETADO
+============================================================
 ```
 
-#### 3. Generar Dashboard de Metricas
-```bash
-python generate_dashboard.py
+---
+
+## ESTRUCTURA DEL PROYECTO
+
+```
+sigma_analyzer/
+├── run_analysis.py              # Orquestador principal (5 pasos)
+├── parser.py                    # Parser de HUs (HTML + Markdown)
+├── rtm_analyzer_ai.py           # Analizador RTM con Claude AI
+├── report_generator.py          # Generador de reportes .md
+├── hu_ideal_html_generator.py   # Generador de HU actualizada .html
+├── db_writer.py                 # Escritor a MS-12 PostgreSQL (9 tablas)
+├── generate_dashboard.py        # Generador de dashboard HTML
+├── requirements.txt             # Dependencias Python
+├── .env                         # API keys y conexion BD
+├── metricas_globales.json       # Metricas acumuladas JSON
+├── METRICAS_RESUMEN.md          # Resumen ejecutivo de metricas
+├── HU_Original/                 # INPUT: HUs en formato HTML ISTQB
+│   └── HU_LOGIN_01.html
+├── reportes/                    # OUTPUT: Reportes de analisis (.md)
+│   └── HU_LOGIN_01_REPORT.md
+├── hu_actualizadas/             # OUTPUT: HUs con escenarios sugeridos (.html)
+│   └── HU_LOGIN_01_ACTUALIZADA.html
+├── templates/                   # Plantillas HTML
+└── docs/                        # Documentacion tecnica
+    └── FLUJO-CORRECTO-SHFT-LEFT-testing.md
 ```
 
-#### 4. Generar Reporte HTML de HU
-```bash
-python hu_ideal_html_generator.py --input docs/HU_SGINC_02.md --output hu_actualizadas/
-```
+---
 
-#### 5. Parsear Historia de Usuario
-```bash
-python parser.py docs/HU_SGINC_02.md
-```
+## MODULOS
 
-#### 6. Analizar Cobertura RTM
-```bash
-python rtm_analyzer_ai.py --hu HU_SGINC_02
-```
+### parser.py
+- `HUHTMLParser`: Parsea HUs en formato HTML (BeautifulSoup)
+- `HUParser`: Parsea HUs en formato Markdown
+- `parse_hu()`: Auto-detecta formato y retorna objeto `HU`
 
-#### 7. Generar Reporte MD
-```bash
-python report_generator.py --hu HU_SGINC_02 --output reportes/
-```
+### rtm_analyzer_ai.py
+- `RTMAnalyzerAI`: Envia HU a Claude AI para analisis semantico
+- Detecta gaps de cobertura (CRITICO/ALTO/MEDIO/BAJO)
+- Genera escenarios sugeridos en formato Gherkin
+- Calcula metricas: cobertura por BR, total escenarios, VCR
 
-### Visualizar Artefactos
+### report_generator.py
+- `ReportGenerator`: Genera reporte Markdown con:
+  - Semaforo de estado (ROJO/AMARILLO/VERDE)
+  - Matriz de cobertura BR vs Escenarios
+  - Lista de gaps con severidad
+  - Escenarios sugeridos
 
-#### Ver Presentaciones (abrir en navegador)
-```
-presentacion_01_pruebas_estaticas.html   # Pruebas Estaticas
-presentacion_02_shift_left_stack.html    # Shift-Left y Stack Tecnologico
-```
+### hu_ideal_html_generator.py
+- `HUIdealHTMLGenerator`: Genera HU actualizada en HTML ISTQB
+  - Escenarios originales + sugeridos por Claude AI
+  - Formato profesional con estilos CSS
 
-#### Ver Dashboard
-```
-dashboard.html
-```
-
-#### Ver Reportes de Metricas
-```
-METRICAS_RESUMEN.md
-INFORME_METRICAS_PRUEBAS_ESTATICAS.md
-```
+### db_writer.py
+- `DBWriter`: Conecta MS-02 con MS-12 PostgreSQL
+  - `connect()`: Establece conexion via DATABASE_URL
+  - `guardar_analisis()`: Inserta en 9 tablas en una transaccion
+  - UPSERT (ON CONFLICT) para idempotencia en re-ejecuciones
+  - VCR auto-calculado por trigger de PostgreSQL
 
 ---
 
@@ -214,44 +223,78 @@ INFORME_METRICAS_PRUEBAS_ESTATICAS.md
 
 ---
 
-## PROXIMOS PASOS - FASE 3
+## TRAZABILIDAD
 
-| Actividad | Herramienta | Estado |
-|-----------|-------------|--------|
-| Deploy del SUT | Docker | Pendiente |
-| Pruebas Exploratorias | Manual | Pendiente |
-| Planning Poker (VCR) | Equipo | Pendiente |
-| Automatizacion E2E | Playwright + TypeScript | Pendiente |
-| Pruebas API | Postman + Newman | Pendiente |
-| Pruebas Performance | K6 | Pendiente |
-| Pruebas Seguridad | OWASP ZAP | Pendiente |
-| CI/CD Pipeline | Jenkins + GitLab | Pendiente |
-| Reportes | Allure | Pendiente |
+```
+Epic --> User Story --> Test Suite --> Test Case --> Test Case Step
+                   \                            /
+                    --> Precondition -----------
+                   \
+                    --> Static Analysis Gap
+                   \
+                    --> VCR Score (auto-trigger)
+```
 
-### HUs Pendientes de Analisis
+### Clasificacion automatica de Suites
+| Suite | Categoria | Criterio |
+|-------|-----------|----------|
+| TS-01 | Positivos | Escenarios con "exitoso", "correcto", "valido" |
+| TS-02 | Negativos | Escenarios con "error", "invalido", "fallido", "rechazo" |
+| TS-03 | Seguridad-OWASP | Escenarios con "seguridad", "inyeccion", "XSS", "bloqueo" |
 
-| HU | Nombre | Epica |
-|----|--------|-------|
-| HU_SGPP_03 | Ver detalle del rol | EP_SGPP |
-| HU_SGPP_04 | Modificacion de perfil | EP_SGPP |
-| HU_SGPP_05 | Habilitacion/Deshabilitacion de Rol | EP_SGPP |
+### VCR (Value-Cost-Risk)
+- **Valor** (1-3): Impacto de negocio
+- **Costo** (1-3): Esfuerzo de automatizacion
+- **Riesgo**: Probabilidad x Impacto
+- **Total**: Valor + Costo + Riesgo
+- **VCR >= 9**: AUTOMATIZAR | **VCR < 9**: MANUAL
+
+---
+
+## DEPENDENCIAS
+
+```
+anthropic>=0.40.0          # Claude AI SDK
+python-dotenv>=1.0.0       # Variables de entorno
+beautifulsoup4>=4.12.0     # Parser HTML
+psycopg2-binary>=2.9.0     # PostgreSQL driver
+```
+
+---
+
+## VERIFICACION EN BASE DE DATOS
+
+### pgAdmin (localhost:5050)
+```
+QASL NEXUS --> qasl_nexus --> Esquemas --> public --> Tablas
+```
+
+### Consultas utiles
+```sql
+-- Trazabilidad completa
+SELECT * FROM v_traceability;
+
+-- Gaps pendientes
+SELECT * FROM v_pending_gaps;
+
+-- Cobertura por HU
+SELECT * FROM v_test_coverage;
+
+-- Resumen ejecutivo
+SELECT * FROM v_executive_summary;
+```
 
 ---
 
 ## VERSION
 
-- **v3.0** - Shift-Left Testing con Trazabilidad Completa
-- **Fecha:** 29/11/2025
-- **Autor:** SIGMA QA Team (Elyer Maldonado, Kelly Ybarra)
-- **Repositorio:** https://gitlab.com/elyerm/sigma-static-analyzer
+- **v4.0** - Shift-Left Testing con Trazabilidad en PostgreSQL (MS-12)
+- **Fecha:** 2026-02-18
+- **Autor:** Elyer Gregorio Maldonado
+- **Plataforma:** QASL NEXUS LLM
+- **Repositorio:** https://github.com/E-Gregorio/QASL-NEXUS-LLM
 
 ---
 
-## LICENCIA
-
-Proyecto interno AGIP - SIGMA QA Team
-
----
-
-*Documento generado por SIGMA QA Platform v3.0*
+*Generado por QASL NEXUS LLM - MS-02 Pruebas Estaticas*
 *Metodologia: Shift-Left Testing (ISTQB CTFL v4.0)*

@@ -1,20 +1,3 @@
-// ═══════════════════════════════════════════════════════════════════════════
-// 🚀 QASL-MOBILE - Shift-Left Mobile Testing with AI Validation
-// ═══════════════════════════════════════════════════════════════════════════
-//
-// The world's first complete mobile testing ecosystem that integrates:
-// ✅ Shift-Left from User Stories (QASL SIGMA integration)
-// ✅ Smart Selector Engine (11 levels, adapted from UNIVERSAL RECORDER PRO)
-// ✅ Visual Recording with automatic YAML generation
-// ✅ Cross-platform testing (Android + iOS via Maestro)
-// ✅ AI-powered UX & Accessibility validation (INGRID Mobile)
-// ✅ Unified metrics with web testing (InfluxDB + Grafana)
-//
-// Author: Elyer Maldonado
-// License: MIT
-//
-// ═══════════════════════════════════════════════════════════════════════════
-
 // Core
 export { SelectorEngine } from './core/selector-engine.js';
 
@@ -50,9 +33,6 @@ import { MaestroRunner } from './runner/maestro-runner.js';
 import { INGRIDMobileAnalyzer } from './ingrid/mobile-analyzer.js';
 import { QASLMobileConfig, QASLTestCase } from './types/index.js';
 
-/**
- * Create a fully configured QASL-MOBILE instance
- */
 export function createQASLMobile(config: QASLMobileConfig) {
   return {
     recorder: new MobileRecorder({

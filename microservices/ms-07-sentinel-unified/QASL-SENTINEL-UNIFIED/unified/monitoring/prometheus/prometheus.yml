@@ -8,7 +8,7 @@ scrape_configs:
       - targets: ['host.docker.internal:9091']
         labels:
           environment: 'test'
-          project: 'sigma'
+          project: 'qasl-nexus'
 
   - job_name: 'sentinel-metrics-unified'
     static_configs:

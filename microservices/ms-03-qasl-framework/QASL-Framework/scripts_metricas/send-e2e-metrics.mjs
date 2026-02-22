@@ -1,18 +1,4 @@
 #!/usr/bin/env node
-/**
- * ═══════════════════════════════════════════════════════════════════════════
- * SEND E2E METRICS - Envía métricas de Playwright a InfluxDB
- * ═══════════════════════════════════════════════════════════════════════════
- *
- * Lee los resultados de Playwright (JSON) y envía métricas a InfluxDB
- * para visualización en Grafana.
- *
- * Uso:
- *   node scripts_metricas/send-e2e-metrics.mjs [results-file]
- *
- * ═══════════════════════════════════════════════════════════════════════════
- */
-
 import fs from 'fs';
 import path from 'path';
 import { sendE2EMetrics, checkInfluxConnection } from './influx-client.mjs';

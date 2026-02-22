@@ -3,7 +3,7 @@
  * ║                           AUTH MANAGER v2.0                                  ║
  * ║         Sistema Universal de Autenticación para APIs                         ║
  * ╠══════════════════════════════════════════════════════════════════════════════╣
- * ║  Proyecto: SIGMA | Cliente: AGIP | Empresa: Epidata                          ║
+ * ║  QASL NEXUS LLM - Elyer Gregorio Maldonado                                   ║
  * ║  Líder Técnico QA: Elyer Gregorio Maldonado                                  ║
  * ╚══════════════════════════════════════════════════════════════════════════════╝
  *

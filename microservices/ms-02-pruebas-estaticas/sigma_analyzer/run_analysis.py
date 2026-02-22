@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-SIGMA Static Analyzer v3.0 AI - Script Principal
-Analiza HUs con Claude AI y genera reportes + HU Actualizada + CSVs de trazabilidad
+QASL NEXUS LLM - MS-02 Pruebas Estaticas
+Analiza HUs con Claude AI y genera reportes + HU Actualizada + Trazabilidad en BD
 """
 import sys
 import json
@@ -17,28 +17,37 @@ from parser import parse_hu
 from rtm_analyzer_ai import RTMAnalyzerAI
 from report_generator import ReportGenerator
 from hu_ideal_html_generator import HUIdealHTMLGenerator
+from db_writer import DBWriter
 
 
 # Rutas
 BASE_DIR = Path(__file__).parent
+HU_ORIGINAL_DIR = BASE_DIR / "HU_Original"
 REPORTES_DIR = BASE_DIR / "reportes"
 HU_ACTUALIZADAS_DIR = BASE_DIR / "hu_actualizadas"
-CSV_OUTPUT_DIR = BASE_DIR.parent / "flujo-ideal"
 METRICAS_FILE = BASE_DIR / "metricas_globales.json"
 
 
 def find_hu_files(hu_ids: list) -> list:
-    """Busca archivos de HU en las épicas"""
-    epicas_dir = BASE_DIR.parent / "epicas"
+    """Busca archivos de HU en HU_Original/ (.html y .md)"""
     found = []
 
+    if not HU_ORIGINAL_DIR.exists():
+        print(f"[ERROR] Directorio no encontrado: {HU_ORIGINAL_DIR}")
+        return found
+
     for hu_id in hu_ids:
-        for epica in epicas_dir.iterdir():
-            if epica.is_dir():
-                for f in epica.iterdir():
-                    if hu_id in f.name and f.suffix == ".md":
-                        found.append((hu_id, f))
-                        break
+        for f in HU_ORIGINAL_DIR.iterdir():
+            if f.is_file() and hu_id in f.name and f.suffix in ('.html', '.htm', '.md'):
+                found.append((hu_id, f))
+                break
+
+    # Si no se especificaron IDs, buscar todas las HUs
+    if not hu_ids:
+        for f in sorted(HU_ORIGINAL_DIR.iterdir()):
+            if f.is_file() and f.suffix in ('.html', '.htm', '.md'):
+                hu_id = f.stem
+                found.append((hu_id, f))
 
     return found
 
@@ -65,24 +74,7 @@ def guardar_metricas(metricas: dict):
         json.dump(metricas, f, indent=2, ensure_ascii=False)
 
 
-def generar_csvs(html_path: Path):
-    """Genera CSVs de trazabilidad usando el generador existente"""
-    try:
-        from csv_ai_generator import CSVAIGenerator
-        print("[5/5] Generando CSVs de trazabilidad...")
-        CSV_OUTPUT_DIR.mkdir(exist_ok=True, parents=True)
-        generator = CSVAIGenerator(str(html_path), str(CSV_OUTPUT_DIR))
-        generator.generate_csvs()
-        return True
-    except ImportError:
-        print("   [WARN] csv_ai_generator no disponible, omitiendo CSVs")
-        return False
-    except Exception as e:
-        print(f"   [ERROR] Error generando CSVs: {e}")
-        return False
-
-
-def analizar_hu(hu_id: str, hu_path: Path, metricas: dict, generar_csv: bool = True) -> dict:
+def analizar_hu(hu_id: str, hu_path: Path, metricas: dict, db: DBWriter = None) -> dict:
     """Analiza una HU con Claude AI y retorna resultados"""
     print(f"\n{'='*60}")
     print(f"Analizando: {hu_id}")
@@ -117,10 +109,13 @@ def analizar_hu(hu_id: str, hu_path: Path, metricas: dict, generar_csv: bool = T
     with open(html_path, 'w', encoding='utf-8') as f:
         f.write(html)
 
-    # 5. Generar CSVs (opcional)
-    csv_generados = False
-    if generar_csv:
-        csv_generados = generar_csvs(html_path)
+    # 5. Guardar trazabilidad en BD (MS-12)
+    db_guardado = False
+    if db and db.conn:
+        print("[5/5] Guardando trazabilidad en MS-12 PostgreSQL...")
+        db_guardado = db.guardar_analisis(hu, resultado)
+    else:
+        print("[5/5] BD no disponible, omitiendo trazabilidad en BD")
 
     # Actualizar metricas
     cobertura = resultado['metricas']['cobertura_escenarios']
@@ -138,7 +133,7 @@ def analizar_hu(hu_id: str, hu_path: Path, metricas: dict, generar_csv: bool = T
         "fecha_analisis": datetime.now().strftime("%Y-%m-%d %H:%M"),
         "reporte": str(report_path.name),
         "hu_actualizada": str(html_path.name),
-        "csv_generados": csv_generados
+        "db_guardado": db_guardado
     }
 
     # Resultados
@@ -148,8 +143,8 @@ def analizar_hu(hu_id: str, hu_path: Path, metricas: dict, generar_csv: bool = T
     print(f"   Gaps criticos: {criticos}")
     print(f"   Reporte: {report_path.name}")
     print(f"   HU Actualizada: {html_path.name}")
-    if csv_generados:
-        print(f"   CSVs: {CSV_OUTPUT_DIR}")
+    if db_guardado:
+        print(f"   BD: Trazabilidad guardada en MS-12")
 
     return resultado
 
@@ -175,7 +170,7 @@ def generar_resumen_metricas(metricas: dict):
     resumen_path = BASE_DIR / "METRICAS_RESUMEN.md"
 
     with open(resumen_path, 'w', encoding='utf-8') as f:
-        f.write("# SIGMA - Metricas de Analisis Estatico\n\n")
+        f.write("# QASL NEXUS LLM - Metricas de Analisis Estatico\n\n")
         f.write(f"**Ultima actualizacion:** {metricas['ultima_actualizacion']}\n\n")
         f.write("---\n\n")
 
@@ -202,52 +197,49 @@ def generar_resumen_metricas(metricas: dict):
             f.write(f"| {hu_id} | {data['epica'][:20]} | {status} {data['cobertura']}% | {data['gaps']} | {data['gaps_criticos']} | [{data['reporte']}](reportes/{data['reporte']}) |\n")
 
         f.write("\n---\n\n")
-        f.write("*Generado por SIGMA Static Analyzer v3.0 AI*\n")
+        f.write("*Generado por QASL NEXUS LLM - MS-02 Pruebas Estaticas*\n")
 
     print(f"\n[INFO] Resumen de metricas: {resumen_path.name}")
 
 
 def main():
     print("\n" + "=" * 60)
-    print("SIGMA STATIC ANALYZER v3.0 AI")
+    print("QASL NEXUS LLM - MS-02 Pruebas Estaticas")
     print("Powered by Claude AI for semantic precision")
     print("=" * 60)
 
     if len(sys.argv) < 2:
         print("\nUso:")
-        print("  python run_analysis.py HU_SGPP_01")
-        print("  python run_analysis.py HU_SGPP_01 HU_SGPP_02")
-        print("  python run_analysis.py --all-EP08")
-        print("  python run_analysis.py HU_SGPP_01 --no-csv")
+        print("  python run_analysis.py HU_XXX_01")
+        print("  python run_analysis.py HU_XXX_01 HU_XXX_02")
+        print("  python run_analysis.py --all")
+        print("  python run_analysis.py HU_XXX_01 --no-db")
         print("\nOpciones:")
-        print("  --no-csv    No generar CSVs de trazabilidad")
-        print("  --all-EP08  Analizar todas las HUs de EP_SIGMA_08")
+        print("  --no-db   No guardar trazabilidad en BD (MS-12)")
+        print("  --all     Analizar todas las HUs en HU_Original/")
+        print(f"\nDirectorio de HUs: {HU_ORIGINAL_DIR}")
         sys.exit(0)
 
     # Opciones
-    generar_csv = "--no-csv" not in sys.argv
+    usar_db = "--no-db" not in sys.argv
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
 
     # Cargar metricas existentes
     metricas = cargar_metricas()
 
+    # Conectar a BD (MS-12)
+    db = None
+    if usar_db:
+        db = DBWriter()
+        if not db.connect():
+            print("[WARN] Continuando sin BD - solo archivos locales")
+            db = None
+
     # Determinar que HUs analizar
-    if "--all-EP08" in sys.argv:
-        epica_dir = BASE_DIR.parent / "epicas" / "EP_SIGMA_08-Gestion de Perfiles y Permisos"
-        hu_ids = []
-        if epica_dir.exists():
-            for f in epica_dir.iterdir():
-                if f.suffix == ".md" and "HU_" in f.name:
-                    hu_id = f.stem.split(" - ")[0].replace(" ", "_")
-                    if "HU_SGPP" in hu_id:
-                        hu_ids.append(hu_id)
-        hu_ids = sorted(set(hu_ids))
+    if "--all" in sys.argv:
+        hu_ids = []  # find_hu_files con lista vacía busca todas
     else:
         hu_ids = args if args else []
-
-    if not hu_ids:
-        print("[ERROR] No se especificaron HUs para analizar")
-        sys.exit(1)
 
     hu_files = find_hu_files(hu_ids)
 
@@ -256,11 +248,15 @@ def main():
         sys.exit(1)
 
     print(f"\nHUs a analizar: {len(hu_files)}")
-    print(f"Generar CSVs: {'Si' if generar_csv else 'No'}")
+    print(f"BD (MS-12): {'Conectada' if db else 'No disponible'}")
 
     # Analizar cada HU
     for hu_id, hu_path in hu_files:
-        analizar_hu(hu_id, hu_path, metricas, generar_csv)
+        analizar_hu(hu_id, hu_path, metricas, db)
+
+    # Cerrar BD
+    if db:
+        db.close()
 
     # Actualizar y guardar metricas
     actualizar_metricas_globales(metricas)
@@ -274,8 +270,8 @@ def main():
     print(f"   Reportes: {REPORTES_DIR}")
     print(f"   HUs Actualizadas: {HU_ACTUALIZADAS_DIR}")
     print(f"   Metricas: {METRICAS_FILE.name}")
-    if generar_csv:
-        print(f"   CSVs: {CSV_OUTPUT_DIR}")
+    if db:
+        print(f"   BD: Trazabilidad en MS-12 PostgreSQL")
 
 
 if __name__ == "__main__":

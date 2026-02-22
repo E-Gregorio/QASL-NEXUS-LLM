@@ -16,6 +16,6 @@
     "nodemailer": "^8.0.1",
     "pdfkit": "^0.17.2"
   },
-  "author": "Elyer Gregorio Maldonado - Epidata Consulting",
+  "author": "Elyer Gregorio Maldonado",
   "license": "ISC"
 }

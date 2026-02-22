@@ -1,9 +1,5 @@
-Aquí tienes una **revisión final** y alineada con **ISTQB FL v4.0 (sección 5.3.2)** y con las **normas IEEE 829/830 e ISO/IEC/IEEE 29119-3**.
-La estructura que ya tienes es muy buena: solo ajusté **títulos, orden y campos complementarios** para reforzar la trazabilidad y las métricas recomendadas en los estándares.
-
----
-
-## 📊 Informe de Avance de Prueba – Plantilla Final
+# Informe de Avance de Prueba
+**Normas de referencia:** ISTQB FL v4.0 (sección 5.3.2), IEEE 829/830, ISO/IEC/IEEE 29119-3
 
 **Proyecto / Módulo:**
 **Versión de la aplicación:**
@@ -85,16 +81,3 @@ La estructura que ya tienes es muy buena: solo ajusté **títulos, orden y campo
 * **ISO/IEC/IEEE 29119-3**: Test Progress Report Template.
 * **IEEE 829**: Standard for Software Test Documentation.
 
----
-
-## 🔑 Puntos clave de la revisión
-
-* **Añadido “Cobertura alcanzada” y “Defectos cerrados”** en métricas, como exige 29119-3.
-* **Refuerzo de referencias normativas** en la sección final.
-* **Estructura en tablas** para claridad y trazabilidad.
-* Mantiene la lógica de tu versión: resumen → desviaciones → obstáculos → métricas → riesgos → plan.
-
----
-
-✅ **Conclusión**
-Con estas mejoras el **Informe de Avance de Prueba** queda plenamente alineado con **ISTQB v4.0** y con las **normas IEEE 829/830 e ISO 29119-3**, listo para usar como documento formal de control de avance en cada sprint o release.

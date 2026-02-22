@@ -1,8 +1,7 @@
 // ============================================
-// SIGMA-SENTINEL - Main Orchestrator
+// QASL-SENTINEL - Main Orchestrator
 // ============================================
-// AGIP - Administración Gubernamental de Ingresos Públicos
-// Buenos Aires Ciudad
+// QASL NEXUS LLM - Elyer Gregorio Maldonado
 
 import { loadConfig, getSnapshotPath } from './config.js';
 import { DOMWatcher } from './watchers/dom-watcher.js';
@@ -34,7 +33,7 @@ export class Sentinel {
     const startTime = Date.now();
 
     this.printBanner();
-    console.log(chalk.cyan('\n🛡️  SIGMA-SENTINEL Starting...\n'));
+    console.log(chalk.cyan('\n🛡️  QASL-SENTINEL Starting...\n'));
 
     try {
       // Initialize components
@@ -136,7 +135,7 @@ export class Sentinel {
           port: 443,
           path: url.pathname || '/',
           method: 'GET',
-          rejectUnauthorized: false, // Ignorar certificados SSL auto-firmados de AGIP
+          rejectUnauthorized: false, // Ignorar certificados SSL auto-firmados
           timeout: 10000,
         }, (res) => {
           resolve(res.statusCode !== undefined && res.statusCode < 500);
@@ -438,15 +437,15 @@ export class Sentinel {
 ║   ███████║███████╗██║ ╚████║   ██║   ██║██║ ╚████║███████╗███████╗    ║
 ║   ╚══════╝╚══════╝╚═╝  ╚═══╝   ╚═╝   ╚═╝╚═╝  ╚═══╝╚══════╝╚══════╝    ║
 ║                                                                       ║
-║        AGIP - Administracion Gubernamental de Ingresos Publicos       ║
-║                      Buenos Aires Ciudad                              ║
+║              QASL NEXUS LLM - Elyer Gregorio Maldonado                ║
+║                    Plataforma QA Multi-LLM                            ║
 ║                                                                       ║
 ║              Autonomous Environment Monitoring System                 ║
 ║           Frontend Change Detection & Regression Prevention           ║
 ║                                                                       ║
 ╚═══════════════════════════════════════════════════════════════════════╝
     `));
-    console.log(chalk.gray('    Version: 1.0.0 | AGIP - Buenos Aires Ciudad\n'));
+    console.log(chalk.gray('    Version: 1.0.0 | QASL NEXUS LLM\n'));
   }
 }
 

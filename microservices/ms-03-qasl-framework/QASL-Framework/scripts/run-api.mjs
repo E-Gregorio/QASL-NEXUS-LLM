@@ -1,28 +1,4 @@
 #!/usr/bin/env node
-/**
- * ═══════════════════════════════════════════════════════════════════════════
- * RUN API - Ejecuta tests API con Newman + Genera Reporte HTMLExtra
- * ═══════════════════════════════════════════════════════════════════════════
- *
- * Lee automáticamente las APIs capturadas durante E2E (.api-captures/)
- * y ejecuta Newman generando reporte HTML profesional.
- *
- * Uso:
- *   node scripts/run-api.mjs [capture-file]
- *
- * Ejemplos:
- *   node scripts/run-api.mjs                           # Usa última captura
- *   node scripts/run-api.mjs ts-001-apis.json          # Captura específica
- *
- * Reportes:
- *   - Newman HTMLExtra: reports/api/{timestamp}-report.html
- *
- * Requisitos:
- *   npm install -g newman newman-reporter-htmlextra
- *
- * ═══════════════════════════════════════════════════════════════════════════
- */
-
 import { execSync } from 'child_process';
 import path from 'path';
 import fs from 'fs';

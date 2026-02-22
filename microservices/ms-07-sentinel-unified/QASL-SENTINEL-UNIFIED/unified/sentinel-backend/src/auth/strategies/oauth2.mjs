@@ -3,7 +3,7 @@
  * ║                           OAUTH2 STRATEGY v2.0                               ║
  * ║              OAuth2 con soporte PKCE (Proof Key for Code Exchange)           ║
  * ╠══════════════════════════════════════════════════════════════════════════════╣
- * ║  Proyecto: SIGMA | Cliente: AGIP | Empresa: Epidata                          ║
+ * ║  QASL NEXUS LLM - Elyer Gregorio Maldonado                                   ║
  * ║  Líder Técnico QA: Elyer Gregorio Maldonado                                  ║
  * ╚══════════════════════════════════════════════════════════════════════════════╝
  *

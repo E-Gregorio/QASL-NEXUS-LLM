@@ -1,18 +1,4 @@
 #!/usr/bin/env node
-/**
- * ═══════════════════════════════════════════════════════════════════════════
- * SEND ZAP METRICS - Envía métricas de OWASP ZAP a InfluxDB
- * ═══════════════════════════════════════════════════════════════════════════
- *
- * Lee los resultados de OWASP ZAP (JSON) y envía métricas a InfluxDB
- * para visualización en Grafana.
- *
- * Uso:
- *   node scripts_metricas/send-zap-metrics.mjs [results-file]
- *
- * ═══════════════════════════════════════════════════════════════════════════
- */
-
 import fs from 'fs';
 import path from 'path';
 import { sendZAPMetrics, checkInfluxConnection } from './influx-client.mjs';

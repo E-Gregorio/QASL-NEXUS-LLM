@@ -1,7 +1,7 @@
 {
   "uid": "qasl-command-center-unified",
   "title": "QASL SENTINEL - Command Center Unificado",
-  "description": "EPIDATA Consulting | Cliente: AGIP | Buenos Aires, Argentina | QA Leader: Elyer Gregorio Maldonado",
+  "description": "QASL NEXUS LLM | QA Leader: Elyer Gregorio Maldonado",
   "tags": [
     "qasl",
     "sentinel",
@@ -55,7 +55,7 @@
       },
       "options": {
         "mode": "html",
-        "content": "<div style=\"background: linear-gradient(135deg, #0d1117 0%, #161b22 50%, #0d1117 100%); padding: 15px 30px; border-radius: 8px; border: 1px solid #30363d; box-shadow: 0 0 30px rgba(56, 139, 253, 0.15);\">\n  <div style=\"display: flex; justify-content: space-between; align-items: center;\">\n    <div style=\"display: flex; align-items: center; gap: 20px;\">\n      <div style=\"font-size: 36px;\">&#128737;</div>\n      <div>\n        <h1 style=\"color: #58a6ff; margin: 0; font-size: 24px; font-weight: 700; letter-spacing: 3px; text-shadow: 0 0 20px rgba(88, 166, 255, 0.5);\">QASL SENTINEL - COMMAND CENTER UNIFICADO</h1>\n        <p style=\"color: #8b949e; margin: 3px 0 0 0; font-size: 12px; letter-spacing: 1px;\">Backend (API-SENTINEL) + Frontend (SIGMA-SENTINEL) | Monitoreo Unificado v2.0</p>\n      </div>\n    </div>\n    <div style=\"text-align: right;\">\n      <div style=\"display: flex; gap: 30px; align-items: center;\">\n        <div style=\"text-align: center;\"><div style=\"color: #8b949e; font-size: 10px; text-transform: uppercase; letter-spacing: 1px;\">Proyecto</div><div style=\"color: #f0f6fc; font-size: 14px; font-weight: 600;\">SIGMA</div></div>\n        <div style=\"text-align: center;\"><div style=\"color: #8b949e; font-size: 10px; text-transform: uppercase; letter-spacing: 1px;\">Cliente</div><div style=\"color: #f0f6fc; font-size: 14px; font-weight: 600;\">AGIP</div></div>\n        <div style=\"text-align: center;\"><div style=\"color: #8b949e; font-size: 10px; text-transform: uppercase; letter-spacing: 1px;\">Empresa</div><div style=\"color: #f0f6fc; font-size: 14px; font-weight: 600;\">Epidata</div></div>\n        <div style=\"text-align: center; border-left: 1px solid #30363d; padding-left: 20px;\"><div style=\"color: #8b949e; font-size: 10px; text-transform: uppercase; letter-spacing: 1px;\">Lider QA</div><div style=\"color: #58a6ff; font-size: 13px; font-weight: 600;\">Elyer Maldonado</div></div>\n      </div>\n    </div>\n  </div>\n</div>"
+        "content": "<div style=\"background: linear-gradient(135deg, #0d1117 0%, #161b22 50%, #0d1117 100%); padding: 15px 30px; border-radius: 8px; border: 1px solid #30363d; box-shadow: 0 0 30px rgba(56, 139, 253, 0.15);\">\n  <div style=\"display: flex; justify-content: space-between; align-items: center;\">\n    <div style=\"display: flex; align-items: center; gap: 20px;\">\n      <div style=\"font-size: 36px;\">&#128737;</div>\n      <div>\n        <h1 style=\"color: #58a6ff; margin: 0; font-size: 24px; font-weight: 700; letter-spacing: 3px; text-shadow: 0 0 20px rgba(88, 166, 255, 0.5);\">QASL SENTINEL - COMMAND CENTER UNIFICADO</h1>\n        <p style=\"color: #8b949e; margin: 3px 0 0 0; font-size: 12px; letter-spacing: 1px;\">Backend (API-SENTINEL) + Frontend (QASL-SENTINEL) | Monitoreo Unificado v2.0</p>\n      </div>\n    </div>\n    <div style=\"text-align: right;\">\n      <div style=\"display: flex; gap: 30px; align-items: center;\">\n        <div style=\"text-align: center;\"><div style=\"color: #8b949e; font-size: 10px; text-transform: uppercase; letter-spacing: 1px;\">Proyecto</div><div style=\"color: #f0f6fc; font-size: 14px; font-weight: 600;\">QASL NEXUS LLM</div></div>\n        <div style=\"text-align: center;\"><div style=\"color: #8b949e; font-size: 10px; text-transform: uppercase; letter-spacing: 1px;\">Organizacion</div><div style=\"color: #f0f6fc; font-size: 14px; font-weight: 600;\">QASL NEXUS LLM</div></div>\n        <div style=\"text-align: center; border-left: 1px solid #30363d; padding-left: 20px;\"><div style=\"color: #8b949e; font-size: 10px; text-transform: uppercase; letter-spacing: 1px;\">Lider QA</div><div style=\"color: #58a6ff; font-size: 13px; font-weight: 600;\">Elyer Maldonado</div></div>\n      </div>\n    </div>\n  </div>\n</div>"
       },
       "transparent": true
     },
@@ -75,7 +75,7 @@
       "id": 201,
       "type": "gauge",
       "title": "Salud Frontend (DOM)",
-      "description": "Estado del frontend basado en el ultimo escaneo de SIGMA-SENTINEL",
+      "description": "Estado del frontend basado en el ultimo escaneo de QASL-SENTINEL",
       "gridPos": {
         "h": 6,
         "w": 8,
@@ -1237,8 +1237,8 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "max(qasl_api_uptime_percentage{api_id=\"GET__sigma_frontend\"})",
-          "legendFormat": "SIGMA Frontend",
+          "expr": "max(qasl_api_uptime_percentage{api_id=\"GET__qasl_frontend\"})",
+          "legendFormat": "QASL Frontend",
           "instant": true
         },
         {
@@ -2801,7 +2801,7 @@
       "id": 802,
       "type": "timeseries",
       "title": "Historial Escaneos Frontend",
-      "description": "Cambios DOM y tiempo de ejecucion de cada escaneo SIGMA-SENTINEL",
+      "description": "Cambios DOM y tiempo de ejecucion de cada escaneo QASL-SENTINEL",
       "gridPos": {
         "h": 7,
         "w": 12,

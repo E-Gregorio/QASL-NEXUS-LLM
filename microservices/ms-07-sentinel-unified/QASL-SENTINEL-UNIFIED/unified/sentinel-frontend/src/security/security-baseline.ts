@@ -1,6 +1,6 @@
 /**
  * ═══════════════════════════════════════════════════════════════════════════
- * SIGMA-SENTINEL - Security Baseline Manager
+ * QASL-SENTINEL - Security Baseline Manager
  * ═══════════════════════════════════════════════════════════════════════════
  * Gestiona baselines de seguridad para detectar regresiones
  *

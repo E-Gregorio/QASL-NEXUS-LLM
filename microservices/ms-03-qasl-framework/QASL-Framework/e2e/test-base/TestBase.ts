@@ -1,15 +1,15 @@
-import { test as base, expect as pwExpect, Page } from '@playwright/test';
-import { DemoQaPage } from '../pages/DemoQaPage';
+import { test as base, expect } from '@playwright/test';
+import { LoginPage } from '../pages/LoginPage';
 
-type Fixtures = {
-  demoQaPage: DemoQaPage;
+type QASLFixtures = {
+    loginPage: LoginPage;
 };
 
-export const test = base.extend<Fixtures>({
-  demoQaPage: async ({ page }, use) => {
-    const demoQaPage = new DemoQaPage(page);
-    await use(demoQaPage);
-  },
+export const test = base.extend<QASLFixtures>({
+    loginPage: async ({ page }, use) => {
+        const loginPage = new LoginPage(page);
+        await use(loginPage);
+    }
 });
 
-export const expect = pwExpect;
+export { expect };

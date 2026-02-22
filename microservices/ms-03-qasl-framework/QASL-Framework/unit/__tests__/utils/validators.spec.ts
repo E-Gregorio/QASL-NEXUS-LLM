@@ -1,8 +1,3 @@
-/**
- * Unit Tests - Validators
- * Tests para funciones de validación
- */
-
 import { describe, it, expect } from 'vitest'
 import {
   validateEmail,

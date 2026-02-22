@@ -34,8 +34,8 @@ export interface TestFailureEvent {
 // Issue creado en herramienta externa
 export interface ExternalIssue {
   tool: ExternalTool;
-  key: string;             // AGIP-1234
-  url: string;             // https://jira.company.com/browse/AGIP-1234
+  key: string;             // PROJ-1234
+  url: string;             // https://jira.company.com/browse/PROJ-1234
   status: string;
 }
 

@@ -3,9 +3,9 @@
  * ║                    QASL-API-SENTINEL - Template Manager                       ║
  * ║                    Gestión de Templates de Industria                          ║
  * ╠══════════════════════════════════════════════════════════════════════════════╣
- * ║  Proyecto: SIGMA                                                              ║
- * ║  Cliente: AGIP                                                                ║
- * ║  Empresa: Epidata                                                             ║
+ * ║  QASL NEXUS LLM                                                               ║
+ * ║  Elyer Gregorio Maldonado                                                     ║
+ * ║  Plataforma QA Multi-LLM                                                      ║
  * ║  Líder Técnico QA: Elyer Gregorio Maldonado                                   ║
  * ╚══════════════════════════════════════════════════════════════════════════════╝
  */

@@ -5,9 +5,7 @@
  * =============================================================================
  * Chatbot inteligente integrado en Grafana con Claude AI.
  *
- * Proyecto: SIGMA - QASL-SENTINEL-UNIFIED
- * Cliente: AGIP (Administración Gubernamental de Ingresos Públicos)
- * Empresa: Epidata Consulting
+ * Proyecto: QASL NEXUS LLM - QASL-SENTINEL-UNIFIED
  * Líder Técnico QA: Elyer Gregorio Maldonado
  *
  * Puerto: 3100
@@ -116,7 +114,7 @@ app.post('/api/chat', async (req, res) => {
     if (t.includes('zap') || t.includes('owasp') || t.includes('vulnerabilidad')) return 'zap';
     if (t.includes('compliance') || t.includes('cumplimiento') || t.includes('soc2') || t.includes('iso27001') || t.includes('pci') || t.includes('hipaa')) return 'compliance';
     if (t.includes('api') && !t.includes('garak') && !t.includes('zap')) return 'apis';
-    if (t.includes('completo') || t.includes('todo') || t.includes('general') || t.includes('sigma')) return 'full';
+    if (t.includes('completo') || t.includes('todo') || t.includes('general') || t.includes('qasl')) return 'full';
     return 'full';
   }
 

@@ -13,7 +13,7 @@
     "show-changes": "tsx src/scripts/show-changes.ts"
   },
   "keywords": ["qa", "testing", "monitoring", "playwright", "unified"],
-  "author": "Elyer Gregorio Maldonado <elyerm@epidataconsulting.com>",
+  "author": "Elyer Gregorio Maldonado",
   "license": "MIT",
   "engines": {
     "node": ">=18.0.0"
