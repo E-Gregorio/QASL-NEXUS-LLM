@@ -9,18 +9,30 @@
 - Template Filler: llena plantillas ISTQB con contexto IA
 - Bug Description: genera descripciones de bugs para Jira
 
-## Decision Engine - Que LLM para que tarea
+## Decision Engine - Estrategia Multi-LLM Optimizada
 
-| Tarea | LLM | Razon |
-|-------|-----|-------|
-| Analisis de gaps | Claude | Mejor razonamiento logico |
-| Calculo VCR | Claude | Mejor evaluacion de riesgo |
-| Llenar templates | Claude | Mejor formato estructurado |
-| Descripcion de bugs | Claude | Descripciones tecnicas precisas |
-| Generacion de tests | OpenAI GPT | Edge cases creativos |
-| Generacion de test data | OpenAI GPT | Datos variados y realistas |
-| Mapeo de campos | OpenAI GPT Mini | Tarea simple, modelo economico |
-| Analisis de screenshots | Gemini | Capacidad multimodal |
+### Opus (Tareas criticas - razonamiento profundo)
+
+| Tarea | Modelo | Razon |
+|-------|--------|-------|
+| Analisis de gaps | claude-opus-4-6 | Razonamiento profundo para detectar gaps que otros modelos no ven |
+| Calculo VCR | claude-opus-4-6 | Evaluacion precisa de riesgo/valor, un VCR mal calculado es costoso |
+| Generacion de tests | claude-opus-4-6 | Cobertura exhaustiva de edge cases y escenarios criticos |
+
+### Sonnet (Tareas estructuradas - velocidad > profundidad)
+
+| Tarea | Modelo | Razon |
+|-------|--------|-------|
+| Descripcion de bugs | claude-sonnet-4-5 | Redaccion tecnica precisa, no requiere razonamiento profundo |
+| Llenar templates | claude-sonnet-4-5 | Tarea mecanica de llenar campos estructurados |
+| Generacion de test data | claude-sonnet-4-5 | Datos variados, no necesita razonamiento complejo |
+| Mapeo de campos | claude-sonnet-4-5 | Mapeo simple entre sistemas |
+
+### Gemini (Vision multimodal)
+
+| Tarea | Modelo | Razon |
+|-------|--------|-------|
+| Analisis de screenshots | gemini-2.5-pro | Mejor vision multimodal para analisis de UI/screenshots |
 
 ## API Endpoints
 
@@ -41,7 +53,7 @@ curl -X POST http://localhost:8000/api/llm/process \
   -d '{
     "taskType": "gap_analysis",
     "prompt": "Analiza gaps en esta HU",
-    "context": "HU_SGINC_02: Alta de Inconsistencias..."
+    "context": "HU_LOGIN_01: Inicio de sesion con email y contrasena..."
   }'
 ```
 
@@ -50,27 +62,27 @@ curl -X POST http://localhost:8000/api/llm/process \
 curl -X POST http://localhost:8000/api/llm/vcr/calculate \
   -H "Content-Type: application/json" \
   -d '{
-    "us_id": "HU_SGINC_02",
-    "nombre_hu": "Alta de Inconsistencias",
+    "us_id": "HU_LOGIN_01",
+    "nombre_hu": "Inicio de Sesion",
     "prioridad": "Alta - MVP 1",
     "criterios_aceptacion": "E1: DADO que...",
-    "reglas_negocio": "BR1: Solo usuarios con perfil CARGA..."
+    "reglas_negocio": "BR1: Solo usuarios con perfil activo..."
   }'
 ```
 
 ## Levantar
 
 ```bash
-# Instalar dependencias
+// Instalar dependencias
 npm install
 
-# Desarrollo (hot reload)
+// Desarrollo (hot reload)
 npm run dev
 
-# Produccion
+// Produccion
 npm run build && npm start
 
-# Docker
+// Docker
 docker-compose up -d
 ```
 
@@ -78,9 +90,9 @@ docker-compose up -d
 
 | Variable | Descripcion | Requerida |
 |----------|-------------|-----------|
-| ANTHROPIC_API_KEY | API key de Claude | Minimo 1 de las 3 |
-| OPENAI_API_KEY | API key de OpenAI | Minimo 1 de las 3 |
-| GOOGLE_AI_API_KEY | API key de Gemini | Minimo 1 de las 3 |
+| ANTHROPIC_API_KEY | API key de Claude (Opus + Sonnet) | Si |
+| OPENAI_API_KEY | API key de OpenAI | Opcional (fallback) |
+| GOOGLE_AI_API_KEY | API key de Gemini | Si (para screenshots) |
 | DB_HOST | Host de PostgreSQL (MS-12) | Si |
 | DB_PORT | Puerto PostgreSQL | Si (default: 5432) |
 | DB_NAME | Nombre de la BD | Si (default: qasl_nexus) |
@@ -90,19 +102,19 @@ docker-compose up -d
 ```
 ms-09-orquestador-llm/
 ├── src/
-│   ├── server.ts              # Express server (puerto 8000)
+│   ├── server.ts              // Express server (puerto 8000)
 │   ├── config/
-│   │   ├── database.ts        # Conexion a MS-12 (PostgreSQL)
-│   │   └── llm-rules.ts       # Reglas del Decision Engine
+│   │   ├── database.ts        // Conexion a MS-12 (PostgreSQL)
+│   │   └── llm-rules.ts       // Reglas del Decision Engine (Opus/Sonnet/Gemini)
 │   ├── services/
-│   │   ├── decision-engine.ts  # Decide que LLM usar
-│   │   ├── llm-providers.ts    # Conexiones Claude/OpenAI/Gemini
-│   │   ├── vcr-calculator.ts   # Calcula VCR con IA
-│   │   └── template-filler.ts  # Llena templates con IA
+│   │   ├── decision-engine.ts  // Decide que LLM usar
+│   │   ├── llm-providers.ts    // Conexiones Claude/OpenAI/Gemini
+│   │   ├── vcr-calculator.ts   // Calcula VCR con IA
+│   │   └── template-filler.ts  // Llena templates con IA
 │   ├── routes/
-│   │   └── llm.routes.ts      # API endpoints
+│   │   └── llm.routes.ts      // API endpoints
 │   └── types/
-│       └── index.ts           # TypeScript types
+│       └── index.ts           // TypeScript types
 ├── docker/
 │   └── Dockerfile
 ├── docker-compose.yml

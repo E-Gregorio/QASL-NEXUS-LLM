@@ -31,7 +31,7 @@ skinparam package {
     BorderThickness 2
 }
 
-title <size:20><b>MS-09 ORQUESTADOR LLM</b></size>\n<size:13><color:SLATE>Cerebro del Sistema - Decision Engine + Multi-LLM</color></size>
+title <size:20><b>MS-09 ORQUESTADOR LLM</b></size>\n<size:13><color:SLATE>Cerebro del Sistema - Decision Engine + Multi-LLM (Opus/Sonnet/Gemini)</color></size>
 
 ' === CLIENTES ===
 rectangle "**MS-02**\nPruebas Estaticas" as C1 #16213e;line:475569
@@ -47,10 +47,21 @@ package "MS-09 ORQUESTADOR LLM :8000" as CORE #0d1117 {
 
     rectangle "**Prompt Builder**\n<size:9>Context Window\nSystem Prompts\nTemplates por tarea</size>" as PB #1e1b4b;line:818cf8
 
-    package "LLM Providers" as LLMS #111827 {
-        rectangle "**Claude**\n<size:9>Anthropic\n<color:#a78bfa>Razonamiento\nGap Analysis\nVCR Calculation</color></size>" as CL #312e81;line:7c3aed
-        rectangle "**GPT**\n<size:9>OpenAI\n<color:#34d399>Creatividad\nTest Generation\nTest Data</color></size>" as GP #064e3b;line:059669
-        rectangle "**Gemini**\n<size:9>Google\n<color:#38bdf8>Vision Multimodal\nScreenshot Analysis\nUI/UX Review</color></size>" as GE #0c4a6e;line:0284c7
+    package "OPUS 4.6 - Tareas Criticas" as TIER_OPUS #1a0a2e {
+        rectangle "**Gap Analysis**\n<size:9><color:#a78bfa>claude-opus-4-6\nRazonamiento profundo\nDetecta gaps invisibles</color></size>" as OP1 #312e81;line:7c3aed
+        rectangle "**VCR Calculation**\n<size:9><color:#a78bfa>claude-opus-4-6\nEvaluacion riesgo/valor\nDecision AUTO vs MANUAL</color></size>" as OP2 #312e81;line:7c3aed
+        rectangle "**Test Generation**\n<size:9><color:#a78bfa>claude-opus-4-6\nCobertura exhaustiva\nEdge cases criticos</color></size>" as OP3 #312e81;line:7c3aed
+    }
+
+    package "SONNET 4.5 - Tareas Estructuradas" as TIER_SONNET #0a1628 {
+        rectangle "**Bug Description**\n<size:9><color:#60a5fa>claude-sonnet-4-5\nRedaccion tecnica</color></size>" as SN1 #1e3a5f;line:3b82f6
+        rectangle "**Template Fill**\n<size:9><color:#60a5fa>claude-sonnet-4-5\nLlenado mecanico</color></size>" as SN2 #1e3a5f;line:3b82f6
+        rectangle "**Test Data Gen**\n<size:9><color:#60a5fa>claude-sonnet-4-5\nDatos variados</color></size>" as SN3 #1e3a5f;line:3b82f6
+        rectangle "**Field Mapping**\n<size:9><color:#60a5fa>claude-sonnet-4-5\nMapeo entre sistemas</color></size>" as SN4 #1e3a5f;line:3b82f6
+    }
+
+    package "GEMINI 2.5 Pro - Vision" as TIER_GEMINI #0a2818 {
+        rectangle "**Screenshot Analysis**\n<size:9><color:#38bdf8>gemini-2.5-pro\nVision multimodal\nUI/UX Review</color></size>" as GE #0c4a6e;line:0284c7
     }
 
     rectangle "**Response Validator**\n<size:9>Schema Validation\nQuality Check\nJSON Parse</size>" as VAL #1e293b;line:6366f1
@@ -59,7 +70,7 @@ package "MS-09 ORQUESTADOR LLM :8000" as CORE #0d1117 {
 
     rectangle "**Template Filler**\n<size:9>Bug Report Generator\nISTQB Format\nJSON Output</size>" as TF #1e293b;line:6366f1
 
-    rectangle "**Audit Log**\n<size:9>Model + Prompt + Response\nConfidence Score\nExplainability</size>" as AUDIT #1e293b;line:475569
+    rectangle "**Audit Log**\n<size:9>Model + Prompt + Response\nTokens + Duration\nTrazabilidad IA</size>" as AUDIT #1e293b;line:475569
 }
 
 database "**MS-12**\nPostgreSQL" as DB #0c4a6e;line:38bdf8
@@ -73,15 +84,20 @@ C4 -[#6366f1]-> API
 
 API -[#818cf8,bold]-> DE
 
-DE -[#7c3aed]-> CL : <color:#a78bfa>gap_analysis\nvcr_calculation</color>
-DE -[#059669]-> GP : <color:#34d399>test_generation\nfield_mapping</color>
-DE -[#0284c7]-> GE : <color:#38bdf8>screenshot_analysis</color>
+DE -[#7c3aed,bold]-> TIER_OPUS : <color:#a78bfa>Critico</color>
+DE -[#3b82f6]-> TIER_SONNET : <color:#60a5fa>Estandar</color>
+DE -[#0284c7]-> TIER_GEMINI : <color:#38bdf8>Multimodal</color>
 
 DE -[#818cf8]-> PB
-PB -[#818cf8]-> LLMS
+PB -[#818cf8]-> TIER_OPUS
+PB -[#818cf8]-> TIER_SONNET
+PB -[#818cf8]-> TIER_GEMINI
 
-CL -[#818cf8]-> VAL
-GP -[#818cf8]-> VAL
+OP1 -[#818cf8]-> VAL
+OP2 -[#818cf8]-> VAL
+OP3 -[#818cf8]-> VAL
+SN1 -[#818cf8]-> VAL
+SN2 -[#818cf8]-> VAL
 GE -[#818cf8]-> VAL
 
 VAL -[#38bdf8,bold]-> DB
@@ -90,12 +106,10 @@ TF -[#6366f1]-> C4 : <color:SLATE>JSON Bug Report</color>
 AUDIT -[#475569]-> DB
 
 legend right
-  |= Componente |= Funcion |
-  | Decision Engine | Elige LLM segun tarea |
-  | Prompt Builder | Contexto + Templates |
-  | VCR Calculator | Automatizar o Manual |
-  | Template Filler | Genera Bug ISTQB |
-  | Audit Log | Trazabilidad IA |
+  |= Tier |= Modelo |= Tareas |
+  | OPUS (Critico) | claude-opus-4-6 | gaps, vcr, tests |
+  | SONNET (Estandar) | claude-sonnet-4-5 | bugs, templates, data |
+  | GEMINI (Vision) | gemini-2.5-pro | screenshots, UI |
 endlegend
 
 @enduml

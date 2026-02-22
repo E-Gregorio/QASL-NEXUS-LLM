@@ -65,7 +65,7 @@ flowchart TD
 
 ---
 
-## MS-09 Orquestador LLM - Cerebro
+## MS-09 Orquestador LLM - Cerebro Multi-LLM
 
 ```mermaid
 flowchart LR
@@ -74,21 +74,38 @@ flowchart LR
     R3["MS-08"] --> API
     R4["MS-10"] --> API
 
-    subgraph MS09["MS-09 ORQUESTADOR LLM"]
+    subgraph MS09["MS-09 ORQUESTADOR LLM :8000"]
         API["API Gateway"]
         DE["Decision Engine"]
         PB["Prompt Builder"]
 
-        subgraph MODELS["LLM PROVIDERS"]
-            CL["Claude - Analisis"]
-            GP["GPT - Generacion"]
-            GE["Gemini - Vision"]
+        subgraph OPUS["OPUS - Tareas Criticas"]
+            CL1["Gap Analysis"]
+            CL2["VCR Calculation"]
+            CL3["Test Generation"]
         end
 
-        VAL["Validator"]
+        subgraph SONNET["SONNET - Tareas Estructuradas"]
+            CL4["Bug Description"]
+            CL5["Template Fill"]
+            CL6["Test Data Gen"]
+            CL7["Field Mapping"]
+        end
+
+        subgraph GEMINI["GEMINI 2.5 Pro - Vision"]
+            GE["Screenshot Analysis"]
+        end
+
+        VAL["Response Validator"]
     end
 
-    API --> DE --> PB --> MODELS --> VAL
+    API --> DE
+    DE -->|"Critico"| OPUS
+    DE -->|"Estructurado"| SONNET
+    DE -->|"Multimodal"| GEMINI
+    OPUS --> VAL
+    SONNET --> VAL
+    GEMINI --> VAL
 
     VAL --> DB[("MS-12 PostgreSQL")]
 ```
@@ -100,13 +117,28 @@ flowchart LR
 ```mermaid
 flowchart LR
     A["1. HU .docx"] --> B["2. MS-02 Parser"]
-    B --> C["3. MS-09 Claude Gaps"]
+    B --> C["3. MS-09 Opus: Gaps"]
     C --> D["4. 4 CSVs Trazabilidad"]
     D --> E[("5. MS-12 PostgreSQL")]
-    E --> F{"6. VCR Score"}
+    E --> F{"6. MS-09 Opus: VCR"}
     F -->|">=9 AUTO"| G["7. MS-08 Pipeline"]
     F -.->|"<9"| H["QA Manual"]
-    G --> I["8. Tests en Paralelo<br/>MS-03 + MS-04 + MS-06"]
+    G --> I["8. Tests Paralelo<br/>MS-03 + MS-04 + MS-06"]
     I --> J[("9. MS-12 Resultados")]
     J --> K["10. Jira + PDF + Grafana<br/>MS-10 + MS-11 + MS-07"]
 ```
+
+---
+
+## Estrategia Multi-LLM del Decision Engine
+
+| Tarea | Modelo | Tier | Razon |
+|-------|--------|------|-------|
+| gap_analysis | Claude Opus 4.6 | Critico | Razonamiento profundo, detecta gaps invisibles |
+| vcr_calculation | Claude Opus 4.6 | Critico | Evaluacion precisa de riesgo/valor de negocio |
+| test_generation | Claude Opus 4.6 | Critico | Cobertura exhaustiva de edge cases |
+| bug_description | Claude Sonnet 4.5 | Estandar | Redaccion tecnica, rapido y preciso |
+| template_fill | Claude Sonnet 4.5 | Estandar | Llenado mecanico de campos |
+| test_data_gen | Claude Sonnet 4.5 | Estandar | Datos variados sin razonamiento complejo |
+| field_mapping | Claude Sonnet 4.5 | Estandar | Mapeo simple entre sistemas |
+| screenshot_analysis | Gemini 2.5 Pro | Vision | Mejor multimodal para UI/screenshots |

@@ -6,63 +6,63 @@
 import { DecisionRule, TaskType } from '../types';
 
 export const LLM_DECISION_RULES: Record<TaskType, DecisionRule> = {
-  // Claude: Mejor razonamiento logico y analisis de codigo
+  // ── OPUS: Tareas criticas que requieren razonamiento profundo ──
   gap_analysis: {
     taskType: 'gap_analysis',
     provider: 'claude',
-    model: 'claude-sonnet-4-5-20250929',
-    reason: 'Claude tiene mejor razonamiento para detectar gaps logicos en requisitos'
+    model: 'claude-opus-4-6',
+    reason: 'Opus: razonamiento profundo para detectar gaps que otros modelos no ven'
   },
 
   vcr_calculation: {
     taskType: 'vcr_calculation',
     provider: 'claude',
+    model: 'claude-opus-4-6',
+    reason: 'Opus: evaluacion precisa de riesgo/valor de negocio, un VCR mal calculado es costoso'
+  },
+
+  test_generation: {
+    taskType: 'test_generation',
+    provider: 'claude',
+    model: 'claude-opus-4-6',
+    reason: 'Opus: cobertura exhaustiva de edge cases y escenarios criticos'
+  },
+
+  // ── SONNET: Tareas estructuradas donde velocidad > profundidad ──
+  bug_description: {
+    taskType: 'bug_description',
+    provider: 'claude',
     model: 'claude-sonnet-4-5-20250929',
-    reason: 'Claude evalua mejor el riesgo y valor de negocio'
+    reason: 'Sonnet: redaccion tecnica precisa, no requiere razonamiento profundo'
   },
 
   template_fill: {
     taskType: 'template_fill',
     provider: 'claude',
     model: 'claude-sonnet-4-5-20250929',
-    reason: 'Claude genera mejor formato estructurado para templates'
-  },
-
-  bug_description: {
-    taskType: 'bug_description',
-    provider: 'claude',
-    model: 'claude-sonnet-4-5-20250929',
-    reason: 'Claude genera descripciones tecnicas precisas'
-  },
-
-  // OpenAI: Mejor creatividad y generacion de datos
-  test_generation: {
-    taskType: 'test_generation',
-    provider: 'openai',
-    model: 'gpt-4o',
-    reason: 'GPT genera edge cases creativos y variaciones de test data'
+    reason: 'Sonnet: tarea mecanica de llenar campos estructurados'
   },
 
   test_data_gen: {
     taskType: 'test_data_gen',
-    provider: 'openai',
-    model: 'gpt-4o',
-    reason: 'GPT genera datos de prueba realistas y variados'
+    provider: 'claude',
+    model: 'claude-sonnet-4-5-20250929',
+    reason: 'Sonnet: generacion de datos variados, no necesita razonamiento complejo'
   },
 
   field_mapping: {
     taskType: 'field_mapping',
-    provider: 'openai',
-    model: 'gpt-4o-mini',
-    reason: 'Tarea simple de mapeo, modelo economico suficiente'
+    provider: 'claude',
+    model: 'claude-sonnet-4-5-20250929',
+    reason: 'Sonnet: mapeo simple de campos entre sistemas'
   },
 
-  // Gemini: Capacidad multimodal (imagenes, screenshots)
+  // ── GEMINI: Vision multimodal (screenshots, UI) ──
   screenshot_analysis: {
     taskType: 'screenshot_analysis',
     provider: 'gemini',
-    model: 'gemini-2.0-flash',
-    reason: 'Gemini tiene capacidades multimodales para analizar screenshots'
+    model: 'gemini-2.5-pro-preview-05-06',
+    reason: 'Gemini 2.5 Pro: mejor vision multimodal para analisis de UI/screenshots'
   }
 };
 
