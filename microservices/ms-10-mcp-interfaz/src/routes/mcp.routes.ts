@@ -56,7 +56,7 @@ router.post('/jira/issue', async (req: Request, res: Response) => {
 router.get('/jira/issue/:key', async (req: Request, res: Response) => {
   try {
     const jira = new JiraConnector();
-    const issue = await jira.getIssue(req.params.key);
+    const issue = await jira.getIssue(req.params.key as string);
     res.json(issue);
   } catch (error: any) {
     res.status(500).json({ error: error.message });

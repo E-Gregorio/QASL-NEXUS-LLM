@@ -22,19 +22,21 @@ router.post('/run', async (req: Request, res: Response) => {
     // Ejecutar asincrono (no bloquea la respuesta)
     const resultPromise = executor.execute(type, triggerType, triggeredBy);
 
-    // Responder inmediatamente con el pipeline ID
-    const pipelineId = `PL-${Date.now().toString(36).toUpperCase()}`;
+    // Responder inmediatamente
     res.json({
       success: true,
-      pipelineId,
       message: `Pipeline ${type} iniciado`,
       status: 'Running',
     });
 
     // Pipeline sigue ejecutandose en background
-    resultPromise.catch((err) => {
-      console.error(`[MS-08] Pipeline error:`, err.message);
-    });
+    resultPromise
+      .then((result) => {
+        console.log(`[MS-08] Pipeline ${result.pipelineId} finalizado: ${result.status}`);
+      })
+      .catch((err) => {
+        console.error(`[MS-08] Pipeline error:`, err.message);
+      });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
@@ -80,9 +82,9 @@ router.get('/history', async (req: Request, res: Response) => {
 
 // ============================================================
 // GET /api/pipeline/health
+// Health check de todos los microservicios
 // ============================================================
 router.get('/health', async (_req: Request, res: Response) => {
-  // Check health de todos los MS
   const checks: Record<string, string> = {};
   const { MS_URLS } = await import('../config/microservices');
   const axios = (await import('axios')).default;

@@ -1,5 +1,5 @@
 -- ============================================
--- SIGMA QA Framework - Base de Datos de Pruebas
+-- QASL NEXUS LLM - Base de Datos de Pruebas
 -- PostgreSQL - Datos Seed Enmascarados
 -- ============================================
 

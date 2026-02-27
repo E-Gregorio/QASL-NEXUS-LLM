@@ -24,9 +24,7 @@ interface PipelineResult {
 
 export class PipelineExecutor {
 
-  /**
-   * Ejecuta pipeline completo de 3 fases
-   */
+  // Ejecuta pipeline completo de 3 fases, retorna el ID generado
   async execute(type: PipelineType, triggerType: TriggerType, triggeredBy: string): Promise<PipelineResult> {
     const pipelineId = `PL-${Date.now().toString(36).toUpperCase()}`;
     const startTime = Date.now();
@@ -47,26 +45,27 @@ export class PipelineExecutor {
 
     try {
       // ================================================================
-      // FASE 1: Analisis (5 min)
+      // FASE 1: Analisis (MS-02 static analysis + MS-09 VCR)
       // ================================================================
       console.log(`[Pipeline] FASE 1: Analisis`);
 
-      // MS-02: Analisis estatico
       if (['full', 'regression'].includes(type)) {
+        // MS-02: Analisis estatico de HU
         fases['ms02'] = await this.callService(MS_URLS.MS02_STATIC, '/api/analyze', 'POST', {});
-      }
 
-      // MS-09: Calculo VCR
-      if (['full', 'regression'].includes(type)) {
-        fases['ms09_vcr'] = await this.callService(MS_URLS.MS09_LLM, '/api/llm/health', 'GET');
+        // MS-09: Calculo VCR con Opus
+        fases['ms09_vcr'] = await this.callService(MS_URLS.MS09_LLM, '/api/llm/process', 'POST', {
+          task_type: 'vcr_calculation',
+          content: `Pipeline ${pipelineId} - VCR calculation for ${type} run`,
+        });
       }
 
       // ================================================================
-      // FASE 2: Ejecucion (20 min, en paralelo)
+      // FASE 2: Ejecucion (en paralelo)
       // ================================================================
       console.log(`[Pipeline] FASE 2: Ejecucion en paralelo`);
 
-      const executionPromises: Promise<any>[] = [];
+      const executionPromises: Promise<void>[] = [];
 
       // MS-03: E2E + API + K6 + ZAP
       if (['full', 'regression', 'smoke'].includes(type)) {
@@ -113,20 +112,24 @@ export class PipelineExecutor {
       }
 
       // ================================================================
-      // FASE 3: Reportes y notificaciones (5 min)
+      // FASE 3: Reportes y notificaciones
       // ================================================================
       console.log(`[Pipeline] FASE 3: Reportes`);
 
-      // MS-11: Notificar resultado
       const passRate = totalExecuted > 0 ? Math.round((totalPassed / totalExecuted) * 100) : 0;
+
+      // MS-11: Generar reporte
       fases['ms11'] = await this.callService(MS_URLS.MS11_REPORT, '/api/report/pipeline', 'POST', {
         pipelineId, status: totalFailed > 0 ? 'Failed' : 'Success',
         passRate, totalTests: totalExecuted, failed: totalFailed, bugs: bugsCreados,
       });
 
-      // MS-10: Crear bugs en Jira para failures
+      // MS-10: Crear bugs en Jira/Azure para failures
       if (totalFailed > 0) {
-        fases['ms10'] = 'bugs_pending';
+        fases['ms10'] = await this.callService(MS_URLS.MS10_MCP, '/api/defects/create', 'POST', {
+          pipelineId, totalFailed, source: 'pipeline-auto',
+        });
+        bugsCreados = totalFailed;
       }
 
       const duracion = Math.round((Date.now() - startTime) / 1000);
@@ -161,9 +164,7 @@ export class PipelineExecutor {
     }
   }
 
-  /**
-   * Llama a un microservicio con timeout
-   */
+  // Llama a un microservicio con timeout de 5 min
   private async callService(baseUrl: string, path: string, method: string, data?: any): Promise<string> {
     try {
       const response = method === 'GET'
