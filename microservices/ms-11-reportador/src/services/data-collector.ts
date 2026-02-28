@@ -102,9 +102,38 @@ export class DataCollector {
     };
   }
 
-  /**
-   * Datos de trazabilidad completa
-   */
+  // Datos especificos de un pipeline (para PDF pipeline-specific)
+  async getPipelineData(pipelineId: string): Promise<any> {
+    const pipeline = await pool.query(
+      'SELECT * FROM pipeline_run WHERE pipeline_id = $1',
+      [pipelineId]
+    );
+
+    const tests = await pool.query(
+      `SELECT id, test_name, test_type, status, execution_result, created_at
+       FROM generated_test_case WHERE pipeline_id = $1 ORDER BY id`,
+      [pipelineId]
+    );
+
+    const executions = await pool.query(
+      'SELECT * FROM test_execution WHERE pipeline_id = $1 ORDER BY id',
+      [pipelineId]
+    );
+
+    // defect table no tiene pipeline_id — buscar todos los defectos recientes
+    const defects = await pool.query(
+      'SELECT * FROM defect ORDER BY id DESC LIMIT 10'
+    );
+
+    return {
+      pipeline: pipeline.rows[0] || null,
+      tests: tests.rows,
+      executions: executions.rows,
+      defects: defects.rows,
+    };
+  }
+
+  // Datos de trazabilidad completa
   async getTraceability(): Promise<any[]> {
     const result = await pool.query('SELECT * FROM v_traceability');
     return result.rows;

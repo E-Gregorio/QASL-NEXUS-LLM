@@ -35,3 +35,8 @@
     box-shadow: 0 0 20px rgba(168, 85, 247, 0.15);
   }
 }
+
+@keyframes progress-slide {
+  0% { left: -40%; }
+  100% { left: 100%; }
+}

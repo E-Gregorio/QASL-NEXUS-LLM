@@ -109,18 +109,15 @@ router.post('/exploratory/generate', async (req: Request, res: Response) => {
   console.log(`[MS-09] Generando tests para ${targetUrl} (pipeline: ${pipelineId})`);
   console.log(`[MS-09] Objetivo: ${objective || 'explorar y validar funcionalidad'}`);
 
-  // Responder inmediatamente
-  res.json({ status: 'generating', pipelineId });
-
-  // Generar en background
   try {
     const prompt = buildExploratoryPrompt(targetUrl, objective || 'explorar y validar funcionalidad');
     const startTime = Date.now();
 
-    // Opus genera los tests
+    // Opus genera los tests (sincrono — MS-08 espera)
     const result = await callClaude(prompt, 'claude-opus-4-6', 8192, 0.2);
 
-    console.log(`[MS-09] Opus genero tests en ${Date.now() - startTime}ms (${result.tokensUsed} tokens)`);
+    const elapsed = Date.now() - startTime;
+    console.log(`[MS-09] Opus genero tests en ${elapsed}ms (${result.tokensUsed} tokens)`);
 
     // Parsear los test cases del response
     const tests = parseGeneratedTests(result.content, targetUrl);
@@ -139,8 +136,11 @@ router.post('/exploratory/generate', async (req: Request, res: Response) => {
     } finally {
       await pool.end();
     }
+
+    res.json({ status: 'generated', pipelineId, testsCount: tests.length, elapsed });
   } catch (error: any) {
     console.error(`[MS-09] Error generando tests: ${error.message}`);
+    res.status(500).json({ status: 'error', error: error.message });
   }
 });
 
@@ -166,37 +166,95 @@ router.get('/health', (_req: Request, res: Response) => {
 // ============================================================
 
 function buildExploratoryPrompt(targetUrl: string, objective: string): string {
-  return `Eres un ingeniero QA senior experto en Playwright. Tu tarea es generar un archivo de tests E2E completo para la siguiente URL.
+  return `Eres un ingeniero QA senior con 10+ anos de experiencia en Playwright. Tu trabajo es generar tests E2E que funcionen PERFECTAMENTE en cualquier sitio web real.
 
 URL TARGET: ${targetUrl}
 OBJETIVO: ${objective}
 
-INSTRUCCIONES CRITICAS:
-1. Genera un UNICO archivo TypeScript valido con import { test, expect } from '@playwright/test'
-2. Usa page.goto('${targetUrl}') con la URL completa (no relativa)
-3. Genera entre 5 y 10 test cases que cubran:
-   - Carga de pagina exitosa
-   - Interaccion con elementos principales (inputs, botones)
-   - Verificacion de funcionalidad core segun el objetivo
-   - Casos negativos (que pasa si no se ingresa datos)
-   - Verificacion de elementos visuales (titulos, listas)
-4. Usa selectores robustos: data-testid, role, text, CSS selectores estables
-5. NO uses selectores dinamicos (IDs generados, nth-child fragil)
-6. Cada test debe ser independiente (no depender de otros tests)
-7. Incluye waits apropiados (waitForLoadState, expect con timeout)
-8. Agrega console.log informativos para ver progreso
+REGLAS CRITICAS DE AUTOMATIZACION (si no las sigues, los tests fallaran):
 
-FORMATO DE RESPUESTA:
-Responde UNICAMENTE con el codigo TypeScript. Sin explicaciones, sin markdown, sin backticks.
-El codigo debe empezar con: import { test, expect } from '@playwright/test';
+1. NAVEGACION: Usa waitUntil: 'domcontentloaded' (NUNCA 'networkidle' porque ads/trackers lo bloquean)
+   await page.goto('${targetUrl}', { waitUntil: 'domcontentloaded' });
+   await page.waitForLoadState('domcontentloaded');
 
-EJEMPLO DE ESTRUCTURA:
+2. ESPERAS: Siempre esperar al elemento ANTES de interactuar
+   await page.locator('selector').waitFor({ state: 'visible', timeout: 10000 });
+   // Luego interactuar
+
+3. SELECTORES (en orden de prioridad):
+   - getByRole('button', { name: 'Submit' }) — preferido
+   - getByText('texto visible') — para links y labels
+   - getByPlaceholder('placeholder text') — para inputs
+   - locator('[data-testid="id"]') — si existe
+   - locator('main selector, #content selector') — dentro del area de contenido
+   NUNCA usar selectores que dependan de estructura CSS de ads o iframes publicitarios
+
+4. ADS Y POPUPS: Los sitios web reales tienen publicidad, banners de cookies, overlays
+   - Si un click falla, usar { force: true } o cerrar el overlay primero
+   - Ignorar elementos dentro de iframes de ads (googlesyndication, doubleclick, etc.)
+   - Enfocar tests en el CONTENIDO PRINCIPAL de la pagina, no en widgets de terceros
+
+5. ASSERTIONS DEFENSIVAS:
+   - Usar toBeVisible() en vez de assertions que dependan de texto exacto que puede cambiar
+   - Usar toHaveCount() con toBeGreaterThan(0) para verificar que existen elementos
+   - Usar { timeout: 10000 } en expects que esperan contenido dinamico
+   - Si un elemento puede no existir, verificar con count() > 0 antes de interactuar
+
+6. TESTS INDEPENDIENTES: Cada test hace su propio goto(), no depende de estado anterior
+
+7. UN TEST DEBE FALLAR SOLO SI HAY UN BUG REAL, nunca por:
+   - Selector fragil que no encuentra el elemento
+   - Timeout porque networkidle espera a que carguen ads
+   - Click interceptado por un overlay/popup
+   - Texto exacto que cambio
+
+ESTRUCTURA DEL ARCHIVO:
+- Genera un UNICO archivo TypeScript valido
+- Entre 5 y 10 tests cubriendo: carga, navegacion, interaccion, funcionalidad core, caso negativo
+- Cada test con Allure metadata
+
+ALLURE OBLIGATORIO en cada test:
+- import { allure } from 'allure-playwright';
+- await allure.epic('QASL NEXUS - Exploratory Testing');
+- await allure.feature('Feature name');
+- await allure.story('Story name');
+- await allure.severity('critical' | 'normal' | 'minor');
+- await allure.owner('QASL NEXUS AI');
+- await allure.tags('exploratory', 'automated');
+- await allure.description('Descripcion clara del test');
+- Usar test.step() para agrupar acciones
+- Screenshot al final: await allure.attachment('Screenshot', await page.screenshot(), 'image/png');
+
+FORMATO: Solo codigo TypeScript. Sin explicaciones, sin markdown, sin backticks.
+
+EJEMPLO CORRECTO:
 import { test, expect } from '@playwright/test';
+import { allure } from 'allure-playwright';
 
-test.describe('Nombre descriptivo', () => {
-  test('TC-001: descripcion', async ({ page }) => {
-    await page.goto('${targetUrl}', { waitUntil: 'networkidle' });
-    // assertions...
+test.describe('Exploratory: ${targetUrl}', () => {
+
+  test('TC-001: Pagina carga correctamente', async ({ page }) => {
+    await allure.epic('QASL NEXUS - Exploratory Testing');
+    await allure.feature('Page Load');
+    await allure.story('Carga inicial');
+    await allure.severity('critical');
+    await allure.owner('QASL NEXUS AI');
+    await allure.tags('exploratory', 'automated', 'smoke');
+    await allure.description('Verifica que la pagina carga y tiene contenido visible');
+
+    await test.step('Navegar a la URL', async () => {
+      await page.goto('${targetUrl}', { waitUntil: 'domcontentloaded' });
+    });
+    await test.step('Verificar que la pagina tiene titulo', async () => {
+      await expect(page).not.toHaveTitle('');
+    });
+    await test.step('Verificar contenido principal visible', async () => {
+      const body = page.locator('body');
+      await expect(body).toBeVisible();
+      const text = await body.innerText();
+      expect(text.length).toBeGreaterThan(0);
+    });
+    await allure.attachment('Screenshot', await page.screenshot(), 'image/png');
   });
 });`;
 }

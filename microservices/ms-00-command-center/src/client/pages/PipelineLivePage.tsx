@@ -17,9 +17,12 @@ const PHASES = [
     ],
   },
   {
-    name: 'Fase 2: Ejecucion (Paralelo)',
+    name: 'Fase 2: Ejecucion',
     services: [
-      { key: 'ms03', label: 'MS-03 QASL Framework', desc: 'Playwright E2E + Newman + K6 + ZAP' },
+      { key: 'ms03_e2e', label: 'MS-03 E2E Tests', desc: 'Playwright + Allure Report' },
+      { key: 'ms03_api', label: 'MS-03 API Tests', desc: 'Newman Collection Runner' },
+      { key: 'ms03_k6', label: 'MS-03 Performance', desc: 'K6 Load Testing' },
+      { key: 'ms03_zap', label: 'MS-03 Security', desc: 'OWASP ZAP Scanner' },
       { key: 'ms04', label: 'MS-04 QASL Mobile', desc: 'Maestro + MobSF Security' },
       { key: 'ms06', label: 'MS-06 Garak Security', desc: 'NVIDIA LLM Vulnerability Scan' },
     ],
@@ -39,24 +42,39 @@ function getServiceStatus(fases: Record<string, string> | undefined, key: string
 }
 
 function statusToVariant(status: string): 'success' | 'running' | 'failed' | 'pending' {
-  if (status === 'ok' || status === 'complete' || status === 'done') return 'success';
-  if (status === 'running' || status === 'in_progress') return 'running';
-  if (status === 'error' || status === 'failed') return 'failed';
+  if (['ok', 'complete', 'completed', 'done', 'generated', 'pass', 'skip'].includes(status)) return 'success';
+  if (['running', 'in_progress', 'generating'].includes(status)) return 'running';
+  if (['error', 'failed', 'fail'].includes(status)) return 'failed';
+  if (status === 'unreachable') return 'failed';
   return 'pending';
 }
 
 function statusToProgress(status: string): number {
-  if (status === 'ok' || status === 'complete' || status === 'done') return 100;
-  if (status === 'running' || status === 'in_progress') return 60;
-  if (status === 'error' || status === 'failed') return 100;
+  if (['ok', 'complete', 'completed', 'done', 'generated', 'pass'].includes(status)) return 100;
+  if (['running', 'in_progress', 'generating'].includes(status)) return 60;
+  if (['error', 'failed', 'fail', 'unreachable'].includes(status)) return 100;
+  if (status === 'skip') return 100;
   return 0;
 }
 
 function statusToColor(status: string): 'green' | 'yellow' | 'red' | 'blue' {
-  if (status === 'ok' || status === 'complete' || status === 'done') return 'green';
-  if (status === 'running' || status === 'in_progress') return 'yellow';
-  if (status === 'error' || status === 'failed') return 'red';
+  if (['ok', 'complete', 'completed', 'done', 'generated', 'pass'].includes(status)) return 'green';
+  if (['running', 'in_progress', 'generating'].includes(status)) return 'yellow';
+  if (['error', 'failed', 'fail'].includes(status)) return 'red';
+  if (status === 'unreachable') return 'red';
+  if (status === 'skip') return 'blue';
   return 'blue';
+}
+
+function statusLabel(status: string): string {
+  const labels: Record<string, string> = {
+    ok: 'DONE', complete: 'DONE', completed: 'DONE', done: 'DONE',
+    generated: 'GENERATED', pass: 'PASS',
+    running: 'RUNNING', in_progress: 'RUNNING', generating: 'GENERATING',
+    error: 'ERROR', failed: 'FAILED', fail: 'FAILED',
+    unreachable: 'OFFLINE', skip: 'SKIP', pending: 'PENDING',
+  };
+  return labels[status] || status.toUpperCase();
 }
 
 export function PipelineLivePage() {
@@ -171,9 +189,9 @@ export function PipelineLivePage() {
                       animated={status === 'running' || status === 'in_progress'}
                     />
                   </div>
-                  <div className="w-24 text-right">
+                  <div className="w-28 text-right">
                     <Badge variant={statusToVariant(status)}>
-                      {status === 'ok' ? 'DONE' : status.toUpperCase()}
+                      {statusLabel(status)}
                     </Badge>
                   </div>
                 </div>
@@ -183,16 +201,72 @@ export function PipelineLivePage() {
         </Card>
       ))}
 
-      {/* Results action */}
+      {/* Report buttons + Results action */}
       {isComplete && (
-        <div className="flex justify-center">
-          <button
-            onClick={() => navigate(`/results?id=${pipelineId}`)}
-            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold"
-          >
-            Ver Resultados
-          </button>
-        </div>
+        <Card>
+          <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">Reportes Generados</h3>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+            {getServiceStatus(data?.fases_ejecutadas, 'ms03_e2e') === 'pass' || getServiceStatus(data?.fases_ejecutadas, 'ms03_e2e') === 'fail' ? (
+              <button
+                onClick={() => window.open('http://localhost:6001/api/report/allure/index.html', '_blank')}
+                className="flex items-center gap-2 px-4 py-3 bg-purple-600/20 border border-purple-500/30 text-purple-300 rounded-lg hover:bg-purple-600/30 transition text-sm font-medium"
+              >
+                <span className="text-lg">&#128202;</span> Allure E2E
+              </button>
+            ) : (
+              <div className="flex items-center gap-2 px-4 py-3 bg-gray-800/50 border border-gray-700 text-gray-600 rounded-lg text-sm">
+                <span className="text-lg">&#128202;</span> Allure E2E
+              </div>
+            )}
+
+            {getServiceStatus(data?.fases_ejecutadas, 'ms03_api') === 'pass' || getServiceStatus(data?.fases_ejecutadas, 'ms03_api') === 'fail' ? (
+              <button
+                onClick={() => window.open(`http://localhost:6001/api/report/newman-view/${pipelineId}`, '_blank')}
+                className="flex items-center gap-2 px-4 py-3 bg-orange-600/20 border border-orange-500/30 text-orange-300 rounded-lg hover:bg-orange-600/30 transition text-sm font-medium"
+              >
+                <span className="text-lg">&#128225;</span> Newman API
+              </button>
+            ) : (
+              <div className="flex items-center gap-2 px-4 py-3 bg-gray-800/50 border border-gray-700 text-gray-600 rounded-lg text-sm">
+                <span className="text-lg">&#128225;</span> Newman API
+              </div>
+            )}
+
+            {getServiceStatus(data?.fases_ejecutadas, 'ms03_k6') === 'pass' || getServiceStatus(data?.fases_ejecutadas, 'ms03_k6') === 'fail' ? (
+              <button
+                onClick={() => window.open(`http://localhost:6001/api/report/k6-view/${pipelineId}`, '_blank')}
+                className="flex items-center gap-2 px-4 py-3 bg-green-600/20 border border-green-500/30 text-green-300 rounded-lg hover:bg-green-600/30 transition text-sm font-medium"
+              >
+                <span className="text-lg">&#9889;</span> K6 Performance
+              </button>
+            ) : (
+              <div className="flex items-center gap-2 px-4 py-3 bg-gray-800/50 border border-gray-700 text-gray-600 rounded-lg text-sm">
+                <span className="text-lg">&#9889;</span> K6 Performance
+              </div>
+            )}
+
+            {getServiceStatus(data?.fases_ejecutadas, 'ms03_zap') === 'pass' || getServiceStatus(data?.fases_ejecutadas, 'ms03_zap') === 'fail' ? (
+              <button
+                onClick={() => window.open(`http://localhost:6001/api/report/zap/zap-${pipelineId}.html`, '_blank')}
+                className="flex items-center gap-2 px-4 py-3 bg-red-600/20 border border-red-500/30 text-red-300 rounded-lg hover:bg-red-600/30 transition text-sm font-medium"
+              >
+                <span className="text-lg">&#128737;</span> ZAP Security
+              </button>
+            ) : (
+              <div className="flex items-center gap-2 px-4 py-3 bg-gray-800/50 border border-gray-700 text-gray-600 rounded-lg text-sm">
+                <span className="text-lg">&#128737;</span> ZAP Security
+              </div>
+            )}
+          </div>
+          <div className="flex justify-center">
+            <button
+              onClick={() => navigate(`/results?id=${pipelineId}`)}
+              className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold"
+            >
+              Ver Resultados Detallados
+            </button>
+          </div>
+        </Card>
       )}
     </div>
   );

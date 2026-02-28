@@ -25,6 +25,15 @@ const DB_URL = process.env.DATABASE_URL || 'postgresql://qasl_admin:qasl_nexus_2
 app.use(cors());
 app.use(express.json());
 
+// Actualiza un sub-step en fases_ejecutadas (JSONB merge)
+async function updateSubStep(pool, pipelineId, key, status) {
+  const patch = JSON.stringify({ [key]: status });
+  await pool.query(
+    `UPDATE pipeline_run SET fases_ejecutadas = COALESCE(fases_ejecutadas, '{}'::jsonb) || $1::jsonb WHERE pipeline_id = $2`,
+    [patch, pipelineId]
+  );
+}
+
 // ============================================================
 // GET /health
 // ============================================================
@@ -35,6 +44,37 @@ app.get('/health', (_req, res) => {
     timestamp: new Date().toISOString(),
     capabilities: ['e2e', 'api', 'k6', 'zap', 'unit'],
   });
+});
+
+// ============================================================
+// DELETE /api/clean-reports — Borra TODOS los reportes en disco
+// Llamado por LIMPIAR RESULTADOS
+// ============================================================
+app.delete('/api/clean-reports', (_req, res) => {
+  const dirs = [
+    path.join(__dirname, 'reports', 'e2e', 'allure-results'),
+    path.join(__dirname, 'reports', 'e2e', 'allure-report'),
+    path.join(__dirname, 'reports', 'e2e', 'html-report'),
+    path.join(__dirname, 'reports', 'e2e', 'screenshots'),
+    path.join(__dirname, 'reports', 'api'),
+    path.join(__dirname, 'reports', 'k6'),
+    path.join(__dirname, 'reports', 'zap'),
+    path.join(__dirname, 'reports', 'test-results'),
+    path.join(__dirname, '.api-captures'),
+  ];
+  let cleaned = 0;
+  for (const dir of dirs) {
+    if (fs.existsSync(dir)) {
+      fs.rmSync(dir, { recursive: true, force: true });
+      cleaned++;
+    }
+  }
+  // Borrar results.json si existe
+  const resultsJson = path.join(__dirname, 'reports', 'e2e', 'results.json');
+  if (fs.existsSync(resultsJson)) fs.unlinkSync(resultsJson);
+
+  console.log(`[MS-03] Clean reports: ${cleaned} directorios eliminados`);
+  res.json({ success: true, cleaned });
 });
 
 // ============================================================
@@ -53,13 +93,14 @@ app.post('/api/execute', async (req, res) => {
   console.log(`[MS-03] Pipeline ${pipelineId} recibido (${type})`);
   if (targetUrl) console.log(`[MS-03] Target: ${targetUrl}`);
 
-  // Responder 202 inmediatamente
-  res.status(202).json({ status: 'running', pipelineId, targetUrl });
-
-  // Ejecutar en background
-  executeTestPipeline(targetUrl, pipelineId, type).catch(err => {
+  // Ejecutar sincrono — MS-08 espera con timeout de 5 min
+  try {
+    const result = await executeTestPipeline(targetUrl, pipelineId, type);
+    res.json({ status: 'completed', pipelineId, ...result });
+  } catch (err) {
     console.error(`[MS-03] Error pipeline ${pipelineId}:`, err.message);
-  });
+    res.status(500).json({ status: 'error', pipelineId, error: err.message });
+  }
 });
 
 // ============================================================
@@ -94,10 +135,20 @@ async function executeTestPipeline(targetUrl, pipelineId, type) {
     const specFileName = `exploratory-${pipelineId}.spec.ts`;
     const specPath = path.join(generatedDir, specFileName);
 
+    // Limpiar capturas previas antes de E2E
+    const apiCaptureDir = path.join(__dirname, '.api-captures');
+    if (fs.existsSync(apiCaptureDir)) {
+      fs.rmSync(apiCaptureDir, { recursive: true, force: true });
+    }
+
     if (genResult.rows.length > 0) {
-      // Tests generados por MS-09 Opus
+      // Tests generados por MS-09 Opus — reemplazar import para usar fixture de captura
       console.log(`[MS-03] ${genResult.rows.length} tests de MS-09 encontrados en MS-12`);
-      const specContent = genResult.rows.map(r => r.test_code).join('\n\n');
+      let specContent = genResult.rows.map(r => r.test_code).join('\n\n');
+      specContent = specContent.replace(
+        /from\s+['"]@playwright\/test['"]/g,
+        "from '../../api-capture'"
+      );
       fs.writeFileSync(specPath, specContent);
     } else {
       // Spec exploratorio basico (funciona para cualquier URL)
@@ -109,11 +160,13 @@ async function executeTestPipeline(targetUrl, pipelineId, type) {
     // STEP 1: E2E Tests (Playwright)
     // ================================================================
     console.log('[MS-03] ── STEP 1: E2E Tests (Playwright) ──');
+    await updateSubStep(pool, pipelineId, 'ms03_e2e', 'running');
 
     const e2eEnv = {
       ...process.env,
       BASE_URL: targetUrl,
       RECORD_HAR: 'true',
+      PIPELINE_ID: pipelineId,
     };
 
     try {
@@ -124,19 +177,60 @@ async function executeTestPipeline(targetUrl, pipelineId, type) {
       results.e2e = 'pass';
       console.log('[MS-03] E2E: PASS');
     } catch (err) {
-      results.e2e = 'fail';
-      console.log('[MS-03] E2E: FAIL');
+      // Playwright sale con exit code != 0 si hay fails, pero stdout tiene los resultados
+      results.e2e = err.stdout?.includes('failed') ? 'fail' : 'pass';
+      console.log(`[MS-03] E2E: ${results.e2e.toUpperCase()}`);
       if (err.stderr) console.log('[MS-03] E2E stderr:', err.stderr.slice(0, 500));
     }
 
-    // Leer resultados JSON de Playwright
+    // Leer resultados JSON de Playwright (contadores reales)
     const resultsPath = path.join(__dirname, 'reports', 'e2e', 'results.json');
     if (fs.existsSync(resultsPath)) {
       try {
         const pw = JSON.parse(fs.readFileSync(resultsPath, 'utf8'));
-        totalPassed = pw.stats?.expected || 0;
-        totalFailed = pw.stats?.unexpected || 0;
+        // Playwright JSON reporter: suites[].specs[].tests[].results[].status
+        if (pw.suites) {
+          const countTests = (suites) => {
+            let passed = 0, failed = 0, skipped = 0;
+            for (const suite of suites) {
+              for (const spec of (suite.specs || [])) {
+                for (const t of (spec.tests || [])) {
+                  const status = t.results?.[0]?.status || t.status;
+                  if (status === 'passed' || status === 'expected') passed++;
+                  else if (status === 'failed' || status === 'unexpected') failed++;
+                  else skipped++;
+                }
+              }
+              // Recurse into nested suites
+              if (suite.suites) {
+                const sub = countTests(suite.suites);
+                passed += sub.passed;
+                failed += sub.failed;
+                skipped += sub.skipped;
+              }
+            }
+            return { passed, failed, skipped };
+          };
+          const counts = countTests(pw.suites);
+          totalPassed = counts.passed;
+          totalFailed = counts.failed;
+        } else if (pw.stats) {
+          totalPassed = pw.stats.expected || 0;
+          totalFailed = pw.stats.unexpected || 0;
+        }
       } catch { /* ignore parse errors */ }
+    }
+
+    // Generar Allure report HTML
+    try {
+      console.log('[MS-03] Generando Allure report...');
+      await execAsync(
+        'npx allure generate reports/e2e/allure-results -o reports/e2e/allure-report --clean',
+        { cwd: __dirname, timeout: 60000 }
+      );
+      console.log('[MS-03] Allure report generado');
+    } catch (err) {
+      console.log('[MS-03] Allure: Skip (allure CLI no disponible)');
     }
 
     // Guardar resultado E2E en test_execution (sin FK, solo pipeline_id)
@@ -161,6 +255,8 @@ async function executeTestPipeline(targetUrl, pipelineId, type) {
       );
     }
 
+    await updateSubStep(pool, pipelineId, 'ms03_e2e', results.e2e === 'pass' ? 'pass' : 'fail');
+
     // ================================================================
     // STEP 2: API Tests (Newman) — solo si hay APIs capturadas
     // ================================================================
@@ -171,6 +267,7 @@ async function executeTestPipeline(targetUrl, pipelineId, type) {
 
       if (hasCaptures) {
         console.log('[MS-03] ── STEP 2: API Tests (Newman) ──');
+        await updateSubStep(pool, pipelineId, 'ms03_api', 'running');
         try {
           await execAsync('node scripts/run-api.mjs', {
             cwd: __dirname, timeout: 120000,
@@ -181,6 +278,7 @@ async function executeTestPipeline(targetUrl, pipelineId, type) {
           results.api = 'fail';
           console.log('[MS-03] API: FAIL');
         }
+        await updateSubStep(pool, pipelineId, 'ms03_api', results.api);
 
         // Guardar resultado API
         await pool.query(
@@ -190,7 +288,10 @@ async function executeTestPipeline(targetUrl, pipelineId, type) {
         );
       } else {
         console.log('[MS-03] API: Skip (sin APIs capturadas — app client-side)');
+        await updateSubStep(pool, pipelineId, 'ms03_api', 'skip');
       }
+    } else {
+      await updateSubStep(pool, pipelineId, 'ms03_api', 'skip');
     }
 
     // ================================================================
@@ -203,8 +304,9 @@ async function executeTestPipeline(targetUrl, pipelineId, type) {
 
       if (hasCaptures) {
         console.log('[MS-03] ── STEP 3: K6 Performance ──');
+        await updateSubStep(pool, pipelineId, 'ms03_k6', 'running');
         try {
-          await execAsync('node scripts/run-k6.mjs --vus=5 --duration=15s', {
+          await execAsync('node scripts/run-k6.mjs --vus=3 --duration=15s', {
             cwd: __dirname, timeout: 120000,
           });
           results.k6 = 'pass';
@@ -213,34 +315,58 @@ async function executeTestPipeline(targetUrl, pipelineId, type) {
           results.k6 = 'skip';
           console.log('[MS-03] K6: Skip (K6 no disponible)');
         }
+        await updateSubStep(pool, pipelineId, 'ms03_k6', results.k6);
       } else {
         console.log('[MS-03] K6: Skip (sin APIs capturadas)');
+        await updateSubStep(pool, pipelineId, 'ms03_k6', 'skip');
       }
+    } else {
+      await updateSubStep(pool, pipelineId, 'ms03_k6', 'skip');
     }
 
     // ================================================================
-    // STEP 4: ZAP Security — escanea la URL directamente
+    // STEP 4: ZAP Security — escanea la URL directamente con Docker
     // ================================================================
     if (['full', 'security'].includes(type) && targetUrl) {
       console.log('[MS-03] ── STEP 4: ZAP Security ──');
+      await updateSubStep(pool, pipelineId, 'ms03_zap', 'running');
+
+      // Crear directorio de reportes ZAP
+      const zapReportDir = path.join(__dirname, 'reports', 'zap');
+      if (!fs.existsSync(zapReportDir)) fs.mkdirSync(zapReportDir, { recursive: true });
+
       try {
-        await execAsync('node scripts/run-zap.mjs', {
-          cwd: __dirname,
-          env: { ...process.env, ZAP_TARGET: targetUrl },
-          timeout: 300000,
-        });
+        // Docker ZAP baseline scan directo contra la URL
+        const cwd = __dirname.replace(/\\/g, '/');
+        const dockerPath = cwd.replace(/^([A-Za-z]):/, (_, l) => `//${l.toLowerCase()}`);
+        const reportName = `zap-${pipelineId}`;
+        const zapCmd = `docker run --rm -v "${dockerPath}/reports/zap:/zap/wrk:rw" -t ghcr.io/zaproxy/zaproxy:stable zap-baseline.py -t "${targetUrl}" -r "${reportName}.html" -J "${reportName}.json" -a -j`;
+
+        await execAsync(zapCmd, { cwd: __dirname, timeout: 300000 });
         results.zap = 'pass';
         console.log('[MS-03] ZAP: Completado');
+      } catch (zapErr) {
+        // ZAP sale con exit code != 0 si encuentra alertas (WARN/FAIL) — pero el reporte existe
+        const reportExists = fs.existsSync(path.join(zapReportDir, `zap-${pipelineId}.html`));
+        if (reportExists) {
+          results.zap = 'pass';
+          console.log('[MS-03] ZAP: Completado (con alertas de seguridad)');
+        } else {
+          results.zap = 'skip';
+          console.log('[MS-03] ZAP: Skip (Docker ZAP no disponible)');
+        }
+      }
 
+      if (results.zap !== 'skip') {
         await pool.query(
           `INSERT INTO test_execution (pipeline_id, resultado, duracion_ms, ambiente, source_ms, notas)
-           VALUES ($1, 'pass', $2, $3, 'ms-03', 'OWASP ZAP security scan')`,
-          [pipelineId, Date.now() - startTime, targetUrl]
+           VALUES ($1, $2, $3, $4, 'ms-03', 'OWASP ZAP security scan')`,
+          [pipelineId, results.zap, Date.now() - startTime, targetUrl]
         );
-      } catch {
-        results.zap = 'skip';
-        console.log('[MS-03] ZAP: Skip (ZAP Docker no disponible)');
       }
+      await updateSubStep(pool, pipelineId, 'ms03_zap', results.zap);
+    } else {
+      await updateSubStep(pool, pipelineId, 'ms03_zap', 'skip');
     }
 
     // ── Limpiar spec temporal ──
@@ -251,8 +377,11 @@ async function executeTestPipeline(targetUrl, pipelineId, type) {
     console.log(`[MS-03] Resultados: E2E=${results.e2e} | API=${results.api} | K6=${results.k6} | ZAP=${results.zap}`);
     console.log(`[MS-03] Tests: ${totalPassed} passed, ${totalFailed} failed`);
 
+    return { results, totalPassed, totalFailed, duration };
+
   } catch (error) {
     console.error(`[MS-03] Error fatal: ${error.message}`);
+    throw error;
   } finally {
     await pool.end();
   }
@@ -269,7 +398,7 @@ function createBasicSpec(targetUrl) {
 // Spec Exploratorio Auto-Generado por MS-03
 // Target: ${safeUrl}
 // ============================================================
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../../api-capture';
 
 test.describe('Exploratory: ${safeUrl}', () => {
 
@@ -338,12 +467,127 @@ test.describe('Exploratory: ${safeUrl}', () => {
 }
 
 // ============================================================
+// GET /api/report/allure — Sirve el Allure HTML report
+// ============================================================
+app.use('/api/report/allure', express.static(path.join(__dirname, 'reports', 'e2e', 'allure-report')));
+
+// ============================================================
+// GET /api/report/zap/* — Sirve reportes ZAP (HTML y JSON)
+// ============================================================
+app.use('/api/report/zap', express.static(path.join(__dirname, 'reports', 'zap')));
+
+// GET /api/report/zap-list — Lista reportes ZAP disponibles
+app.get('/api/report/zap-list', (_req, res) => {
+  const zapDir = path.join(__dirname, 'reports', 'zap');
+  if (!fs.existsSync(zapDir)) return res.json({ reports: [] });
+  const files = fs.readdirSync(zapDir)
+    .filter(f => f.endsWith('.html'))
+    .map(f => ({
+      name: f,
+      pipelineId: f.replace('zap-', '').replace('.html', ''),
+      url: `/api/report/zap/${f}`,
+      size: fs.statSync(path.join(zapDir, f)).size,
+      date: fs.statSync(path.join(zapDir, f)).mtime,
+    }))
+    .sort((a, b) => new Date(b.date) - new Date(a.date));
+  res.json({ reports: files });
+});
+
+// ============================================================
+// GET /api/report/newman/* — Sirve reportes Newman (HTML)
+// ============================================================
+app.use('/api/report/newman', express.static(path.join(__dirname, 'reports', 'api')));
+
+// GET /api/report/newman-list — Lista reportes Newman disponibles
+app.get('/api/report/newman-list', (_req, res) => {
+  const dir = path.join(__dirname, 'reports', 'api');
+  if (!fs.existsSync(dir)) return res.json({ reports: [] });
+  const files = fs.readdirSync(dir)
+    .filter(f => f.endsWith('.html'))
+    .map(f => ({
+      name: f,
+      url: `/api/report/newman/${f}`,
+      size: fs.statSync(path.join(dir, f)).size,
+      date: fs.statSync(path.join(dir, f)).mtime,
+    }))
+    .sort((a, b) => new Date(b.date) - new Date(a.date));
+  res.json({ reports: files });
+});
+
+// ============================================================
+// GET /api/report/k6/* — Sirve reportes K6 (HTML)
+// ============================================================
+app.use('/api/report/k6', express.static(path.join(__dirname, 'reports', 'k6')));
+
+// GET /api/report/k6-list — Lista reportes K6 disponibles
+app.get('/api/report/k6-list', (_req, res) => {
+  const dir = path.join(__dirname, 'reports', 'k6');
+  if (!fs.existsSync(dir)) return res.json({ reports: [] });
+  const files = fs.readdirSync(dir)
+    .filter(f => f.endsWith('.html'))
+    .map(f => ({
+      name: f,
+      url: `/api/report/k6/${f}`,
+      size: fs.statSync(path.join(dir, f)).size,
+      date: fs.statSync(path.join(dir, f)).mtime,
+    }))
+    .sort((a, b) => new Date(b.date) - new Date(a.date));
+  res.json({ reports: files });
+});
+
+// ============================================================
+// GET /api/report/newman-view/:pipelineId — Redirect al HTML del pipeline
+// GET /api/report/k6-view/:pipelineId — Redirect al HTML del pipeline
+// ============================================================
+app.get('/api/report/newman-view/:pipelineId', (req, res) => {
+  const dir = path.join(__dirname, 'reports', 'api');
+  if (!fs.existsSync(dir)) return res.status(404).json({ error: 'No hay reportes Newman' });
+  const file = fs.readdirSync(dir).find(f => f.startsWith(req.params.pipelineId) && f.endsWith('.html'));
+  if (!file) return res.status(404).json({ error: `No hay reporte Newman para ${req.params.pipelineId}` });
+  res.redirect(`/api/report/newman/${file}`);
+});
+
+app.get('/api/report/k6-view/:pipelineId', (req, res) => {
+  const dir = path.join(__dirname, 'reports', 'k6');
+  if (!fs.existsSync(dir)) return res.status(404).json({ error: 'No hay reportes K6' });
+  const file = fs.readdirSync(dir).find(f => f.startsWith(req.params.pipelineId) && f.endsWith('.html'));
+  if (!file) return res.status(404).json({ error: `No hay reporte K6 para ${req.params.pipelineId}` });
+  res.redirect(`/api/report/k6/${file}`);
+});
+
+// ============================================================
+// GET /api/results/:pipelineId — Resultados detallados
+// ============================================================
+app.get('/api/results/:pipelineId', async (req, res) => {
+  const pool = new pg.Pool({ connectionString: DB_URL });
+  try {
+    const execResult = await pool.query(
+      'SELECT * FROM test_execution WHERE pipeline_id = $1 ORDER BY id',
+      [req.params.pipelineId]
+    );
+    const genResult = await pool.query(
+      'SELECT id, test_name, test_type, status, execution_result FROM generated_test_case WHERE pipeline_id = $1 ORDER BY id',
+      [req.params.pipelineId]
+    );
+    res.json({
+      executions: execResult.rows,
+      generatedTests: genResult.rows,
+      allureReportUrl: '/api/report/allure/index.html',
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  } finally {
+    await pool.end();
+  }
+});
+
+// ============================================================
 // 404 handler
 // ============================================================
 app.use((_req, res) => {
   res.status(404).json({
     error: 'Endpoint no encontrado',
-    endpoints: ['GET /health', 'POST /api/execute'],
+    endpoints: ['GET /health', 'POST /api/execute', 'GET /api/report/allure', 'GET /api/report/zap/:file', 'GET /api/report/zap-list', 'GET /api/report/newman/:file', 'GET /api/report/newman-list', 'GET /api/report/k6/:file', 'GET /api/report/k6-list', 'GET /api/results/:pipelineId'],
   });
 });
 

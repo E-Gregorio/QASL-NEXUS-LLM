@@ -9,8 +9,9 @@ export function ExploratoryAIPage() {
   const [objective, setObjective] = useState('');
   const [model, setModel] = useState('opus');
   const [running, setRunning] = useState(false);
+  const [cleaning, setCleaning] = useState(false);
 
-  const handleExplore = async () => {
+  const handleExplore = async (pipelineType: 'e2e' | 'full') => {
     if (!url.trim() || !objective.trim()) {
       alert('Ingresa la URL y el objetivo');
       return;
@@ -18,7 +19,7 @@ export function ExploratoryAIPage() {
     setRunning(true);
     try {
       const result = await api.runPipeline({
-        type: 'full',
+        type: pipelineType,
         triggerType: 'manual',
         triggeredBy: 'command-center-exploratory',
         targetUrl: url.trim(),
@@ -35,12 +36,25 @@ export function ExploratoryAIPage() {
     }
   };
 
+  const handleClean = async () => {
+    if (!window.confirm('Eliminar todos los resultados de corridas anteriores?')) return;
+    setCleaning(true);
+    try {
+      const result = await api.cleanResults();
+      alert(`Resultados eliminados: ${result.deleted?.pipeline_run || 0} pipelines, ${result.deleted?.test_execution || 0} ejecuciones`);
+    } catch (err: any) {
+      alert(`Error: ${err.message}`);
+    } finally {
+      setCleaning(false);
+    }
+  };
+
   return (
     <div className="space-y-8">
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-white">Exploratory AI</h1>
-        <p className="text-gray-500 text-sm mt-1">INGRID analiza tu aplicacion con inteligencia artificial</p>
+        <p className="text-gray-500 text-sm mt-1">Analiza tu aplicacion con inteligencia artificial</p>
       </div>
 
       {/* Config */}
@@ -114,26 +128,42 @@ export function ExploratoryAIPage() {
         <div className="flex gap-4">
           <div className="text-purple-400 text-2xl">&#9889;</div>
           <div>
-            <div className="text-sm text-purple-300 font-semibold mb-1">Como funciona INGRID</div>
+            <div className="text-sm text-purple-300 font-semibold mb-1">Como funciona el Exploratory AI</div>
             <ol className="text-xs text-gray-400 space-y-1 list-decimal list-inside">
-              <li>INGRID navega tu aplicacion como un usuario real</li>
-              <li>Analiza cada pantalla con AI Vision (Gemini 2.5 Pro)</li>
-              <li>Genera test cases automaticamente basados en lo que encuentra</li>
-              <li>Ejecuta los tests generados con Playwright</li>
-              <li>Reporta bugs con screenshots y pasos de reproduccion</li>
+              <li>MS-09 Opus analiza la URL y genera tests E2E con Playwright</li>
+              <li><strong className="text-blue-400">EXPLORAR E2E</strong>: Solo Playwright + Allure (rapido)</li>
+              <li><strong className="text-purple-400">PIPELINE COMPLETO</strong>: E2E + Newman API + K6 Performance + ZAP Security</li>
+              <li>Los resultados se guardan en MS-12 (PostgreSQL)</li>
+              <li>MS-11 genera reporte PDF | MS-10 crea bugs en Jira/Azure</li>
             </ol>
           </div>
         </div>
       </Card>
 
       {/* Execute */}
-      <div className="flex justify-center">
+      <div className="flex flex-col items-center gap-4">
+        <div className="flex gap-4">
+          <button
+            onClick={() => handleExplore('e2e')}
+            disabled={running || !url.trim() || !objective.trim()}
+            className="px-8 py-4 bg-blue-600 text-white rounded-xl font-semibold text-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {running ? 'Ejecutando...' : 'EXPLORAR E2E'}
+          </button>
+          <button
+            onClick={() => handleExplore('full')}
+            disabled={running || !url.trim() || !objective.trim()}
+            className="px-8 py-4 bg-purple-600 text-white rounded-xl font-semibold text-lg hover:bg-purple-700 transition disabled:opacity-50 disabled:cursor-not-allowed glow-purple"
+          >
+            {running ? 'Ejecutando...' : 'PIPELINE COMPLETO'}
+          </button>
+        </div>
         <button
-          onClick={handleExplore}
-          disabled={running || !url.trim() || !objective.trim()}
-          className="px-8 py-4 bg-purple-600 text-white rounded-xl font-semibold text-lg hover:bg-purple-700 transition disabled:opacity-50 disabled:cursor-not-allowed glow-purple"
+          onClick={handleClean}
+          disabled={cleaning || running}
+          className="px-6 py-2 bg-red-600/20 text-red-400 border border-red-500/30 rounded-lg text-sm hover:bg-red-600/30 transition disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {running ? 'Iniciando Exploracion...' : 'EXPLORAR CON AI'}
+          {cleaning ? 'Limpiando...' : 'LIMPIAR RESULTADOS'}
         </button>
       </div>
     </div>

@@ -8,7 +8,7 @@ import axios from 'axios';
 import { pool } from '../config/database';
 import { MS_URLS } from '../config/microservices';
 
-export type PipelineType = 'full' | 'regression' | 'smoke' | 'security' | 'mobile';
+export type PipelineType = 'full' | 'regression' | 'smoke' | 'security' | 'mobile' | 'e2e';
 export type TriggerType = 'git_push' | 'manual' | 'schedule';
 
 interface PipelineResult {
@@ -45,10 +45,11 @@ export class PipelineExecutor {
     console.log(`[Pipeline] ${id} iniciado (${type}) por ${triggeredBy}`);
     if (targetUrl) console.log(`[Pipeline] Target URL: ${targetUrl}`);
 
-    // Registrar inicio en MS-12 (con target_url y objective)
+    // Registrar inicio en MS-12 (ON CONFLICT porque la ruta /run ya inserta la fila)
     await pool.query(
       `INSERT INTO pipeline_run (pipeline_id, tipo, trigger_type, trigger_by, estado, target_url, objective)
-       VALUES ($1, $2, $3, $4, 'Running', $5, $6)`,
+       VALUES ($1, $2, $3, $4, 'Running', $5, $6)
+       ON CONFLICT (pipeline_id) DO NOTHING`,
       [id, type, triggerType, triggeredBy, targetUrl || null, objective || null]
     );
 
@@ -60,8 +61,10 @@ export class PipelineExecutor {
 
       // Si hay targetUrl → flujo exploratorio: MS-09 Opus genera tests E2E
       if (targetUrl) {
-        // MS-09 Opus: Analiza la URL + objetivo y genera tests Playwright
         console.log(`[Pipeline] MS-09 generando tests para ${targetUrl}...`);
+        fases['ms09_generate'] = 'running';
+        await this.updateFases(id, fases);
+
         fases['ms09_generate'] = await this.callService(
           MS_URLS.MS09_LLM, '/api/llm/exploratory/generate', 'POST',
           { targetUrl, objective, pipelineId: id }
@@ -91,12 +94,21 @@ export class PipelineExecutor {
       const executionPromises: Promise<void>[] = [];
 
       // MS-03: E2E + API + K6 + ZAP (pasa targetUrl y pipelineId)
-      if (['full', 'regression', 'smoke'].includes(type)) {
+      // Usa axios directo para capturar totalPassed/totalFailed del response
+      if (['full', 'regression', 'smoke', 'e2e'].includes(type)) {
+        fases['ms03'] = 'running';
+        await this.updateFases(id, fases);
         executionPromises.push(
-          this.callService(MS_URLS.MS03_FRAMEWORK, '/api/execute', 'POST', {
+          axios.post(`${MS_URLS.MS03_FRAMEWORK}/api/execute`, {
             type, pipelineId: id, targetUrl: targetUrl || null,
-          })
-            .then((r) => { fases['ms03'] = r; })
+          }, { timeout: 300000 })
+            .then((response) => {
+              fases['ms03'] = response.data?.status || 'ok';
+              if (response.data?.totalPassed !== undefined) totalPassed = response.data.totalPassed;
+              if (response.data?.totalFailed !== undefined) totalFailed = response.data.totalFailed;
+              totalExecuted = totalPassed + totalFailed;
+              console.log(`[Pipeline] MS-03 reporta: ${totalPassed} passed, ${totalFailed} failed`);
+            })
             .catch(() => { fases['ms03'] = 'error'; })
         );
       }
@@ -122,34 +134,20 @@ export class PipelineExecutor {
       await Promise.allSettled(executionPromises);
       await this.updateFases(id, fases);
 
-      // Obtener metricas de MS-12 post-ejecucion
-      const metricsResult = await pool.query(`
-        SELECT
-          COUNT(*) AS total,
-          COUNT(CASE WHEN resultado = 'pass' THEN 1 END) AS passed,
-          COUNT(CASE WHEN resultado = 'fail' THEN 1 END) AS failed
-        FROM test_execution WHERE pipeline_id = $1
-      `, [id]);
-
-      if (metricsResult.rows[0]) {
-        totalExecuted = parseInt(metricsResult.rows[0].total) || 0;
-        totalPassed = parseInt(metricsResult.rows[0].passed) || 0;
-        totalFailed = parseInt(metricsResult.rows[0].failed) || 0;
-      }
-
-      // Si no hay test_execution rows, contar generated_test_case
-      if (totalExecuted === 0 && targetUrl) {
-        const genResult = await pool.query(`
+      // Fallback: si MS-03 no devolvio contadores, leer de MS-12
+      if (totalExecuted === 0) {
+        const metricsResult = await pool.query(`
           SELECT
             COUNT(*) AS total,
-            COUNT(CASE WHEN status = 'passed' THEN 1 END) AS passed,
-            COUNT(CASE WHEN status = 'failed' THEN 1 END) AS failed
-          FROM generated_test_case WHERE pipeline_id = $1
+            COUNT(CASE WHEN resultado = 'pass' THEN 1 END) AS passed,
+            COUNT(CASE WHEN resultado = 'fail' THEN 1 END) AS failed
+          FROM test_execution WHERE pipeline_id = $1
         `, [id]);
-        if (genResult.rows[0]) {
-          totalExecuted = parseInt(genResult.rows[0].total) || 0;
-          totalPassed = parseInt(genResult.rows[0].passed) || 0;
-          totalFailed = parseInt(genResult.rows[0].failed) || 0;
+
+        if (metricsResult.rows[0] && parseInt(metricsResult.rows[0].total) > 0) {
+          totalExecuted = parseInt(metricsResult.rows[0].total) || 0;
+          totalPassed = parseInt(metricsResult.rows[0].passed) || 0;
+          totalFailed = parseInt(metricsResult.rows[0].failed) || 0;
         }
       }
 
@@ -161,6 +159,8 @@ export class PipelineExecutor {
       const passRate = totalExecuted > 0 ? Math.round((totalPassed / totalExecuted) * 100) : 0;
 
       // MS-11: Generar reporte
+      fases['ms11'] = 'running';
+      await this.updateFases(id, fases);
       fases['ms11'] = await this.callService(MS_URLS.MS11_REPORT, '/api/report/pipeline', 'POST', {
         pipelineId: id, status: totalFailed > 0 ? 'Failed' : 'Success',
         passRate, totalTests: totalExecuted, failed: totalFailed, bugs: bugsCreados,
@@ -179,12 +179,13 @@ export class PipelineExecutor {
       const duracion = Math.round((Date.now() - startTime) / 1000);
       const status = totalFailed > 0 ? 'Failed' : 'Success';
 
-      // Actualizar pipeline en MS-12
+      // Actualizar pipeline en MS-12 (fases con merge para preservar sub-steps de MS-03)
       await pool.query(
         `UPDATE pipeline_run SET
           estado = $1, fecha_fin = NOW(), duracion_seg = $2,
           total_tc_ejecutados = $3, total_passed = $4, total_failed = $5,
-          pass_rate = $6, bugs_creados = $7, fases_ejecutadas = $8
+          pass_rate = $6, bugs_creados = $7,
+          fases_ejecutadas = COALESCE(fases_ejecutadas, '{}'::jsonb) || $8::jsonb
         WHERE pipeline_id = $9`,
         [status, duracion, totalExecuted, totalPassed, totalFailed,
          passRate, bugsCreados, JSON.stringify(fases), id]
@@ -208,10 +209,11 @@ export class PipelineExecutor {
     }
   }
 
-  // Actualiza fases_ejecutadas en MS-12 para polling real-time
+  // Actualiza fases_ejecutadas en MS-12 usando JSONB merge (||)
+  // Permite que MS-03 tambien escriba sub-steps sin sobreescribir
   private async updateFases(pipelineId: string, fases: Record<string, string>): Promise<void> {
     await pool.query(
-      'UPDATE pipeline_run SET fases_ejecutadas = $1 WHERE pipeline_id = $2',
+      `UPDATE pipeline_run SET fases_ejecutadas = COALESCE(fases_ejecutadas, '{}'::jsonb) || $1::jsonb WHERE pipeline_id = $2`,
       [JSON.stringify(fases), pipelineId]
     );
   }

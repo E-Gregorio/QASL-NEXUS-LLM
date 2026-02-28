@@ -35,6 +35,29 @@ datasources:
       token: qasl-sentinel-token-2024
 
   # ============================================
+  # POSTGRESQL (MS-12 QASL NEXUS Database)
+  # ============================================
+  - name: PostgreSQL-QASL
+    type: postgres
+    uid: PostgreSQL-QASL
+    url: host.docker.internal:5432
+    user: qasl_admin
+    access: proxy
+    isDefault: true
+    editable: false
+    jsonData:
+      database: qasl_nexus
+      user: qasl_admin
+      sslmode: disable
+      maxOpenConns: 5
+      maxIdleConns: 2
+      connMaxLifetime: 14400
+      postgresVersion: 1600
+      timescaledb: false
+    secureJsonData:
+      password: qasl_nexus_2026
+
+  # ============================================
   # INFLUXDB - QASL-MOBILE (Testing Mobile)
   # ============================================
   - name: InfluxDB-Mobile

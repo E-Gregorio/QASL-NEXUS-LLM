@@ -1,0 +1,234 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "id": 1,
+      "title": "Pipeline Pass Rate (Ultimos 20)",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "datasource": { "type": "postgres", "uid": "PostgreSQL-QASL" },
+      "targets": [
+        {
+          "rawSql": "SELECT fecha_inicio AS time, pass_rate AS \"Pass Rate\", total_tc_ejecutados AS \"Total Tests\" FROM pipeline_run WHERE fecha_inicio IS NOT NULL ORDER BY fecha_inicio DESC LIMIT 20",
+          "format": "time_series",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "fillOpacity": 15, "lineWidth": 2 },
+          "unit": "percent",
+          "min": 0,
+          "max": 100
+        },
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "Total Tests" },
+            "properties": [{ "id": "unit", "value": "short" }, { "id": "custom.axisPlacement", "value": "right" }]
+          }
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "title": "Pipeline Status",
+      "type": "piechart",
+      "gridPos": { "h": 8, "w": 6, "x": 12, "y": 0 },
+      "datasource": { "type": "postgres", "uid": "PostgreSQL-QASL" },
+      "targets": [
+        {
+          "rawSql": "SELECT estado AS metric, COUNT(*) AS value FROM pipeline_run GROUP BY estado",
+          "format": "table",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "pieType": "donut",
+        "legend": { "displayMode": "table", "placement": "right" }
+      },
+      "fieldConfig": {
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "Success" }, "properties": [{ "id": "color", "value": { "fixedColor": "#36a64f", "mode": "fixed" } }] },
+          { "matcher": { "id": "byName", "options": "Failed" }, "properties": [{ "id": "color", "value": { "fixedColor": "#dc3545", "mode": "fixed" } }] },
+          { "matcher": { "id": "byName", "options": "Running" }, "properties": [{ "id": "color", "value": { "fixedColor": "#ffc107", "mode": "fixed" } }] }
+        ]
+      }
+    },
+    {
+      "id": 3,
+      "title": "Tests Totales Ejecutados",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 3, "x": 18, "y": 0 },
+      "datasource": { "type": "postgres", "uid": "PostgreSQL-QASL" },
+      "targets": [
+        {
+          "rawSql": "SELECT SUM(total_tc_ejecutados) AS \"Total\" FROM pipeline_run",
+          "format": "table",
+          "refId": "A"
+        }
+      ],
+      "options": { "colorMode": "value", "graphMode": "none", "textMode": "auto" },
+      "fieldConfig": { "defaults": { "color": { "mode": "fixed", "fixedColor": "#3b82f6" }, "unit": "short" } }
+    },
+    {
+      "id": 4,
+      "title": "Pass Rate Promedio",
+      "type": "gauge",
+      "gridPos": { "h": 4, "w": 3, "x": 21, "y": 0 },
+      "datasource": { "type": "postgres", "uid": "PostgreSQL-QASL" },
+      "targets": [
+        {
+          "rawSql": "SELECT AVG(pass_rate) AS \"Avg Pass Rate\" FROM pipeline_run WHERE pass_rate IS NOT NULL",
+          "format": "table",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "#dc3545", "value": null },
+              { "color": "#ffc107", "value": 70 },
+              { "color": "#36a64f", "value": 90 }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 5,
+      "title": "Pipelines Recientes",
+      "type": "table",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "datasource": { "type": "postgres", "uid": "PostgreSQL-QASL" },
+      "targets": [
+        {
+          "rawSql": "SELECT pipeline_id AS \"Pipeline\", estado AS \"Status\", tipo AS \"Type\", total_tc_ejecutados AS \"Tests\", total_passed AS \"Passed\", total_failed AS \"Failed\", pass_rate AS \"Pass Rate\", duracion_seg AS \"Duration (s)\", fecha_inicio AS \"Started\" FROM pipeline_run ORDER BY fecha_inicio DESC LIMIT 15",
+          "format": "table",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "Pass Rate" }, "properties": [{ "id": "unit", "value": "percent" }] },
+          { "matcher": { "id": "byName", "options": "Status" }, "properties": [{ "id": "custom.displayMode", "value": "color-text" }] }
+        ]
+      }
+    },
+    {
+      "id": 6,
+      "title": "Tests Generados por AI (MS-09)",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 4, "x": 12, "y": 8 },
+      "datasource": { "type": "postgres", "uid": "PostgreSQL-QASL" },
+      "targets": [
+        {
+          "rawSql": "SELECT COUNT(*) AS \"Total\" FROM generated_test_case",
+          "format": "table",
+          "refId": "A"
+        }
+      ],
+      "options": { "colorMode": "value", "graphMode": "none" },
+      "fieldConfig": { "defaults": { "color": { "mode": "fixed", "fixedColor": "#a855f7" } } }
+    },
+    {
+      "id": 7,
+      "title": "Tests Passed vs Failed",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 4, "x": 16, "y": 8 },
+      "datasource": { "type": "postgres", "uid": "PostgreSQL-QASL" },
+      "targets": [
+        {
+          "rawSql": "SELECT SUM(total_passed) AS \"Passed\", SUM(total_failed) AS \"Failed\" FROM pipeline_run",
+          "format": "table",
+          "refId": "A"
+        }
+      ],
+      "options": { "colorMode": "value", "graphMode": "none" },
+      "fieldConfig": {
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "Passed" }, "properties": [{ "id": "color", "value": { "fixedColor": "#36a64f", "mode": "fixed" } }] },
+          { "matcher": { "id": "byName", "options": "Failed" }, "properties": [{ "id": "color", "value": { "fixedColor": "#dc3545", "mode": "fixed" } }] }
+        ]
+      }
+    },
+    {
+      "id": 8,
+      "title": "Defectos por Severidad",
+      "type": "barchart",
+      "gridPos": { "h": 8, "w": 6, "x": 12, "y": 12 },
+      "datasource": { "type": "postgres", "uid": "PostgreSQL-QASL" },
+      "targets": [
+        {
+          "rawSql": "SELECT severidad AS \"Severidad\", COUNT(*) AS \"Count\" FROM defect GROUP BY severidad ORDER BY COUNT(*) DESC",
+          "format": "table",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "title": "Defectos por Estado",
+      "type": "piechart",
+      "gridPos": { "h": 8, "w": 6, "x": 18, "y": 12 },
+      "datasource": { "type": "postgres", "uid": "PostgreSQL-QASL" },
+      "targets": [
+        {
+          "rawSql": "SELECT estado AS metric, COUNT(*) AS value FROM defect GROUP BY estado",
+          "format": "table",
+          "refId": "A"
+        }
+      ],
+      "options": { "pieType": "donut" }
+    },
+    {
+      "id": 10,
+      "title": "Ejecuciones de Tests",
+      "type": "table",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 16 },
+      "datasource": { "type": "postgres", "uid": "PostgreSQL-QASL" },
+      "targets": [
+        {
+          "rawSql": "SELECT pipeline_id AS \"Pipeline\", resultado AS \"Result\", source_ms AS \"Source\", duracion_ms AS \"Duration (ms)\", ambiente AS \"Environment\", notas AS \"Notes\", created_at AS \"Date\" FROM test_execution ORDER BY created_at DESC LIMIT 20",
+          "format": "table",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "title": "Executive Summary",
+      "type": "table",
+      "gridPos": { "h": 4, "w": 12, "x": 0, "y": 24 },
+      "datasource": { "type": "postgres", "uid": "PostgreSQL-QASL" },
+      "targets": [
+        {
+          "rawSql": "SELECT * FROM v_executive_summary",
+          "format": "table",
+          "refId": "A"
+        }
+      ]
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 39,
+  "tags": ["qasl", "pipeline", "qa", "testing"],
+  "templating": { "list": [] },
+  "time": { "from": "now-7d", "to": "now" },
+  "timepicker": {},
+  "timezone": "",
+  "title": "QASL NEXUS - Pipeline Metrics",
+  "uid": "qasl-pipeline-metrics",
+  "version": 1
+}

@@ -46,5 +46,13 @@ export const api = {
   // Reportador (proxy a MS-11)
   generateReport: (body?: any) =>
     request<any>('/api/proxy/report/executive', { method: 'POST', body: JSON.stringify(body || {}) }),
+  generatePipelinePDF: (pipelineId: string) =>
+    request<any>('/api/proxy/report/pipeline-pdf', { method: 'POST', body: JSON.stringify({ pipelineId }) }),
+  resendNotification: (pipelineId: string) =>
+    request<any>('/api/proxy/report/resend-notification', { method: 'POST', body: JSON.stringify({ pipelineId }) }),
   getReportSummary: () => request<any>('/api/proxy/report/summary'),
+
+  // Clean results (proxy a MS-08)
+  cleanResults: () =>
+    request<any>('/api/proxy/pipeline/clean-results', { method: 'DELETE' }),
 };
