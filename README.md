@@ -40,7 +40,7 @@ QASL NEXUS LLM is a **12-microservice platform** that automates the complete QA 
 
 ---
 
-## Two Execution Flows
+## Three Execution Flows
 
 ### Flow 1: Static Analysis (User Story .docx)
 ```
@@ -52,19 +52,38 @@ MS-02 (parse .docx) --> MS-09 (gap analysis + VCR) --> MS-08 (pipeline)
 ```
 MS-00 Command Center --> User enters URL + objective
   --> MS-08 Pipeline orchestrates:
-      PHASE 1: MS-09 Opus generates Playwright tests from URL
+      PHASE 1: MS-03 DOM Scan (Playwright scans all interactive elements)
+               MS-09 Opus generates tests using REAL selectors from DOM
       PHASE 2: MS-03 executes 4 test types with sub-step progress:
                - E2E (Playwright + Allure) --> always runs
                - API (Newman) --> if APIs captured during E2E
                - K6 (Performance) --> if APIs captured
                - ZAP (OWASP Security) --> Docker scan against URL
-      PHASE 3: MS-11 report + MS-10 bug creation
+      PHASE 3: MS-11 report (PDF + Email) + MS-10 bug creation
   --> MS-00 PipelineLivePage shows real-time progress per sub-step
 ```
+
+**DOM Scan**: Before generating tests, Playwright opens the URL in headless Chromium, extracts all inputs, buttons, selects, links, tables, forms, navigation, and labels with their best selectors (data-testid > id > name > role+aria > placeholder > tag.class). Opus receives this real DOM structure and generates tests with verified selectors instead of guessing.
+
+**Verified results**:
+- TodoMVC: 10/10 tests passed (100%) with real DOM selectors
+- demoqa.com/books: Full pipeline (E2E + Newman + K6 + ZAP) completed with PDF, Email, Grafana
 
 Two execution modes available in the UI:
 - **EXPLORAR E2E**: Only Playwright + Allure report (fast)
 - **PIPELINE COMPLETO**: E2E + Newman API + K6 Performance + ZAP Security
+
+### Flow 3: Import Existing Tests (coming soon)
+```
+MS-00 Command Center --> User pastes existing Playwright spec + target URL
+  --> MS-08 Pipeline orchestrates:
+      PHASE 1: MS-09 Sonnet adapts spec (adds Allure wrapping, test.step,
+               screenshots) WITHOUT changing selectors or test logic
+      PHASE 2: MS-03 executes adapted spec (E2E + Newman + K6 + ZAP)
+      PHASE 3: MS-11 report + MS-10 bug creation
+```
+
+Allows QA teams with existing E2E test suites to bring them into QASL NEXUS and get the full platform benefits: Allure reports, API testing, performance testing, security scanning, PDF reports, email notifications, and Grafana dashboards -- without rewriting their tests.
 
 ---
 
@@ -84,7 +103,7 @@ Two execution modes available in the UI:
     -----------------
     [.docx Upload] --> MS-02 Static Analyzer --> MS-09 LLM Brain
                         (Parse HU, 4 CSVs)       (Opus: Gap Analysis)
-    [URL + Objective] --> MS-09 Opus generates E2E tests
+    [URL + Objective] --> MS-03 DOM Scan --> MS-09 Opus generates E2E tests
                               |                         |
                               +------------+------------+
                                            v
@@ -353,6 +372,7 @@ curl http://localhost:8888/api/pipeline/health
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
+| POST | `/api/explore` | DOM Scan: Playwright scans URL, extracts all interactive elements |
 | POST | `/api/execute` | Execute tests (E2E + API + K6 + ZAP) |
 | DELETE | `/api/clean-reports` | Remove all report files from disk |
 | GET | `/api/report/allure/*` | Serve Allure HTML report |
