@@ -13,6 +13,7 @@ import pg from 'pg';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { chromium } from 'playwright';
 
 const execAsync = promisify(exec);
 const __filename = fileURLToPath(import.meta.url);
@@ -44,6 +45,232 @@ app.get('/health', (_req, res) => {
     timestamp: new Date().toISOString(),
     capabilities: ['e2e', 'api', 'k6', 'zap', 'unit'],
   });
+});
+
+// ============================================================
+// POST /api/explore — Escanea el DOM completo de cualquier URL
+// Playwright entra, captura TODOS los elementos interactivos,
+// screenshot, y APIs interceptadas. MS-09 usa esta data para
+// generar tests con selectores REALES.
+// ============================================================
+app.post('/api/explore', async (req, res) => {
+  const { targetUrl, pipelineId } = req.body;
+
+  if (!targetUrl) {
+    return res.status(400).json({ error: 'targetUrl requerido' });
+  }
+
+  console.log(`[MS-03] DOM Scan iniciado: ${targetUrl}`);
+  const startTime = Date.now();
+
+  let browser;
+  try {
+    // DOM scan SIEMPRE headless (no necesitamos ver el browser, solo leer el DOM)
+    browser = await chromium.launch({ headless: true });
+    const context = await browser.newContext({
+      viewport: { width: 1920, height: 1080 },
+      userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+    });
+    const page = await context.newPage();
+
+    // Capturar llamadas de red (APIs reales del dominio)
+    const apiCalls = [];
+    let targetOrigin = '';
+    try { targetOrigin = new URL(targetUrl).origin; } catch { /* ok */ }
+
+    page.on('request', request => {
+      if (!['xhr', 'fetch'].includes(request.resourceType())) return;
+      const url = request.url();
+      if (!url.startsWith('http')) return;
+      // Filtrar: solo mismo dominio
+      try {
+        if (targetOrigin && new URL(url).origin !== targetOrigin) return;
+      } catch { return; }
+      apiCalls.push({
+        method: request.method(),
+        url,
+        resourceType: request.resourceType(),
+      });
+    });
+
+    // Navegar
+    await page.goto(targetUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
+    // Esperar un poco para que cargue contenido dinamico
+    await page.waitForTimeout(3000);
+
+    // Screenshot
+    const screenshotsDir = path.join(__dirname, 'reports', 'e2e', 'screenshots');
+    if (!fs.existsSync(screenshotsDir)) fs.mkdirSync(screenshotsDir, { recursive: true });
+    const screenshotPath = path.join(screenshotsDir, `dom-scan-${pipelineId || 'manual'}.png`);
+    await page.screenshot({ path: screenshotPath, fullPage: true });
+
+    // Extraer DOM completo con page.evaluate
+    const domStructure = await page.evaluate(() => {
+      // Helper: obtener el mejor selector para un elemento
+      function getBestSelector(el) {
+        // 1. data-testid
+        if (el.dataset?.testid) return `[data-testid="${el.dataset.testid}"]`;
+        // 2. id unico
+        if (el.id) return `#${el.id}`;
+        // 3. name
+        if (el.name) return `[name="${el.name}"]`;
+        // 4. role + texto accesible
+        const role = el.getAttribute('role');
+        const ariaLabel = el.getAttribute('aria-label');
+        if (role && ariaLabel) return `[role="${role}"][aria-label="${ariaLabel}"]`;
+        // 5. placeholder
+        if (el.placeholder) return `[placeholder="${el.placeholder}"]`;
+        // 6. tipo + clase
+        const tag = el.tagName.toLowerCase();
+        const cls = el.className?.toString().split(' ').filter(c => c && c.length < 30).slice(0, 2).join('.');
+        if (cls) return `${tag}.${cls}`;
+        // 7. tag solo
+        return tag;
+      }
+
+      // Helper: texto visible limpio
+      function cleanText(text) {
+        return (text || '').trim().replace(/\s+/g, ' ').slice(0, 100);
+      }
+
+      return {
+        url: window.location.href,
+        title: document.title,
+
+        headings: {
+          h1: Array.from(document.querySelectorAll('h1')).map(el => cleanText(el.textContent)),
+          h2: Array.from(document.querySelectorAll('h2')).map(el => cleanText(el.textContent)),
+          h3: Array.from(document.querySelectorAll('h3')).map(el => cleanText(el.textContent)),
+        },
+
+        forms: Array.from(document.querySelectorAll('form')).map(form => ({
+          id: form.id || null,
+          name: form.getAttribute('name') || null,
+          action: form.action || null,
+          method: form.method || 'get',
+          selector: getBestSelector(form),
+        })),
+
+        inputs: Array.from(document.querySelectorAll('input, textarea')).map(el => ({
+          tag: el.tagName.toLowerCase(),
+          type: el.type || 'text',
+          id: el.id || null,
+          name: el.name || null,
+          placeholder: el.placeholder || null,
+          value: el.value || null,
+          required: el.required || false,
+          visible: el.offsetParent !== null,
+          selector: getBestSelector(el),
+          ariaLabel: el.getAttribute('aria-label') || null,
+        })).filter(el => el.visible),
+
+        selects: Array.from(document.querySelectorAll('select')).map(sel => ({
+          id: sel.id || null,
+          name: sel.name || null,
+          selector: getBestSelector(sel),
+          options: Array.from(sel.options).slice(0, 10).map(opt => ({
+            value: opt.value,
+            text: cleanText(opt.text),
+          })),
+          totalOptions: sel.options.length,
+        })),
+
+        buttons: Array.from(document.querySelectorAll('button, input[type="submit"], input[type="button"], [role="button"]')).map(btn => ({
+          tag: btn.tagName.toLowerCase(),
+          type: btn.getAttribute('type') || null,
+          text: cleanText(btn.textContent) || btn.value || null,
+          selector: getBestSelector(btn),
+          visible: btn.offsetParent !== null,
+          ariaLabel: btn.getAttribute('aria-label') || null,
+        })).filter(btn => btn.visible),
+
+        links: Array.from(document.querySelectorAll('a[href]')).map(a => ({
+          text: cleanText(a.textContent),
+          href: a.href,
+          selector: getBestSelector(a),
+          visible: a.offsetParent !== null,
+        })).filter(l => l.visible).slice(0, 50),
+
+        tables: Array.from(document.querySelectorAll('table')).map(table => ({
+          id: table.id || null,
+          selector: getBestSelector(table),
+          headers: Array.from(table.querySelectorAll('th')).map(th => cleanText(th.textContent)),
+          rowCount: table.querySelectorAll('tr').length,
+          columnCount: table.querySelectorAll('th').length || table.querySelector('tr')?.querySelectorAll('td').length || 0,
+        })),
+
+        labels: Array.from(document.querySelectorAll('label')).map(label => ({
+          for: label.htmlFor || null,
+          text: cleanText(label.textContent),
+        })).filter(l => l.text),
+
+        images: Array.from(document.querySelectorAll('img')).map(img => ({
+          alt: img.alt || null,
+          src: img.src?.slice(0, 200) || null,
+          visible: img.offsetParent !== null,
+        })).filter(i => i.visible).slice(0, 20),
+
+        navigation: Array.from(document.querySelectorAll('nav, [role="navigation"]')).map(nav => ({
+          selector: getBestSelector(nav),
+          links: Array.from(nav.querySelectorAll('a')).map(a => ({
+            text: cleanText(a.textContent),
+            href: a.href,
+          })).slice(0, 20),
+        })),
+
+        dialogs: Array.from(document.querySelectorAll('dialog, [role="dialog"], [role="alertdialog"], .modal')).map(d => ({
+          selector: getBestSelector(d),
+          visible: d.offsetParent !== null || d.open,
+          text: cleanText(d.textContent).slice(0, 200),
+        })),
+
+        meta: {
+          language: document.documentElement.lang || null,
+          charset: document.characterSet,
+          viewport: document.querySelector('meta[name="viewport"]')?.content || null,
+          bodyClasses: document.body.className || null,
+          totalElements: document.querySelectorAll('*').length,
+          totalInteractive: document.querySelectorAll('input, button, select, textarea, a[href], [role="button"]').length,
+        },
+      };
+    });
+
+    await browser.close();
+    browser = null;
+
+    const elapsed = Date.now() - startTime;
+    const summary = {
+      inputs: domStructure.inputs.length,
+      buttons: domStructure.buttons.length,
+      links: domStructure.links.length,
+      selects: domStructure.selects.length,
+      tables: domStructure.tables.length,
+      forms: domStructure.forms.length,
+      headings: domStructure.headings.h1.length + domStructure.headings.h2.length + domStructure.headings.h3.length,
+      navigation: domStructure.navigation.length,
+      totalInteractive: domStructure.meta.totalInteractive,
+      apiCalls: apiCalls.length,
+    };
+
+    console.log(`[MS-03] DOM Scan completado en ${elapsed}ms`);
+    console.log(`[MS-03]   Inputs: ${summary.inputs} | Buttons: ${summary.buttons} | Links: ${summary.links} | Selects: ${summary.selects}`);
+    console.log(`[MS-03]   Tables: ${summary.tables} | Forms: ${summary.forms} | APIs: ${summary.apiCalls}`);
+
+    res.json({
+      status: 'ok',
+      elapsed,
+      targetUrl,
+      domStructure,
+      apiCalls,
+      summary,
+      screenshotPath: `/api/report/allure/screenshots/dom-scan-${pipelineId || 'manual'}.png`,
+    });
+
+  } catch (err) {
+    console.error(`[MS-03] DOM Scan error: ${err.message}`);
+    if (browser) await browser.close().catch(() => {});
+    res.status(500).json({ status: 'error', error: err.message });
+  }
 });
 
 // ============================================================
@@ -587,7 +814,7 @@ app.get('/api/results/:pipelineId', async (req, res) => {
 app.use((_req, res) => {
   res.status(404).json({
     error: 'Endpoint no encontrado',
-    endpoints: ['GET /health', 'POST /api/execute', 'GET /api/report/allure', 'GET /api/report/zap/:file', 'GET /api/report/zap-list', 'GET /api/report/newman/:file', 'GET /api/report/newman-list', 'GET /api/report/k6/:file', 'GET /api/report/k6-list', 'GET /api/results/:pipelineId'],
+    endpoints: ['GET /health', 'POST /api/explore', 'POST /api/execute', 'GET /api/report/allure', 'GET /api/report/zap/:file', 'GET /api/report/zap-list', 'GET /api/report/newman/:file', 'GET /api/report/newman-list', 'GET /api/report/k6/:file', 'GET /api/report/k6-list', 'GET /api/results/:pipelineId'],
   });
 });
 
@@ -602,6 +829,7 @@ app.listen(PORT, () => {
   console.log(`   Running on: http://localhost:${PORT}`);
   console.log('   Endpoints:');
   console.log('      GET  /health        - Server status');
+  console.log('      POST /api/explore   - DOM Scan (Playwright escanea cualquier URL)');
   console.log('      POST /api/execute   - Execute tests (E2E + API + K6 + ZAP)');
   console.log('═══════════════════════════════════════════════════════════════');
   console.log('');

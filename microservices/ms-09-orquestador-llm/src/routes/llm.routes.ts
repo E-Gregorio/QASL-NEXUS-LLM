@@ -100,7 +100,7 @@ router.post('/template/fill', async (req: Request, res: Response) => {
 // Guarda tests en generated_test_case (MS-12)
 // ============================================================
 router.post('/exploratory/generate', async (req: Request, res: Response) => {
-  const { targetUrl, objective, pipelineId } = req.body;
+  const { targetUrl, objective, pipelineId, domStructure, apiCalls } = req.body;
 
   if (!targetUrl || !pipelineId) {
     return res.status(400).json({ error: 'targetUrl y pipelineId son requeridos' });
@@ -108,9 +108,13 @@ router.post('/exploratory/generate', async (req: Request, res: Response) => {
 
   console.log(`[MS-09] Generando tests para ${targetUrl} (pipeline: ${pipelineId})`);
   console.log(`[MS-09] Objetivo: ${objective || 'explorar y validar funcionalidad'}`);
+  console.log(`[MS-09] DOM Structure: ${domStructure ? 'SI (' + (domStructure.meta?.totalInteractive || '?') + ' elementos)' : 'NO (modo legacy)'}`);
 
   try {
-    const prompt = buildExploratoryPrompt(targetUrl, objective || 'explorar y validar funcionalidad');
+    // Si tenemos domStructure (del DOM scan de MS-03), usarla. Si no, modo legacy.
+    const prompt = domStructure
+      ? buildDOMPrompt(targetUrl, objective || 'explorar y validar funcionalidad', domStructure, apiCalls)
+      : buildLegacyPrompt(targetUrl, objective || 'explorar y validar funcionalidad');
     const startTime = Date.now();
 
     // Opus genera los tests (sincrono — MS-08 espera)
@@ -165,98 +169,130 @@ router.get('/health', (_req: Request, res: Response) => {
 // Helpers para generacion de tests exploratorios
 // ============================================================
 
-function buildExploratoryPrompt(targetUrl: string, objective: string): string {
-  return `Eres un ingeniero QA senior con 10+ anos de experiencia en Playwright. Tu trabajo es generar tests E2E que funcionen PERFECTAMENTE en cualquier sitio web real.
+// Prompt principal: recibe DOM real escaneado por MS-03
+function buildDOMPrompt(targetUrl: string, objective: string, dom: any, apiCalls?: any[]): string {
+  // Serializar DOM structure compacto para el prompt
+  const inputsSummary = (dom.inputs || []).map((i: any) =>
+    `  - ${i.tag}[type=${i.type}] selector="${i.selector}" placeholder="${i.placeholder || ''}" name="${i.name || ''}" ${i.required ? 'REQUIRED' : ''}`
+  ).join('\n');
 
-URL TARGET: ${targetUrl}
+  const buttonsSummary = (dom.buttons || []).map((b: any) =>
+    `  - text="${b.text}" selector="${b.selector}" ariaLabel="${b.ariaLabel || ''}"`
+  ).join('\n');
+
+  const linksSummary = (dom.links || []).slice(0, 30).map((l: any) =>
+    `  - "${l.text}" href="${l.href}" selector="${l.selector}"`
+  ).join('\n');
+
+  const selectsSummary = (dom.selects || []).map((s: any) =>
+    `  - selector="${s.selector}" name="${s.name || ''}" options(${s.totalOptions}): ${s.options.slice(0, 5).map((o: any) => o.text).join(', ')}${s.totalOptions > 5 ? '...' : ''}`
+  ).join('\n');
+
+  const tablesSummary = (dom.tables || []).map((t: any) =>
+    `  - selector="${t.selector}" headers=[${t.headers.join(', ')}] rows=${t.rowCount}`
+  ).join('\n');
+
+  const formsSummary = (dom.forms || []).map((f: any) =>
+    `  - selector="${f.selector}" method=${f.method} action="${f.action || ''}"`
+  ).join('\n');
+
+  const navSummary = (dom.navigation || []).map((n: any) =>
+    `  - selector="${n.selector}" links: ${n.links.map((l: any) => l.text).join(', ')}`
+  ).join('\n');
+
+  const apiSummary = (apiCalls || []).map((a: any) =>
+    `  - ${a.method} ${a.url}`
+  ).join('\n');
+
+  return `Eres un ingeniero QA senior. Genera tests E2E Playwright para esta pagina web.
+
+URL: ${targetUrl}
+TITULO: ${dom.title || 'Sin titulo'}
 OBJETIVO: ${objective}
 
-REGLAS CRITICAS DE AUTOMATIZACION (si no las sigues, los tests fallaran):
+═══════════════════════════════════════════════════════
+ESTRUCTURA DOM REAL (escaneada por Playwright)
+═══════════════════════════════════════════════════════
 
-1. NAVEGACION: Usa waitUntil: 'domcontentloaded' (NUNCA 'networkidle' porque ads/trackers lo bloquean)
-   await page.goto('${targetUrl}', { waitUntil: 'domcontentloaded' });
-   await page.waitForLoadState('domcontentloaded');
+HEADINGS:
+  H1: ${(dom.headings?.h1 || []).join(' | ') || 'ninguno'}
+  H2: ${(dom.headings?.h2 || []).join(' | ') || 'ninguno'}
+  H3: ${(dom.headings?.h3 || []).join(' | ') || 'ninguno'}
 
-2. ESPERAS: Siempre esperar al elemento ANTES de interactuar
-   await page.locator('selector').waitFor({ state: 'visible', timeout: 10000 });
-   // Luego interactuar
+FORMULARIOS (${dom.forms?.length || 0}):
+${formsSummary || '  ninguno'}
 
-3. SELECTORES (en orden de prioridad):
-   - getByRole('button', { name: 'Submit' }) — preferido
-   - getByText('texto visible') — para links y labels
-   - getByPlaceholder('placeholder text') — para inputs
-   - locator('[data-testid="id"]') — si existe
-   - locator('main selector, #content selector') — dentro del area de contenido
-   NUNCA usar selectores que dependan de estructura CSS de ads o iframes publicitarios
+INPUTS (${dom.inputs?.length || 0}):
+${inputsSummary || '  ninguno'}
 
-4. ADS Y POPUPS: Los sitios web reales tienen publicidad, banners de cookies, overlays
-   - Si un click falla, usar { force: true } o cerrar el overlay primero
-   - Ignorar elementos dentro de iframes de ads (googlesyndication, doubleclick, etc.)
-   - Enfocar tests en el CONTENIDO PRINCIPAL de la pagina, no en widgets de terceros
+SELECTS/DROPDOWNS (${dom.selects?.length || 0}):
+${selectsSummary || '  ninguno'}
 
-5. ASSERTIONS DEFENSIVAS:
-   - Usar toBeVisible() en vez de assertions que dependan de texto exacto que puede cambiar
-   - Usar toHaveCount() con toBeGreaterThan(0) para verificar que existen elementos
-   - Usar { timeout: 10000 } en expects que esperan contenido dinamico
-   - Si un elemento puede no existir, verificar con count() > 0 antes de interactuar
+BOTONES (${dom.buttons?.length || 0}):
+${buttonsSummary || '  ninguno'}
 
-6. TESTS INDEPENDIENTES: Cada test hace su propio goto(), no depende de estado anterior
+LINKS (${dom.links?.length || 0}):
+${linksSummary || '  ninguno'}
 
-7. UN TEST DEBE FALLAR SOLO SI HAY UN BUG REAL, nunca por:
-   - Selector fragil que no encuentra el elemento
-   - Timeout porque networkidle espera a que carguen ads
-   - Click interceptado por un overlay/popup
-   - Texto exacto que cambio
+TABLAS (${dom.tables?.length || 0}):
+${tablesSummary || '  ninguna'}
 
-ESTRUCTURA DEL ARCHIVO:
-- Genera un UNICO archivo TypeScript valido
-- Entre 5 y 10 tests cubriendo: carga, navegacion, interaccion, funcionalidad core, caso negativo
-- Cada test con Allure metadata
+NAVEGACION (${dom.navigation?.length || 0}):
+${navSummary || '  ninguna'}
 
-ALLURE OBLIGATORIO en cada test:
-- import { allure } from 'allure-playwright';
-- await allure.epic('QASL NEXUS - Exploratory Testing');
-- await allure.feature('Feature name');
-- await allure.story('Story name');
-- await allure.severity('critical' | 'normal' | 'minor');
-- await allure.owner('QASL NEXUS AI');
-- await allure.tags('exploratory', 'automated');
-- await allure.description('Descripcion clara del test');
-- Usar test.step() para agrupar acciones
-- Screenshot al final: await allure.attachment('Screenshot', await page.screenshot(), 'image/png');
+APIs DETECTADAS (${apiCalls?.length || 0}):
+${apiSummary || '  ninguna'}
 
-FORMATO: Solo codigo TypeScript. Sin explicaciones, sin markdown, sin backticks.
+META: ${dom.meta?.totalElements || 0} elementos totales, ${dom.meta?.totalInteractive || 0} interactivos, idioma: ${dom.meta?.language || 'no definido'}
 
-EJEMPLO CORRECTO:
+═══════════════════════════════════════════════════════
+REGLAS OBLIGATORIAS
+═══════════════════════════════════════════════════════
+
+1. USA SOLO SELECTORES QUE EXISTEN ARRIBA. No inventes selectores.
+   Prioridad: selector del DOM > getByRole > getByText > getByPlaceholder
+
+2. NAVEGACION: waitUntil: 'domcontentloaded' (NUNCA 'networkidle')
+
+3. ESPERAS: Siempre waitFor({ state: 'visible', timeout: 10000 }) antes de interactuar
+
+4. CADA TEST: Hace su propio page.goto(), es independiente
+
+5. ASSERTIONS DEFENSIVAS: toBeVisible(), toHaveCount(), expect con timeout
+
+6. FALLA = BUG REAL: Un test solo debe fallar si hay un defecto real en la app
+
+7. ALLURE en cada test:
+   import { allure } from 'allure-playwright';
+   await allure.epic('QASL NEXUS - Exploratory Testing');
+   await allure.feature('...');
+   await allure.story('...');
+   await allure.severity('critical' | 'normal' | 'minor');
+   await allure.owner('QASL NEXUS AI');
+   await allure.tags('exploratory', 'automated');
+   await allure.description('...');
+   // Usar test.step() para agrupar acciones
+   // Screenshot al final: await allure.attachment('Screenshot', await page.screenshot(), 'image/png');
+
+8. FORMATO: Un UNICO archivo TypeScript. Sin markdown, sin backticks, sin explicaciones.
+   import { test, expect } from '@playwright/test';
+   import { allure } from 'allure-playwright';
+
+9. GENERA 5-10 TESTS cubriendo: carga, elementos visibles, interaccion con inputs/buttons, navegacion, formularios, caso negativo.
+
+IMPORTANTE: Los selectores del DOM scan son REALES y VERIFICADOS. Usalos directamente.`;
+}
+
+// Prompt legacy (sin DOM scan, para compatibilidad)
+function buildLegacyPrompt(targetUrl: string, objective: string): string {
+  return `Eres un ingeniero QA senior. Genera tests E2E Playwright para ${targetUrl}.
+OBJETIVO: ${objective}
+
+REGLAS: waitUntil 'domcontentloaded', selectores defensivos (getByRole > getByText > getByPlaceholder), cada test independiente con goto(), assertions con timeout.
+ALLURE obligatorio en cada test (epic, feature, story, severity, owner, tags, description, screenshot).
+FORMATO: Un archivo TypeScript. Sin markdown ni backticks. 5-10 tests.
 import { test, expect } from '@playwright/test';
-import { allure } from 'allure-playwright';
-
-test.describe('Exploratory: ${targetUrl}', () => {
-
-  test('TC-001: Pagina carga correctamente', async ({ page }) => {
-    await allure.epic('QASL NEXUS - Exploratory Testing');
-    await allure.feature('Page Load');
-    await allure.story('Carga inicial');
-    await allure.severity('critical');
-    await allure.owner('QASL NEXUS AI');
-    await allure.tags('exploratory', 'automated', 'smoke');
-    await allure.description('Verifica que la pagina carga y tiene contenido visible');
-
-    await test.step('Navegar a la URL', async () => {
-      await page.goto('${targetUrl}', { waitUntil: 'domcontentloaded' });
-    });
-    await test.step('Verificar que la pagina tiene titulo', async () => {
-      await expect(page).not.toHaveTitle('');
-    });
-    await test.step('Verificar contenido principal visible', async () => {
-      const body = page.locator('body');
-      await expect(body).toBeVisible();
-      const text = await body.innerText();
-      expect(text.length).toBeGreaterThan(0);
-    });
-    await allure.attachment('Screenshot', await page.screenshot(), 'image/png');
-  });
-});`;
+import { allure } from 'allure-playwright';`;
 }
 
 function parseGeneratedTests(content: string, targetUrl: string): Array<{ name: string; type: string; code: string }> {

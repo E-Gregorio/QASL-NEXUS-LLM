@@ -11,7 +11,8 @@ const PHASES = [
   {
     name: 'Fase 1: Analisis',
     services: [
-      { key: 'ms09_generate', label: 'MS-09 AI Test Generator', desc: 'Opus genera tests Playwright desde URL' },
+      { key: 'ms03_explore', label: 'MS-03 DOM Scanner', desc: 'Playwright escanea DOM completo de la URL' },
+      { key: 'ms09_generate', label: 'MS-09 AI Test Generator', desc: 'Opus genera tests con selectores reales del DOM' },
       { key: 'ms02', label: 'MS-02 Static Analyzer', desc: 'Parsing HU + Gap Detection' },
       { key: 'ms09_vcr', label: 'MS-09 VCR Calculator', desc: 'Value + Cost + Risk' },
     ],

@@ -59,15 +59,44 @@ export class PipelineExecutor {
       // ================================================================
       console.log(`[Pipeline] FASE 1: Analisis`);
 
-      // Si hay targetUrl → flujo exploratorio: MS-09 Opus genera tests E2E
+      // Si hay targetUrl → flujo exploratorio:
+      // 1) MS-03 escanea DOM (Playwright navega y extrae todos los elementos)
+      // 2) MS-09 Opus genera tests usando los selectores REALES del DOM
       if (targetUrl) {
-        console.log(`[Pipeline] MS-09 generando tests para ${targetUrl}...`);
+        // PASO 1: DOM Scan — MS-03 Playwright escanea la pagina
+        console.log(`[Pipeline] ╔══ PASO 1: DOM SCAN ══╗`);
+        console.log(`[Pipeline] Llamando MS-03 /api/explore → ${targetUrl}`);
+        fases['ms03_explore'] = 'running';
+        await this.updateFases(id, fases);
+
+        let domStructure: any = null;
+        let apiCalls: any[] = [];
+        try {
+          const exploreResponse = await axios.post(
+            `${MS_URLS.MS03_FRAMEWORK}/api/explore`,
+            { targetUrl, pipelineId: id },
+            { timeout: 60000 }
+          );
+          domStructure = exploreResponse.data?.domStructure || null;
+          apiCalls = exploreResponse.data?.apiCalls || [];
+          fases['ms03_explore'] = 'ok';
+          const summary = exploreResponse.data?.summary || {};
+          console.log(`[Pipeline] DOM Scan OK: ${summary.inputs || 0} inputs, ${summary.buttons || 0} buttons, ${summary.links || 0} links, ${summary.selects || 0} selects`);
+        } catch (err: any) {
+          fases['ms03_explore'] = 'error';
+          console.error(`[Pipeline] DOM Scan FALLO: ${err.message}`);
+        }
+        await this.updateFases(id, fases);
+
+        // PASO 2: MS-09 Opus genera tests CON el DOM real
+        console.log(`[Pipeline] ╔══ PASO 2: AI TEST GENERATION ══╗`);
+        console.log(`[Pipeline] DOM ${domStructure ? 'SI (' + (domStructure.meta?.totalInteractive || '?') + ' elementos interactivos)' : 'NO → modo legacy (sin selectores reales)'}`);
         fases['ms09_generate'] = 'running';
         await this.updateFases(id, fases);
 
         fases['ms09_generate'] = await this.callService(
           MS_URLS.MS09_LLM, '/api/llm/exploratory/generate', 'POST',
-          { targetUrl, objective, pipelineId: id }
+          { targetUrl, objective, pipelineId: id, domStructure, apiCalls }
         );
         await this.updateFases(id, fases);
       }

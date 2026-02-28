@@ -64,7 +64,7 @@ export function usePipelinePolling(pipelineId: string | null) {
         return;
       }
       poll();
-    }, 3000);
+    }, 2000);
 
     return () => { active = false; clearInterval(interval); };
   }, [pipelineId]); // eslint-disable-line react-hooks/exhaustive-deps
