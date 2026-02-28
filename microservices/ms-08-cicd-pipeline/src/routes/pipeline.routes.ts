@@ -17,20 +17,21 @@ const executor = new PipelineExecutor();
 // ============================================================
 router.post('/run', async (req: Request, res: Response) => {
   try {
-    const { type = 'full', triggerType = 'manual', triggeredBy = 'api' } = req.body;
+    const { type = 'full', triggerType = 'manual', triggeredBy = 'api', targetUrl, objective } = req.body;
 
-    // Ejecutar asincrono (no bloquea la respuesta)
-    const resultPromise = executor.execute(type, triggerType, triggeredBy);
+    // Generar ID antes de ejecutar para devolverlo al frontend
+    const pipelineId = `PL-${Date.now().toString(36).toUpperCase()}`;
 
-    // Responder inmediatamente
+    // Responder inmediatamente con el ID
     res.json({
       success: true,
+      pipelineId,
       message: `Pipeline ${type} iniciado`,
       status: 'Running',
     });
 
     // Pipeline sigue ejecutandose en background
-    resultPromise
+    executor.execute(type, triggerType, triggeredBy, pipelineId, targetUrl, objective)
       .then((result) => {
         console.log(`[MS-08] Pipeline ${result.pipelineId} finalizado: ${result.status}`);
       })

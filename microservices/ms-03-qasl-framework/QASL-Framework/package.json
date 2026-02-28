@@ -18,6 +18,7 @@
         "infra:logs": "start http://localhost:3001/d/infrastructure-logs",
         "dashboard": "start http://localhost:3001/d/qasl-nexus-control",
         "demo": "node scripts/run-demo.mjs",
+        "server": "node server.mjs",
         "pipeline": "node scripts/run-pipeline.mjs",
         "docker:up": "docker-compose up -d",
         "docker:down": "docker-compose down",
@@ -49,7 +50,9 @@
         "vitest": "^2.0.0"
     },
     "dependencies": {
+        "cors": "^2.8.6",
         "dotenv": "^16.3.1",
+        "express": "^5.2.1",
         "pg": "^8.13.0"
     }
 }

@@ -6,10 +6,12 @@ import { Badge } from '../components/ui/Badge';
 import { ProgressBar } from '../components/ui/ProgressBar';
 
 // Pipeline phases with their microservices
+// Incluye tanto flujo estatico (ms02/ms09_vcr) como exploratorio (ms09_generate)
 const PHASES = [
   {
     name: 'Fase 1: Analisis',
     services: [
+      { key: 'ms09_generate', label: 'MS-09 AI Test Generator', desc: 'Opus genera tests Playwright desde URL' },
       { key: 'ms02', label: 'MS-02 Static Analyzer', desc: 'Parsing HU + Gap Detection' },
       { key: 'ms09_vcr', label: 'MS-09 VCR Calculator', desc: 'Value + Cost + Risk' },
     ],
@@ -17,18 +19,16 @@ const PHASES = [
   {
     name: 'Fase 2: Ejecucion (Paralelo)',
     services: [
-      { key: 'ms03', label: 'MS-03 QASL Framework', desc: 'Playwright + Newman + K6 + ZAP' },
+      { key: 'ms03', label: 'MS-03 QASL Framework', desc: 'Playwright E2E + Newman + K6 + ZAP' },
       { key: 'ms04', label: 'MS-04 QASL Mobile', desc: 'Maestro + MobSF Security' },
-      { key: 'ms05', label: 'MS-05 INGRID AI', desc: 'AI Test Generation (OWASP LLM)' },
       { key: 'ms06', label: 'MS-06 Garak Security', desc: 'NVIDIA LLM Vulnerability Scan' },
     ],
   },
   {
     name: 'Fase 3: Reportes',
     services: [
-      { key: 'ms10', label: 'MS-10 MCP Interfaz', desc: 'Jira Bug Creation' },
       { key: 'ms11', label: 'MS-11 Reportador', desc: 'PDF + Slack + Teams + Email' },
-      { key: 'ms07', label: 'MS-07 Sentinel', desc: 'Grafana Dashboards' },
+      { key: 'ms10', label: 'MS-10 MCP Interfaz', desc: 'Jira Bug Creation' },
     ],
   },
 ];

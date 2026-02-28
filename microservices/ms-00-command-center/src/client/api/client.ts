@@ -26,7 +26,7 @@ export const api = {
   getPassRate: () => request<any[]>('/api/dashboard/pass-rate'),
 
   // Pipeline (proxy a MS-08)
-  runPipeline: (body: { type: string; triggerType?: string; triggeredBy?: string }) =>
+  runPipeline: (body: { type: string; triggerType?: string; triggeredBy?: string; targetUrl?: string; objective?: string }) =>
     request<any>('/api/proxy/pipeline/run', { method: 'POST', body: JSON.stringify(body) }),
   getPipelineStatus: (id: string) => request<any>(`/api/proxy/pipeline/status/${id}`),
   getPipelineHistory: (limit = 20) => request<any>(`/api/proxy/pipeline/history?limit=${limit}`),

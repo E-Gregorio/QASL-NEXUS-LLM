@@ -21,6 +21,8 @@ export function ExploratoryAIPage() {
         type: 'full',
         triggerType: 'manual',
         triggeredBy: 'command-center-exploratory',
+        targetUrl: url.trim(),
+        objective: objective.trim(),
       });
       const id = result.pipeline_id || result.pipelineId;
       if (id) {
