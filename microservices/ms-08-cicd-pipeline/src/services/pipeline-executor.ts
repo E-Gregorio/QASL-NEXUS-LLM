@@ -33,6 +33,7 @@ export class PipelineExecutor {
     pipelineId?: string,
     targetUrl?: string,
     objective?: string,
+    importedCode?: string,
   ): Promise<PipelineResult> {
     const id = pipelineId || `PL-${Date.now().toString(36).toUpperCase()}`;
     const startTime = Date.now();
@@ -43,6 +44,7 @@ export class PipelineExecutor {
     let bugsCreados = 0;
 
     console.log(`[Pipeline] ${id} iniciado (${type}) por ${triggeredBy}`);
+    if (importedCode) console.log(`[Pipeline] VIA 3: Import mode (${importedCode.length} chars)`);
     if (targetUrl) console.log(`[Pipeline] Target URL: ${targetUrl}`);
 
     // Registrar inicio en MS-12 (ON CONFLICT porque la ruta /run ya inserta la fila)
@@ -59,10 +61,22 @@ export class PipelineExecutor {
       // ================================================================
       console.log(`[Pipeline] FASE 1: Analisis`);
 
-      // Si hay targetUrl → flujo exploratorio:
-      // 1) MS-03 escanea DOM (Playwright navega y extrae todos los elementos)
-      // 2) MS-09 Opus genera tests usando los selectores REALES del DOM
-      if (targetUrl) {
+      // VIA 3: Importar spec existente → Sonnet adapta (agrega Allure) → ejecuta
+      if (importedCode) {
+        console.log(`[Pipeline] ╔══ VIA 3: IMPORT + ADAPT ══╗`);
+        console.log(`[Pipeline] Codigo importado: ${importedCode.length} chars`);
+        fases['ms09_adapt'] = 'running';
+        await this.updateFases(id, fases);
+
+        fases['ms09_adapt'] = await this.callService(
+          MS_URLS.MS09_LLM, '/api/llm/import/adapt', 'POST',
+          { code: importedCode, targetUrl, pipelineId: id }
+        );
+        console.log(`[Pipeline] Sonnet adapto spec: ${fases['ms09_adapt']}`);
+        await this.updateFases(id, fases);
+
+      // VIA 2: Flujo exploratorio — DOM scan + Opus genera tests
+      } else if (targetUrl) {
         // PASO 1: DOM Scan — MS-03 Playwright escanea la pagina
         console.log(`[Pipeline] ╔══ PASO 1: DOM SCAN ══╗`);
         console.log(`[Pipeline] Llamando MS-03 /api/explore → ${targetUrl}`);

@@ -20,7 +20,7 @@ const executor = new PipelineExecutor();
 // ============================================================
 router.post('/run', async (req: Request, res: Response) => {
   try {
-    const { type = 'full', triggerType = 'manual', triggeredBy = 'api', targetUrl, objective } = req.body;
+    const { type = 'full', triggerType = 'manual', triggeredBy = 'api', targetUrl, objective, importedCode } = req.body;
 
     // Generar ID antes de ejecutar para devolverlo al frontend
     const pipelineId = `PL-${Date.now().toString(36).toUpperCase()}`;
@@ -41,7 +41,7 @@ router.post('/run', async (req: Request, res: Response) => {
     });
 
     // Pipeline sigue ejecutandose en background (INSERT ya hecho, executor lo detecta)
-    executor.execute(type, triggerType, triggeredBy, pipelineId, targetUrl, objective)
+    executor.execute(type, triggerType, triggeredBy, pipelineId, targetUrl, objective, importedCode)
       .then((result) => {
         console.log(`[MS-08] Pipeline ${result.pipelineId} finalizado: ${result.status}`);
       })

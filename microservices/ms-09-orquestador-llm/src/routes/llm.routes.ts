@@ -149,6 +149,57 @@ router.post('/exploratory/generate', async (req: Request, res: Response) => {
 });
 
 // ============================================================
+// POST /api/llm/import/adapt
+// Via 3: Recibe spec Playwright existente, Sonnet agrega Allure
+// wrapping sin tocar selectores ni logica de tests
+// Usado por: MS-08 Pipeline (flujo import)
+// ============================================================
+router.post('/import/adapt', async (req: Request, res: Response) => {
+  const { code, targetUrl, pipelineId } = req.body;
+
+  if (!code || !pipelineId) {
+    return res.status(400).json({ error: 'code y pipelineId son requeridos' });
+  }
+
+  console.log(`[MS-09] Import/Adapt para pipeline ${pipelineId}`);
+  console.log(`[MS-09] Target URL: ${targetUrl || 'no especificada'}`);
+  console.log(`[MS-09] Codigo original: ${code.length} chars`);
+
+  try {
+    const prompt = buildImportAdaptPrompt(code, targetUrl);
+    const startTime = Date.now();
+
+    // Sonnet adapta (mas rapido y barato que Opus — es adaptacion, no generacion creativa)
+    const result = await callClaude(prompt, 'claude-sonnet-4-5-20250929', 8192, 0.1);
+
+    const elapsed = Date.now() - startTime;
+    console.log(`[MS-09] Sonnet adapto spec en ${elapsed}ms (${result.tokensUsed} tokens)`);
+
+    const tests = parseGeneratedTests(result.content, targetUrl || 'imported');
+
+    // Guardar en MS-12
+    const pool = new pg.Pool({ connectionString: DB_URL });
+    try {
+      for (const test of tests) {
+        await pool.query(
+          `INSERT INTO generated_test_case (pipeline_id, test_name, test_type, test_code, target_url, status)
+           VALUES ($1, $2, $3, $4, $5, 'generated')`,
+          [pipelineId, test.name, test.type, test.code, targetUrl || 'imported']
+        );
+      }
+      console.log(`[MS-09] ${tests.length} tests adaptados guardados en MS-12 para pipeline ${pipelineId}`);
+    } finally {
+      await pool.end();
+    }
+
+    res.json({ status: 'generated', pipelineId, testsCount: tests.length, elapsed });
+  } catch (error: any) {
+    console.error(`[MS-09] Error adaptando spec: ${error.message}`);
+    res.status(500).json({ status: 'error', error: error.message });
+  }
+});
+
+// ============================================================
 // GET /api/llm/health
 // Health check
 // ============================================================
@@ -293,6 +344,45 @@ ALLURE obligatorio en cada test (epic, feature, story, severity, owner, tags, de
 FORMATO: Un archivo TypeScript. Sin markdown ni backticks. 5-10 tests.
 import { test, expect } from '@playwright/test';
 import { allure } from 'allure-playwright';`;
+}
+
+// Prompt para Via 3: adaptar spec existente agregando Allure wrapping
+function buildImportAdaptPrompt(code: string, targetUrl?: string): string {
+  return `Eres un ingeniero QA senior. Tu tarea es ADAPTAR un spec Playwright existente para integrarlo en la plataforma QASL NEXUS LLM.
+
+REGLAS CRITICAS:
+1. NO CAMBIES los selectores del usuario. Son suyos y funcionan en su app.
+2. NO CAMBIES la logica de los tests. No agregues ni quites assertions.
+3. NO CAMBIES los page.goto() ni las URLs. El usuario sabe a donde apuntar.
+4. SOLO agrega la capa Allure encima del codigo existente.
+
+LO QUE DEBES AGREGAR:
+- import { allure } from 'allure-playwright'; (si no existe)
+- En CADA test:
+  await allure.epic('QASL NEXUS - Imported Tests');
+  await allure.feature('nombre descriptivo del feature');
+  await allure.story('nombre descriptivo del test');
+  await allure.severity('normal');
+  await allure.owner('QASL NEXUS Import');
+  await allure.tags('imported', 'adapted');
+  await allure.description('descripcion clara de lo que hace el test');
+- Envolver las acciones principales en test.step() si no lo tienen
+- Agregar screenshot al final: await allure.attachment('Screenshot', await page.screenshot(), 'image/png');
+
+LO QUE DEBES VERIFICAR (y corregir SOLO si esta mal):
+- Que tenga import { test, expect } from '@playwright/test';
+- Que waitUntil sea 'domcontentloaded' (cambiar 'networkidle' si aparece)
+- Si hay test.beforeEach con goto(), dejarlo tal cual
+
+FORMATO: Devuelve SOLO el codigo TypeScript adaptado. Sin markdown, sin backticks, sin explicaciones.
+
+═══════════════════════════════════════════════════════
+SPEC ORIGINAL DEL USUARIO:
+═══════════════════════════════════════════════════════
+${code}
+═══════════════════════════════════════════════════════
+${targetUrl ? `\nTARGET URL de referencia: ${targetUrl}` : ''}
+Adapta el spec agregando Allure. NO modifiques la logica ni los selectores.`;
 }
 
 function parseGeneratedTests(content: string, targetUrl: string): Array<{ name: string; type: string; code: string }> {

@@ -10,6 +10,9 @@ export function ExploratoryAIPage() {
   const [model, setModel] = useState('opus');
   const [running, setRunning] = useState(false);
   const [cleaning, setCleaning] = useState(false);
+  const [importCode, setImportCode] = useState('');
+  const [importUrl, setImportUrl] = useState('');
+  const [importing, setImporting] = useState(false);
 
   const handleExplore = async (pipelineType: 'e2e' | 'full') => {
     if (!url.trim() || !objective.trim()) {
@@ -46,6 +49,32 @@ export function ExploratoryAIPage() {
       alert(`Error: ${err.message}`);
     } finally {
       setCleaning(false);
+    }
+  };
+
+  const handleImport = async () => {
+    if (!importCode.trim()) {
+      alert('Pega tu spec Playwright en el textarea');
+      return;
+    }
+    setImporting(true);
+    try {
+      const result = await api.runPipeline({
+        type: 'full',
+        triggerType: 'manual',
+        triggeredBy: 'command-center-import',
+        targetUrl: importUrl.trim() || undefined,
+        objective: 'Imported E2E spec — adapted with Allure by Sonnet',
+        importedCode: importCode.trim(),
+      });
+      const id = result.pipeline_id || result.pipelineId;
+      if (id) {
+        navigate(`/pipeline?id=${id}`);
+      }
+    } catch (err: any) {
+      alert(`Error: ${err.message}`);
+    } finally {
+      setImporting(false);
     }
   };
 
@@ -137,6 +166,41 @@ export function ExploratoryAIPage() {
               <li>MS-11 genera reporte PDF | MS-10 crea bugs en Jira/Azure</li>
             </ol>
           </div>
+        </div>
+      </Card>
+
+      {/* Via 3: Importar Spec Existente */}
+      <Card>
+        <h2 className="text-lg font-semibold text-white mb-1">Importar Spec E2E</h2>
+        <p className="text-xs text-gray-500 mb-4">Pega tu spec Playwright existente. Sonnet agrega Allure wrapping sin modificar selectores ni logica.</p>
+        <div className="space-y-3">
+          <div>
+            <label className="text-sm text-gray-400 block mb-1">URL de la Aplicacion (opcional)</label>
+            <input
+              type="url"
+              value={importUrl}
+              onChange={(e) => setImportUrl(e.target.value)}
+              placeholder="https://mi-app.example.com (la URL que usa tu spec)"
+              className="w-full bg-surface-primary border border-surface-border rounded-lg px-4 py-2 text-white placeholder-gray-600 focus:border-green-500 focus:outline-none transition text-sm"
+            />
+          </div>
+          <div>
+            <label className="text-sm text-gray-400 block mb-1">Codigo Playwright (.spec.ts)</label>
+            <textarea
+              value={importCode}
+              onChange={(e) => setImportCode(e.target.value)}
+              placeholder="import { test, expect } from '@playwright/test';&#10;&#10;test('mi test', async ({ page }) => {&#10;  await page.goto('https://...');&#10;  // ...&#10;});"
+              rows={10}
+              className="w-full bg-surface-primary border border-surface-border rounded-lg px-4 py-3 text-green-300 placeholder-gray-600 focus:border-green-500 focus:outline-none transition resize-y font-mono text-sm"
+            />
+          </div>
+          <button
+            onClick={handleImport}
+            disabled={importing || running || !importCode.trim()}
+            className="w-full px-6 py-3 bg-green-600 text-white rounded-xl font-semibold hover:bg-green-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {importing ? 'Importando y ejecutando...' : 'IMPORTAR Y EJECUTAR'}
+          </button>
         </div>
       </Card>
 

@@ -13,6 +13,7 @@ const PHASES = [
     services: [
       { key: 'ms03_explore', label: 'MS-03 DOM Scanner', desc: 'Playwright escanea DOM completo de la URL' },
       { key: 'ms09_generate', label: 'MS-09 AI Test Generator', desc: 'Opus genera tests con selectores reales del DOM' },
+      { key: 'ms09_adapt', label: 'MS-09 Import Adapter', desc: 'Sonnet adapta spec importado con Allure wrapping' },
       { key: 'ms02', label: 'MS-02 Static Analyzer', desc: 'Parsing HU + Gap Detection' },
       { key: 'ms09_vcr', label: 'MS-09 VCR Calculator', desc: 'Value + Cost + Risk' },
     ],
@@ -43,7 +44,7 @@ function getServiceStatus(fases: Record<string, string> | undefined, key: string
 }
 
 function statusToVariant(status: string): 'success' | 'running' | 'failed' | 'pending' {
-  if (['ok', 'complete', 'completed', 'done', 'generated', 'pass', 'skip'].includes(status)) return 'success';
+  if (['ok', 'complete', 'completed', 'done', 'generated', 'adapted', 'pass', 'skip'].includes(status)) return 'success';
   if (['running', 'in_progress', 'generating'].includes(status)) return 'running';
   if (['error', 'failed', 'fail'].includes(status)) return 'failed';
   if (status === 'unreachable') return 'failed';
@@ -51,7 +52,7 @@ function statusToVariant(status: string): 'success' | 'running' | 'failed' | 'pe
 }
 
 function statusToProgress(status: string): number {
-  if (['ok', 'complete', 'completed', 'done', 'generated', 'pass'].includes(status)) return 100;
+  if (['ok', 'complete', 'completed', 'done', 'generated', 'adapted', 'pass'].includes(status)) return 100;
   if (['running', 'in_progress', 'generating'].includes(status)) return 60;
   if (['error', 'failed', 'fail', 'unreachable'].includes(status)) return 100;
   if (status === 'skip') return 100;
@@ -59,7 +60,7 @@ function statusToProgress(status: string): number {
 }
 
 function statusToColor(status: string): 'green' | 'yellow' | 'red' | 'blue' {
-  if (['ok', 'complete', 'completed', 'done', 'generated', 'pass'].includes(status)) return 'green';
+  if (['ok', 'complete', 'completed', 'done', 'generated', 'adapted', 'pass'].includes(status)) return 'green';
   if (['running', 'in_progress', 'generating'].includes(status)) return 'yellow';
   if (['error', 'failed', 'fail'].includes(status)) return 'red';
   if (status === 'unreachable') return 'red';
@@ -70,7 +71,7 @@ function statusToColor(status: string): 'green' | 'yellow' | 'red' | 'blue' {
 function statusLabel(status: string): string {
   const labels: Record<string, string> = {
     ok: 'DONE', complete: 'DONE', completed: 'DONE', done: 'DONE',
-    generated: 'GENERATED', pass: 'PASS',
+    generated: 'GENERATED', adapted: 'ADAPTED', pass: 'PASS',
     running: 'RUNNING', in_progress: 'RUNNING', generating: 'GENERATING',
     error: 'ERROR', failed: 'FAILED', fail: 'FAILED',
     unreachable: 'OFFLINE', skip: 'SKIP', pending: 'PENDING',
