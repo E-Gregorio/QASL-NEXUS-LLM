@@ -376,6 +376,23 @@ async function executeTestPipeline(targetUrl, pipelineId, type) {
         /from\s+['"]@playwright\/test['"]/g,
         "from '../../api-capture'"
       );
+      // Sanitizar codigo: arreglar sintaxis que Playwright/Babel no soporta
+      // 1. (await x.method())?.prop → convierte a variable temporal
+      specContent = specContent.replace(
+        /\(await\s+([^)]+)\)\?\./g,
+        '(await $1) && (await $1).'
+      );
+      // 2. Reemplazar optional chaining comun en resultados de await
+      specContent = specContent.replace(
+        /const\s+(\w+)\s*=\s*\(await\s+([^)]+)\)\s*&&\s*\(await\s+\2\)\.(\w+)\(\)/g,
+        'const _tmp_$1 = await $2; const $1 = _tmp_$1 ? _tmp_$1.$3() : null'
+      );
+      // 3. Eliminar imports que no sean api-capture ni allure-playwright
+      specContent = specContent.replace(
+        /^import\s+.*from\s+['"](?!\.\.\/\.\.\/api-capture|allure-playwright).*['"];?\s*$/gm,
+        '// [QASL] import eliminado (no disponible en entorno de ejecucion)'
+      );
+      console.log(`[MS-03] Spec sanitizado: ${specContent.length} chars`);
       fs.writeFileSync(specPath, specContent);
     } else {
       // Spec exploratorio basico (funciona para cualquier URL)
@@ -404,9 +421,23 @@ async function executeTestPipeline(targetUrl, pipelineId, type) {
       results.e2e = 'pass';
       console.log('[MS-03] E2E: PASS');
     } catch (err) {
-      // Playwright sale con exit code != 0 si hay fails, pero stdout tiene los resultados
-      results.e2e = err.stdout?.includes('failed') ? 'fail' : 'pass';
-      console.log(`[MS-03] E2E: ${results.e2e.toUpperCase()}`);
+      // Detectar errores fatales: SyntaxError, No tests found, compilacion fallida
+      const output = (err.stdout || '') + (err.stderr || '');
+      const isFatalError = output.includes('No tests found')
+        || output.includes('SyntaxError')
+        || output.includes('Cannot find module')
+        || output.includes('Unexpected token')
+        || output.includes('compilation failed');
+
+      if (isFatalError) {
+        results.e2e = 'fail';
+        console.log('[MS-03] E2E: FAIL (error de compilacion o spec invalido)');
+        console.log('[MS-03] Error:', output.slice(0, 800));
+      } else {
+        // Playwright exit != 0 por tests que fallaron (no por error de compilacion)
+        results.e2e = err.stdout?.includes('failed') ? 'fail' : 'pass';
+        console.log(`[MS-03] E2E: ${results.e2e.toUpperCase()}`);
+      }
       if (err.stderr) console.log('[MS-03] E2E stderr:', err.stderr.slice(0, 500));
     }
 

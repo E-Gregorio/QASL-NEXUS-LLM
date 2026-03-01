@@ -60,11 +60,11 @@ export function ExploratoryAIPage() {
     setImporting(true);
     try {
       const result = await api.runPipeline({
-        type: 'full',
+        type: 'e2e',
         triggerType: 'manual',
         triggeredBy: 'command-center-import',
         targetUrl: importUrl.trim() || undefined,
-        objective: 'Imported E2E spec — adapted with Allure by Sonnet',
+        objective: 'Imported E2E spec — adapted with Allure',
         importedCode: importCode.trim(),
       });
       const id = result.pipeline_id || result.pipelineId;

@@ -43,6 +43,11 @@ export class PipelineExecutor {
     let totalExecuted = 0;
     let bugsCreados = 0;
 
+    // Via 3 Import: forzar e2e (solo Playwright, no Newman/K6/ZAP)
+    if (importedCode && type !== 'e2e') {
+      console.log(`[Pipeline] VIA 3: forzando type e2e (era ${type})`);
+      type = 'e2e' as PipelineType;
+    }
     console.log(`[Pipeline] ${id} iniciado (${type}) por ${triggeredBy}`);
     if (importedCode) console.log(`[Pipeline] VIA 3: Import mode (${importedCode.length} chars)`);
     if (targetUrl) console.log(`[Pipeline] Target URL: ${targetUrl}`);
